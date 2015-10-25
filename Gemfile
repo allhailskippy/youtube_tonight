@@ -8,6 +8,10 @@ gem 'bundler', '>= 1.8.4'
 
 gem 'sqlite3'
 
+# Javascript gems
+gem 'jquery-rails'
+gem 'jquery-ui-rails'
+
 source 'https://rails-assets.org' do
   gem 'rails-assets-bootstrap'
   gem 'rails-assets-angular'
@@ -26,8 +30,6 @@ group :assets do
 
   gem 'uglifier', '>= 1.0.3'
 end
-
-gem 'jquery-rails'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
