@@ -13,8 +13,9 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui
-//= require_tree .
 //= require bootstrap
 //= require angular
+//= require ng-rails-csrf
 //= require leaflet
 //= require holderjs
+//= require apps/apps.js

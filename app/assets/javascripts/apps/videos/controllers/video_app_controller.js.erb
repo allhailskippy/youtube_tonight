@@ -1,0 +1,49 @@
+/**
+ * @ngdoc controller
+ * @name VideoAppCtrl
+ *
+ * @description Controller for the entire VideoApp
+ */
+(function() {
+  "use strict";
+
+var VideoAppCtrl = function(
+  $scope,
+  VideoApp, Video
+  ) {
+
+  //$scope.page = 1;
+  //$scope.perPage = 30;
+  //$scope.endOfStream = false;
+  $scope.retrieving = true;
+  //$scope.videoTotal = 0;
+  //$scope.totalPages = 0;
+  $scope.videos = [];
+
+  $scope.queryVideos = function() {
+    var params = {
+//      'page': $scope.page,
+//      'per_page': $scope.perPage,
+    };
+
+    Video.query(params).then(function(response) {
+      angular.forEach(response.data, function(video) {
+        $scope.videos.push(Video.build(video));
+      });
+//      $scope.videoTotal = response.total;
+//      $scope.totalPages = response.total_pages;
+      $scope.retrieving = false;
+    });
+  };
+
+  $scope.queryVideos();
+};
+
+VideoAppCtrl.$inject = [
+  '$scope',
+  'VideoApp', 'Video'
+];
+
+angular.module("VideoApp")
+       .controller('VideoAppCtrl', VideoAppCtrl);
+}());
