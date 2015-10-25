@@ -46,6 +46,7 @@ Youtubetonight::Application.routes.draw do
   #     resources :products
   #   end
 
+  resources :shows
   resources :videos
   resources :home
 

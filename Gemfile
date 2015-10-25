@@ -9,7 +9,7 @@ gem 'bundler', '>= 1.8.4'
 gem 'mysql2'
 
 # Javascript gems
-gem 'jquery-rails'
+gem 'jquery-rails', '2.3.0'
 gem 'jquery-ui-rails'
 
 source 'https://rails-assets.org' do

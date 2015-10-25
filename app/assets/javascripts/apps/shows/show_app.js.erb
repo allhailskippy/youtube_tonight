@@ -1,0 +1,30 @@
+//= require_self
+//= require_tree ./controllers
+//= require_tree ./services
+//= require_tree ./directives
+//= require_tree ./resources
+/**
+ * @ngdoc overview
+ * @name Show App
+ *
+ * @description The ShowApp is used for viewing shows.
+ * This file is where the routes are defined for this app
+ */
+(function(){
+'use strict';
+
+var routesConfig = function($locationProvider, $routeProvider) {
+  $routeProvider.
+  when('/index', {
+    controller: 'IndexCtrl',
+    templateUrl: '<%= asset_path("apps/shows/templates/index.html") %>',
+  }).
+  otherwise({
+    redirectTo: '/index'
+  });
+};
+routesConfig.$inject = ['$locationProvider', '$routeProvider'];
+
+angular.module('ShowApp', ['ngRoute', 'ngResource', 'ng-rails-csrf', 'tableSort'])
+       .config(routesConfig);
+})();

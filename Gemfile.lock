@@ -114,7 +114,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (>= 1.8.4)
   coffee-rails (~> 3.2.1)
-  jquery-rails
+  jquery-rails (= 2.3.0)
   jquery-ui-rails
   mysql2
   ng-rails-csrf

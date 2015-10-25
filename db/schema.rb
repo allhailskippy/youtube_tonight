@@ -11,9 +11,17 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151025020043) do
+ActiveRecord::Schema.define(:version => 20151025152420) do
+
+  create_table "shows", :force => true do |t|
+    t.date     "air_date"
+    t.string   "title"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "videos", :force => true do |t|
+    t.integer  "show_id"
     t.string   "title"
     t.text     "link"
     t.string   "video_id"

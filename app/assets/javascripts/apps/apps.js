@@ -1,3 +1,3 @@
 //= require_tree ./shared
-//= require angular
 //= require ./videos/video_app
+//= require ./shows/show_app

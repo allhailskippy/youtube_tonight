@@ -1,0 +1,19 @@
+<div class="page-header">
+  <h1>Shows</h1>
+</div>
+<table class="table table-striped" ts-wrapper>
+  <thead>
+    <tr>
+      <th ts-criteria="id">#</th>
+      <th ts-criteria="title|lowercase" ts-default>Title</th>
+      <th ts-criteria="air_date">Air Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="show in shows" ts-repeat>
+      <td>{{ show.id }}</td>
+      <td>{{ show.title }}</td>
+      <td>{{ show.air_date }}</td>
+    </tr>
+  </tbody>
+</table>
