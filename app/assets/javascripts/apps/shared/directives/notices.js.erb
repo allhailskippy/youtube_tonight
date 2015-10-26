@@ -12,16 +12,35 @@
 (function() {
 'use strict';
 
-var controller = function($scope) {};
+var controller = function(
+  $scope,
+  Notice
+) {
+  /**
+   * Setup
+   */
+  $scope.notices = Notice.defaults();
 
-controller.$inject = ['$scope'];
+  /**
+   * Watched variables
+   */
+  $scope.$watch(function() {
+    return Notice.notices
+  }, function(newVal) {
+    $scope.notices = newVal;
+  });
+};
+
+controller.$inject = [
+  '$scope',
+  'Notice'
+];
 
 var Notices = function() {
   return {
     restrict: 'E',
     replace: true,
     scope: {
-      notices: '=?'
     },
     controller: controller,
     templateUrl: '<%= asset_path("apps/shared/templates/notices.html") %>'

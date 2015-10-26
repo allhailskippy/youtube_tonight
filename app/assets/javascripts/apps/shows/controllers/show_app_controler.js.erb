@@ -7,25 +7,10 @@
 (function() {
   "use strict";
 
-var ShowAppCtrl = function(
-  $scope,
-  ShowApp, Show
-  ) {
-
-  $scope.editing = false;
-  $scope.notices = {
-    alerts: null,
-    errors: null,
-    successes: null,
-    warnings: null
-  };
-  $scope.currentShow = Show.build({});
+var ShowAppCtrl = function() {
 };
 
-ShowAppCtrl.$inject = [
-  '$scope',
-  'ShowApp', 'Show'
-];
+ShowAppCtrl.$inject = [];
 
 angular.module("ShowApp")
        .controller('ShowAppCtrl', ShowAppCtrl);

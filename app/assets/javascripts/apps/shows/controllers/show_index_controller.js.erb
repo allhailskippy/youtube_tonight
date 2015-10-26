@@ -8,15 +8,15 @@
   "use strict";
 
 var ShowIndexCtrl = function( 
-  $scope,
+  $scope, $location,
   ShowApp, Show
   ) {
 
   /**
    * Setup
    */
-  $scope.shows = [];
   $scope.retrieving = false;
+  $scope.shows = [];
 
   /**
    * Watch variables
@@ -27,11 +27,23 @@ var ShowIndexCtrl = function(
    */
   // Grabs all of the shows
   $scope.addNew = function() {
-    $scope.editing = true;
-    $scope.currentShow = Show.build({});
-    $scope.$applyAsync();
+    // Clear out any existing show first
+    Show.resetCurrentShow();
+
+    // Show 'new' form
+    $location.path('/new');
   };
 
+  // Edit a show
+  $scope.edit = function(show) {
+    // Set the show to work on
+    Show.setCurrentShow(show);
+
+    // Show the 'edit' form
+    $location.path('/' + show.id + '/edit');
+  };
+
+  // Get all shows
   $scope.fetchShows = function() {
     if(!$scope.retreiving) {
       $scope.retrieving = true;
@@ -47,8 +59,7 @@ var ShowIndexCtrl = function(
 
     $scope.querying = true;
 
-    var params = {
-    };
+    var params = {};
 
     // Lookup campaigns based on params
     Show.query(params).then(function(response) {
@@ -65,22 +76,10 @@ var ShowIndexCtrl = function(
 };
 
 ShowIndexCtrl.$inject = [
-  '$scope',
+  '$scope', '$location',
   'ShowApp', 'Show'
 ];
 
-var ShowIndex = function() {
-  return {
-    restrict: 'E',
-    scope: {
-      editing: '=',
-      notices: '='
-    },
-    templateUrl: '<%= asset_path("apps/shows/templates/index.html") %>',
-    controller: ShowIndexCtrl
-  };
-};
-
 angular.module("ShowApp")
-       .directive('showIndex', ShowIndex);
+       .controller('ShowIndexCtrl', ShowIndexCtrl);
 }());

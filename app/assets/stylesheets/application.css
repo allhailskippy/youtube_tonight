@@ -33,3 +33,6 @@ body {
   width: auto;
 }
 
+.glyphicon.destructive {
+  color: #C00;
+}

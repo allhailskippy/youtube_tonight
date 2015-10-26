@@ -1,7 +1,6 @@
 //= require_self
 //= require_tree ./controllers
 //= require_tree ./services
-//= require_tree ./directives
 //= require_tree ./resources
 /**
  * @ngdoc overview
@@ -16,8 +15,16 @@
 var routesConfig = function($locationProvider, $routeProvider) {
   $routeProvider.
   when('/index', {
-    controller: 'IndexCtrl',
-    templateUrl: '<%= asset_path("apps/shows/templates/home.html") %>',
+    controller: 'ShowIndexCtrl',
+    templateUrl: '<%= asset_path("apps/shows/templates/index.html") %>',
+  }).
+  when('/new', {
+    controller: 'ShowFormCtrl',
+    templateUrl: '<%= asset_path("apps/shows/templates/form.html") %>',
+  }).
+  when('/:id/edit', {
+    controller: 'ShowFormCtrl',
+    templateUrl: '<%= asset_path("apps/shows/templates/form.html") %>',
   }).
   otherwise({
     redirectTo: '/index'

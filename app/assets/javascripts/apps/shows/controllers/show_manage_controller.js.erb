@@ -1,0 +1,97 @@
+/**
+ * @ngdoc controller
+ * @name ShowManageCtrl
+ *
+ * @description Logic for adding/editing shows
+ */
+(function() {
+  "use strict";
+
+var ShowFormCtrl = function(
+  $scope, $routeParams, $location,
+  ShowApp, Show, Notice
+  ) {
+
+  /**
+   * Setup
+   */
+  // Set a blank show as current show by default
+  $scope.currentShow = Show.setCurrentShow(Show.build({}));
+
+  // Grab show from server
+  if($routeParams.id) {
+    Show.find($routeParams.id).then(function(response) {
+      Show.setCurrentShow(Show.build(response.data));
+    });
+  }
+
+  /**
+   * Watch variables
+   */
+  $scope.$watch(function() {
+    return Show.currentShow
+  }, function(newVal) {
+    $scope.currentShow = newVal;
+  });
+
+  /**
+   * Local methods
+   */
+  // Handle error response from server side
+  var handleErrors = function(response) {
+    Notice.handleErrors(response);
+  };
+
+  /**
+   * Scope methods
+   */
+  $scope.cancel = function() {
+    // Clear current show
+    Show.resetCurrentShow();
+
+    // Clear any errors
+    Notice.reset();
+
+    // Send to index
+    $location.path('/index');
+  };
+
+  // Deletes a show
+  $scope.destroy = function() {
+    if(confirm("Are you sure you want to delete this show?\nThis will remove all queue entries as well.")){
+      $scope.currentShow.destroy().then(function() {
+        Notice.setSuccesses('Successfully Deleted Show');
+        Show.clearCurrentShow();
+        $location.path('/index');
+      }).catch(handleErrors);
+    }
+  };
+
+  // Shows the proper header prefix
+  $scope.headingStr = function() {
+    return $scope.currentShow.id ? 'Edit' : 'Create New';
+  };
+
+  // Saves the current show
+  $scope.save = function() {
+    // Check this before saving. After save it won't be new
+    var newRecord = $scope.currentShow.isNewRecord();
+
+    $scope.currentShow.save().then(function() {
+      Notice.setSuccesses(newRecord ? 'Successfully Created Show' : 'Successfully Updated Show');
+      Show.resetCurrentShow();
+
+      // Redirect back to index
+      $location.path('/index');
+    }).catch(handleErrors);
+  };
+};
+
+ShowFormCtrl.$inject = [
+  '$scope', '$routeParams', '$location',
+  'ShowApp', 'Show', 'Notice'
+];
+
+angular.module("ShowApp")
+       .controller('ShowFormCtrl', ShowFormCtrl);
+}());

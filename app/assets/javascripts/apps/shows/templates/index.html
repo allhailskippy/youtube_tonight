@@ -8,9 +8,10 @@
 <table class="table table-striped" ts-wrapper>
   <thead>
     <tr>
-      <th ts-criteria="id">#</th>
-      <th ts-criteria="title|lowercase" ts-default>Title</th>
-      <th ts-criteria="air_date">Air Date</th>
+      <th ts-criteria="id" ts-default="descending">#</th>
+      <th ts-criteria="title|lowercase">Title</th>
+      <th ts-criteria="air_date" ts-default="descending">Air Date</th>
+      <th>&nbsp;</th>
     </tr>
   </thead>
   <tbody>
@@ -18,6 +19,17 @@
       <td>{{ show.id }}</td>
       <td>{{ show.title }}</td>
       <td>{{ show.air_date }}</td>
+      <td class="text-right">
+        <span
+          class="glyphicon glyphicon-film"
+          aria-hidden="true"
+        ></span>
+        <span
+          class="glyphicon glyphicon-edit"
+          aria-hidden="true"
+          ng-click="edit(show)"
+        ></span>
+      </td>
     </tr>
   </tbody>
 </table>
