@@ -1,0 +1,50 @@
+/**
+ * @ngdoc controller
+ * @name ShowFormCtrl
+ *
+ * @description Logic for adding/editing shows
+ */
+(function() {
+  "use strict";
+
+var ShowFormCtrl = function( 
+  $scope,
+  ShowApp, Show
+  ) {
+
+  /**
+   * Setup
+   */
+
+  /**
+   * Watch variables
+   */
+
+  /**
+   * Scope methods
+   */
+  $scope.cancel = function() {
+    $scope.editing = false;
+  };
+};
+
+ShowFormCtrl.$inject = [
+  '$scope',
+  'ShowApp', 'Show'
+];
+
+var ShowForm = function() {
+  return {
+    restrict: 'E',
+    scope: {
+      currentShow: '=',
+      editing: '='
+    },
+    templateUrl: '<%= asset_path("apps/shows/templates/form.html") %>',
+    controller: ShowFormCtrl
+  };
+};
+
+angular.module("ShowApp")
+       .directive('showForm', ShowForm);
+}());

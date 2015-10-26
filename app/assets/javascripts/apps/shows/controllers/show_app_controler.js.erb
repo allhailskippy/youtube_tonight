@@ -1,0 +1,26 @@
+/**
+ * @ngdoc controller
+ * @name ShowAppCtrl
+ *
+ * @description Controller for the entire ShowApp
+ */
+(function() {
+  "use strict";
+
+var ShowAppCtrl = function(
+  $scope,
+  ShowApp, Show
+  ) {
+
+  $scope.editing = false;
+  $scope.currentShow = null;
+};
+
+ShowAppCtrl.$inject = [
+  '$scope',
+  'ShowApp', 'Show'
+];
+
+angular.module("ShowApp")
+       .controller('ShowAppCtrl', ShowAppCtrl);
+}());

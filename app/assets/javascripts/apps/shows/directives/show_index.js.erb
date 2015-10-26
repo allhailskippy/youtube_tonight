@@ -1,0 +1,85 @@
+/**
+ * @ngdoc controller
+ * @name ShowIndexCtrl
+ *
+ * @description Logic for index stuffs
+ */
+(function() {
+  "use strict";
+
+var ShowIndexCtrl = function( 
+  $scope,
+  ShowApp, Show
+  ) {
+
+  /**
+   * Setup
+   */
+  $scope.shows = [];
+  $scope.retrieving = false;
+
+  /**
+   * Watch variables
+   */
+
+  /**
+   * Scope methods
+   */
+  // Grabs all of the shows
+  $scope.addNew = function() {
+    $scope.editing = true;
+    $scope.currentShow = Show.build({});
+    $scope.$applyAsync();
+  };
+
+  $scope.fetchShows = function() {
+    if(!$scope.retreiving) {
+      $scope.retrieving = true;
+      $scope.shows = []; 
+      $scope.queryShows();
+    }
+  };
+
+  // Looks up facebook campaigns based on filter data
+  $scope.queryShows = function() {
+    // Skip if we're currently looking up shows
+    if($scope.querying) { return true; }
+
+    $scope.querying = true;
+
+    var params = {
+    };
+
+    // Lookup campaigns based on params
+    Show.query(params).then(function(response) {
+      angular.forEach(response.data, function(show) {
+        $scope.shows.push(Show.build(show));
+      });
+      $scope.retrieving = false;
+      $scope.querying = false;
+    });
+  };
+
+  // Lookup initial list of shows
+  $scope.fetchShows();
+};
+
+ShowIndexCtrl.$inject = [
+  '$scope',
+  'ShowApp', 'Show'
+];
+
+var ShowIndex = function() {
+  return {
+    restrict: 'E',
+    scope: {
+      editing: '='
+    },
+    templateUrl: '<%= asset_path("apps/shows/templates/index.html") %>',
+    controller: ShowIndexCtrl
+  };
+};
+
+angular.module("ShowApp")
+       .directive('showIndex', ShowIndex);
+}());

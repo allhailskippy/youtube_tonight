@@ -17,7 +17,7 @@ var routesConfig = function($locationProvider, $routeProvider) {
   $routeProvider.
   when('/index', {
     controller: 'IndexCtrl',
-    templateUrl: '<%= asset_path("apps/shows/templates/index.html") %>',
+    templateUrl: '<%= asset_path("apps/shows/templates/home.html") %>',
   }).
   otherwise({
     redirectTo: '/index'
