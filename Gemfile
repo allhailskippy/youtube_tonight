@@ -3,10 +3,8 @@ source 'https://rubygems.org'
 gem 'rails', '3.2.21'
 gem 'bundler', '>= 1.8.4'
 
-# Bundle edge Rails instead:
-# gem 'rails', :git => 'git://github.com/rails/rails.git'
-
 gem 'mysql2'
+gem 'date_validator'
 
 # Javascript gems
 gem 'jquery-rails', '2.3.0'
@@ -18,7 +16,6 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-leaflet'
   gem 'rails-assets-holderjs'
 end
-
 gem 'ng-rails-csrf'
 
 # Gems used only for assets and not required
@@ -32,6 +29,11 @@ group :assets do
 
   gem 'uglifier', '>= 1.0.3'
 end
+
+
+
+
+
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

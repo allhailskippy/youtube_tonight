@@ -13,7 +13,13 @@ var ShowAppCtrl = function(
   ) {
 
   $scope.editing = false;
-  $scope.currentShow = null;
+  $scope.notices = {
+    alerts: null,
+    errors: null,
+    successes: null,
+    warnings: null
+  };
+  $scope.currentShow = Show.build({});
 };
 
 ShowAppCtrl.$inject = [

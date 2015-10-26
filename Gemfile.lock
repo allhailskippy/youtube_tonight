@@ -38,6 +38,8 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.9.1.1)
+    date_validator (0.8.1)
+      activemodel
     erubis (2.7.0)
     execjs (2.5.2)
     hike (1.2.3)
@@ -114,6 +116,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (>= 1.8.4)
   coffee-rails (~> 3.2.1)
+  date_validator
   jquery-rails (= 2.3.0)
   jquery-ui-rails
   mysql2

@@ -73,7 +73,8 @@ var ShowIndex = function() {
   return {
     restrict: 'E',
     scope: {
-      editing: '='
+      editing: '=',
+      notices: '='
     },
     templateUrl: '<%= asset_path("apps/shows/templates/index.html") %>',
     controller: ShowIndexCtrl

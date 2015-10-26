@@ -1,0 +1,33 @@
+/**
+ * @ngdoc directive
+ * @name notices
+ * @module shared
+ *
+ * @description
+ * This directive displays notices, warnings, alerts and errors.
+ *
+ * ### Usage
+ * <notices notices="notices"></notices>
+ */
+(function() {
+'use strict';
+
+var controller = function($scope) {};
+
+controller.$inject = ['$scope'];
+
+var Notices = function() {
+  return {
+    restrict: 'E',
+    replace: true,
+    scope: {
+      notices: '=?'
+    },
+    controller: controller,
+    templateUrl: '<%= asset_path("apps/shared/templates/notices.html") %>'
+  };
+};
+
+angular.module('shared')
+       .directive('notices', Notices);
+}());

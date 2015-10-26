@@ -25,6 +25,6 @@ var routesConfig = function($locationProvider, $routeProvider) {
 };
 routesConfig.$inject = ['$locationProvider', '$routeProvider'];
 
-angular.module('ShowApp', ['ngRoute', 'ngResource', 'ng-rails-csrf', 'tableSort'])
+angular.module('ShowApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf', 'tableSort'])
        .config(routesConfig);
 })();
