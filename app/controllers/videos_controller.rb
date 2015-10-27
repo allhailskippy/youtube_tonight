@@ -71,6 +71,28 @@ class VideosController < ApplicationController
     end
   end
 
+  # DELETE /videos/:id
+  def destroy
+    respond_to do |format|
+      begin
+        @video = scoped.find(params[:id])
+        @video.destroy
+        format.json do
+          render json: {
+            :status => :ok
+          }
+        end
+      rescue Exception => e
+        format.json do
+          render json: {
+            :errors => [e.to_s]
+          },
+          status: :unprocessable_entity
+        end
+      end
+    end
+  end
+
 private
   def scoped
     if @show

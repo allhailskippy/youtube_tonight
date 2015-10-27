@@ -24,6 +24,11 @@ var Video = function(VideoApi) {
   ];
 
   self.build = function(video) {
+    // Delete video
+    video.destroy = function() {
+      return VideoApi.delete({id: video.id}).$promise;
+    };
+
     // Save model to server side
     video.save = function() {
       var $promise;

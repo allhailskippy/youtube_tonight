@@ -24,6 +24,16 @@ var IndexCtrl = function(
   /**
    * Scope Methods
    */
+  // Deletes a video from the queue
+  $scope.destroy = function(video) {
+    if(confirm("Are you sure you want to delete this video from the queue?\nThis cannot be undone.")){
+      video.destroy().then(function() {
+        $scope.videos = [];
+        $scope.queryVideos();
+      }).catch();
+    }
+  };
+
   // Look up list of videos
   $scope.queryVideos = function(check_for_latest) {
     check_for_latest = check_for_latest || false;
