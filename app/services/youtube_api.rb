@@ -11,19 +11,24 @@ class YoutubeApi
         :api_method => youtube.search.list,
         :parameters => {
           :part => 'snippet',
-          :q => video, #'https://www.youtube.com/watch?v=7sNKNEfjpDQ',
+          :q => video,
           :maxResults => 1
         }
       )
 
-      resp = {}
+      # Parse the query string from the video
+      vp = Rack::Utils.parse_nested_query(URI.parse(video).query) rescue {}
 
+      resp = {}
       # Add each result to the appropriate list, and then display the lists of
       # matching videos, channels, and playlists.
       search_response.data.items.each do |r|
         case r.id.kind
           when 'youtube#video'
             resp = {
+              video_id: r.id.videoId,
+              start_time: vp["t"] ? vp["t"] : vp["start"],
+              end_time: vp["end"],
               published_at: r.snippet.published_at,
               channel_id: r.snippet.channel_id,
               channel_title: r.snippet.channel_title,

@@ -26,11 +26,19 @@ var controller = function(
    * Watched variables
    */
   $scope.$watch('currentVideo.link', function(newVal, oldVal) {
+    if(newVal && newVal != oldVal || newVal == '') {
+      // Clear out any existing thumbnail
+      $scope.currentVideo.api_thumbnail_medium_url = Video.defaultThumbnail;
+    }
+
     if(newVal && newVal != oldVal) {
+      // Lookup youtube video
       YoutubeParser.query(newVal).then(function(response) {
         var yt = YoutubeParser.build(response.data);
-        $scope.currentVideo.title = yt.title;
-        $scope.currentVideo.api_thumbnail_medium_url = yt.thumbnail_medium_url;
+
+        // Store the data on the current video object
+        $scope.currentVideo.setFromYoutubeParser(yt);
+
       }).catch(Notice.handleErrors);
     }
   });
