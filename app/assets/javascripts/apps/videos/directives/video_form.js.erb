@@ -13,7 +13,7 @@
 'use strict';
 
 var controller = function(
-  $scope, $routeParams,
+  $scope, $routeParams, $timeout,
   Video, Notice, YoutubeParser
 ) {
   /**
@@ -21,6 +21,7 @@ var controller = function(
    */
   $scope.show_id = $routeParams.show_id;
   $scope.currentVideo = Video.build({show_id: $scope.show_id});
+  var searchTimeout;
 
   /**
    * Watched variables
@@ -32,14 +33,19 @@ var controller = function(
     }
 
     if(newVal && newVal != oldVal) {
-      // Lookup youtube video
-      YoutubeParser.query(newVal).then(function(response) {
-        var yt = YoutubeParser.build(response.data);
+      if(searchTimeout) {
+        $timeout.cancel(searchTimeout);
+      }
 
-        // Store the data on the current video object
-        $scope.currentVideo.setFromYoutubeParser(yt);
+      searchTimeout = $timeout(function() {
+        // Lookup youtube video
+        YoutubeParser.query(newVal).then(function(response) {
+          var yt = YoutubeParser.build(response.data);
 
-      }).catch(Notice.handleErrors);
+          // Store the data on the current video object
+          $scope.currentVideo.setFromYoutubeParser(yt);
+        });
+      }, 250);
     }
   });
 
@@ -58,7 +64,7 @@ var controller = function(
 };
 
 controller.$inject = [
-  '$scope', '$routeParams',
+  '$scope', '$routeParams', '$timeout',
   'Video', 'Notice', 'YoutubeParser'
 ];
 
