@@ -1,14 +1,14 @@
 /**
  * @ngdoc controller
- * @name ShowManageCtrl
+ * @name FormCtrl
  *
  * @description Logic for adding/editing shows
  */
 (function() {
   "use strict";
 
-var ShowFormCtrl = function(
-  $scope, $routeParams, $location,
+var FormCtrl = function(
+  $scope, $routeParams, $location, $window,
   ShowApp, Show, Notice
   ) {
 
@@ -77,21 +77,23 @@ var ShowFormCtrl = function(
     // Check this before saving. After save it won't be new
     var newRecord = $scope.currentShow.isNewRecord();
 
-    $scope.currentShow.save().then(function() {
+    $scope.currentShow.save().then(function(response) {
       Notice.setSuccesses(newRecord ? 'Successfully Created Show' : 'Successfully Updated Show');
       Show.resetCurrentShow();
 
+      var show = Show.build(response.data);
+
       // Redirect back to index
-      $location.path('/index');
+      $window.location.href = '/videos#/shows/' + show.id;
     }).catch(handleErrors);
   };
 };
 
-ShowFormCtrl.$inject = [
-  '$scope', '$routeParams', '$location',
+FormCtrl.$inject = [
+  '$scope', '$routeParams', '$location', '$window',
   'ShowApp', 'Show', 'Notice'
 ];
 
 angular.module("ShowApp")
-       .controller('ShowFormCtrl', ShowFormCtrl);
+       .controller('FormCtrl', FormCtrl);
 }());

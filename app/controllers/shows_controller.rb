@@ -60,7 +60,9 @@ class ShowsController < ApplicationController
         @show.save!
 
         format.json do
-          render json: @show.as_json
+          render json: {
+            data: @show.as_json
+          }
         end
       rescue ActiveRecord::RecordInvalid
         format.json do

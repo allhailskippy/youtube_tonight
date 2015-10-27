@@ -1,13 +1,13 @@
 /**
  * @ngdoc controller
- * @name ShowIndexCtrl
+ * @name IndexCtrl
  *
  * @description Logic for index stuffs
  */
 (function() {
   "use strict";
 
-var ShowIndexCtrl = function( 
+var IndexCtrl = function(
   $scope, $location, $window,
   ShowApp, Show
   ) {
@@ -80,11 +80,11 @@ var ShowIndexCtrl = function(
   };
 };
 
-ShowIndexCtrl.$inject = [
+IndexCtrl.$inject = [
   '$scope', '$location', '$window',
   'ShowApp', 'Show'
 ];
 
 angular.module("ShowApp")
-       .controller('ShowIndexCtrl', ShowIndexCtrl);
+       .controller('IndexCtrl', IndexCtrl);
 }());
