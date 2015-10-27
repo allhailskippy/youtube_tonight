@@ -1,5 +1,8 @@
 class Video < ActiveRecord::Base
-  attr_accessible :title, :link, :show_id, :start_time, :end_time, :sort_order
+  attr_accessible :title, :link, :show_id, :start_time, :end_time, :sort_order,
+    :video_id, :api_published_at, :api_channel_id, :api_channel_title,
+    :api_description, :api_thumbnail_medium_url, :api_thumbnail_default_url,
+    :api_thumbnail_high_url, :api_title
 
   ##
   # Validations

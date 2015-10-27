@@ -1,0 +1,51 @@
+/**
+ * @ngdoc directive
+ * @name VideoShow
+ * @module VideoApp
+ *
+ * @description
+ * This directive displays the video
+ *
+ * ### Usage
+ * <video-show current-video="currentVideo"></video-show>
+ */
+(function() {
+'use strict';
+
+var controller = function(
+  $scope,
+  Video
+) {
+  /**
+   * Setup
+   */
+
+  /**
+   * Watched variables
+   */
+
+  /**
+   * Scope Methods
+   */
+};
+
+controller.$inject = [
+  '$scope',
+  'Video'
+];
+
+var VideoShow = function() {
+  return {
+    restrict: 'E',
+    scope: {
+      currentVideo: '='
+    },
+    controller: controller,
+    templateUrl: '<%= asset_path("apps/videos/templates/video_show.html") %>'
+  };
+};
+
+angular.module('VideoApp')
+       .directive('videoShow', VideoShow);
+}());
+

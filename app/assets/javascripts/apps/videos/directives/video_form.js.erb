@@ -4,10 +4,10 @@
  * @module VideoApp
  *
  * @description
- * This directive displays the add new video form
+ * This directive displays the add video form
  *
  * ### Usage
- * <new-video></new-video>
+ * <video-form></video-form>
  */
 (function() {
 'use strict';
@@ -25,10 +25,10 @@ var controller = function(
   /**
    * Watched variables
    */
-  $scope.$watch('currentVideo.link', function(newVal, oldVal) {
+  $scope.$watch('currentVideo.search', function(newVal, oldVal) {
     if(newVal && newVal != oldVal || newVal == '') {
       // Clear out any existing thumbnail
-      $scope.currentVideo.api_thumbnail_medium_url = Video.defaultThumbnail;
+      $scope.currentVideo.api_thumbnail_medium_url = '';
     }
 
     if(newVal && newVal != oldVal) {

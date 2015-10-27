@@ -5,55 +5,47 @@
   <div class="panel-body">
     <notices notices="notices"></notices>
     <form role="form">
-      <div class="form-group">
-        <label for="link">URL:</label>
-        <input
-          type="text"
-          name="link"
-          class="form-control"
-          ng-model="currentVideo.link"
-        />
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="search">URL:</label>
+          <input
+            type="text"
+            name="search"
+            class="form-control"
+            ng-model="currentVideo.search"
+          />
+        </div>
+        <div class="form-group">
+          <label for="title">Title:</label>
+          <input
+            type="text"
+            name="title"
+            class="form-control"
+            ng-model="currentVideo.title"
+          />
+        </div>
       </div>
-      <div class="form-group">
-        <label for="title">Title:</label>
-        <input
-          type="text"
-          name="title"
-          class="form-control"
-          ng-model="currentVideo.title"
-        />
+      <div class="col-md-2">
+        <div class="form-group">
+          <label for="start_time">Start At (Seconds):</label>
+          <spin value="currentVideo.start_time" min="0" max="10000" step="1" />
+        </div>
       </div>
-      <div class="form-group">
-        <label for="start_time">Start At (Seconds):</label>
-        <input
-          type="text"
-          name="link"
-          class="form-control"
-          ng-model="currentVideo.start_time"
-        />
+      <div class="col-md-2">
+        <div class="form-group">
+          <label for="end_time">End At (Seconds):</label>
+          <spin value="currentVideo.end_time" min="0" max="10000" step="1" />
+        </div>
       </div>
-      <div class="form-group">
-        <label for="end_time">End At (Seconds):</label>
-        <input
-          type="text"
-          name="link"
-          class="form-control"
-          ng-model="currentVideo.end_time"
-        />
+      <div class="col-md-8">&nbsp;</div>
+      <div class="col-md-12">
+        <video-show current-video="currentVideo"></video-show>
+        <button
+          type="submit"
+          class="btn btn-default btn-success pull-right"
+          ng-click="save()"
+        >Add To Queue</button>
       </div>
-      <div class="form-group">
-        <img
-          holder="holder.js/320x180?text=Youtube Video Thumbnail"
-          class="img-thumbnail"
-          alt="Youtube Video Thumbnail"
-          ng-src="{{currentVideo.api_thumbnail_medium_url}}"
-        />
-      </div>
-      <button
-        type="submit"
-        class="btn btn-default btn-success"
-        ng-click="save()"
-      >Add To Queue</button>
     </form>
   </div>
 </div>

@@ -36,7 +36,8 @@ class YoutubeApi
               thumbnail_default_url: r.snippet.thumbnails.default.url,
               thumbnail_medium_url: r.snippet.thumbnails.medium.url,
               thumbnail_high_url: r.snippet.thumbnails.high.url,
-              title: r.snippet.title
+              title: r.snippet.title,
+              link: "https://www.youtube.com/v/#{r.id.videoId}"
             }
         end
       end
