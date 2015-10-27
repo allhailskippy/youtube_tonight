@@ -1,7 +1,7 @@
 /**
  * @ngdoc service
  * @name VideoApi
- * @module VideoApp
+ * @module shared
  *
  * @description
  * This service communicates with the /videos and associated http json endpoints
@@ -15,6 +15,9 @@ var VideoApi = function($resource) {
     'query': {
       method:'GET',
       isArray: false
+    },
+    'update': {
+      method: 'PUT'
     }
   };
 
@@ -23,6 +26,6 @@ var VideoApi = function($resource) {
 
 VideoApi.$inject = ['$resource'];
 
-angular.module('VideoApp')
+angular.module('shared')
        .factory("VideoApi", VideoApi);
 })();

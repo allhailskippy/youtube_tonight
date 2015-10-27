@@ -5,12 +5,9 @@ class CreateShows < ActiveRecord::Migration
       t.string :title
       t.timestamps
     end
-
-    add_column :videos, :show_id, :integer, :after => :id
   end
 
   def down
     drop_table :shows
-    remove_column :videos, :show_id
   end
 end

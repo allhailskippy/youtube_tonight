@@ -9,8 +9,9 @@ var Video = function(VideoApi) {
     'id',
     'link',
     'show_id',
+    'sort_order',
     'start_time',
-    'title',
+    'title'
   ];
 
   self.build = function(video) {
@@ -50,6 +51,6 @@ var Video = function(VideoApi) {
 
 Video.$inject = ['VideoApi'];
 
-angular.module('VideoApp')
+angular.module('shared')
        .service('Video', Video);
 }());

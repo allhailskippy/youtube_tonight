@@ -34,7 +34,8 @@ var IndexCtrl = function(
         var params = {
           page: $scope.page,
           per_page: $scope.per_page,
-          show_id: $routeParams.show_id
+          show_id: $routeParams.show_id,
+          'q[s]': 'sort_order ASC'
         };
 
         // Just check for new videos
@@ -57,9 +58,21 @@ var IndexCtrl = function(
   // Make actual lookup
   $scope.queryVideos();
 
+  // Wrapper method for grabbing only new videos
   $scope.queryNewVideos = function() {
     $scope.queryVideos(true);
-  }; 
+  };
+
+  // Haw to save sort order
+  $scope.sortableOptions = {
+    stop: function(e, ui) {
+      // this callback has the changed model
+      var logEntry = $scope.videos.map(function(o, i){
+        o.sort_order = i;
+        o.save();
+      });
+    }
+  };
 };
 
 IndexCtrl.$inject = [

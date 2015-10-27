@@ -42,6 +42,35 @@ class VideosController < ApplicationController
     end
   end
 
+  # PUT /videos/:id.json
+  def update
+    @video = scoped.find(params[:id])
+
+    respond_to do |format|
+      begin
+        @video.update_attributes!(params[:video])
+        format.json do
+          render json: @video.as_json
+        end
+      rescue ActiveRecord::RecordInvalid
+        format.json do
+          render json: {
+            errors: @video.errors,
+            full_errors: @video.errors.full_messages
+          },
+          status: :unprocessable_entity
+        end
+      rescue Exception => e
+        format.json do
+          render json: {
+            errors: e.to_s
+          },
+          status: :unprocessable_entity
+        end
+      end
+    end
+  end
+
 private
   def scoped
     if @show

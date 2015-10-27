@@ -34,6 +34,8 @@ var controller = function(
       Notice.setSuccesses('Successfully Added Video');
       $scope.currentVideo = Video.build({ show_id: $scope.show_id});
 
+      // This is called on the parent controller.
+      // Is defined in the scope section below
       $scope.queryNewVideos();
     }).catch(Notice.handleErrors);
   };

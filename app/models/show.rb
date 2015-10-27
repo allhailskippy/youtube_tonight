@@ -6,7 +6,8 @@ class Show < ActiveRecord::Base
   # Validations
   #
   validates :title, :presence => true
-  validates :air_date, :date => { :after_or_equal_to => Date.today }
+  validates :air_date, :date => { :after_or_equal_to => Date.today }, :on => :create
+  validates :air_date, :date => true, :on => :update
 
   ##
   # Relations

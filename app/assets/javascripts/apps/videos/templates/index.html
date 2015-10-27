@@ -10,7 +10,7 @@
   query-new-videos='queryNewVideos()'
 ></new-video>
 <div>
-  <div class="list-group" ui-sortable ng-model="videos">
+  <div class="list-group" ui-sortable="sortableOptions" ng-model="videos">
     <div ng-repeat="video in videos" class="panel panel-info">
       <div class="panel-heading">
         <h3 class="panel-title">{{ video.title }}</h3>
