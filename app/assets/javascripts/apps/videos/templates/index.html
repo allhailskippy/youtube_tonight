@@ -6,12 +6,12 @@
   </div>
   </h1>
 </div>
-<new-video
+<video-form
   query-new-videos='queryNewVideos()'
-></new-video>
+></video-form>
 <div>
   <div class="list-group" ui-sortable="sortableOptions" ng-model="videos">
-    <div ng-repeat="video in videos" class="panel panel-info">
+    <div ng-repeat="video in videos" class="panel panel-primary">
       <div class="panel-heading">
         <h3 class="panel-title">{{ video.title }}</h3>
       </div>

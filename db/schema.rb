@@ -28,8 +28,16 @@ ActiveRecord::Schema.define(:version => 20151025152420) do
     t.string   "start_time"
     t.string   "end_time"
     t.integer  "sort_order"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.string   "api_published_at"
+    t.string   "api_channel_id"
+    t.string   "api_channel_title"
+    t.text     "api_description"
+    t.string   "api_thumbnail_medium_url"
+    t.string   "api_thumbnail_default_url"
+    t.string   "api_thumbnail_high_url"
+    t.string   "api_title"
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
   end
 
 end

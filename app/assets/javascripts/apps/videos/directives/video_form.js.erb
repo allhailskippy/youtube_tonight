@@ -1,6 +1,6 @@
 /**
  * @ngdoc directive
- * @name NewVideo
+ * @name VideoForm
  * @module VideoApp
  *
  * @description
@@ -46,18 +46,18 @@ controller.$inject = [
   'Video', 'Notice'
 ];
 
-var NewVideo = function() {
+var VideoForm = function() {
   return {
     restrict: 'E',
     scope: {
       queryNewVideos: '&'
     },
     controller: controller,
-    templateUrl: '<%= asset_path("apps/videos/templates/new_video_form.html") %>'
+    templateUrl: '<%= asset_path("apps/videos/templates/video_form.html") %>'
   };
 };
 
 angular.module('VideoApp')
-       .directive('newVideo', NewVideo);
+       .directive('videoForm', VideoForm);
 }());
 

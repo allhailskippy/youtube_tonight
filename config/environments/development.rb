@@ -1,3 +1,7 @@
+yml_section = Rails.env.to_s
+yml_file = YAML.load(File.open(File.join(Rails.root.to_s, 'config', 'environments', 'credentials.yml')))
+credentials = yml_file[yml_section]
+
 Youtubetonight::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -34,4 +38,6 @@ Youtubetonight::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+
+  YOUTUBE_API_KEY = credentials['youtube_api_key']
 end

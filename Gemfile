@@ -21,6 +21,8 @@ source 'https://rails-assets.org' do
 end
 gem 'ng-rails-csrf'
 
+gem 'google-api-client'
+
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
