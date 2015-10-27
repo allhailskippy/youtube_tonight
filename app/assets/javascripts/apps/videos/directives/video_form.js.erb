@@ -14,7 +14,7 @@
 
 var controller = function(
   $scope, $routeParams,
-  Video, Notice
+  Video, Notice, YoutubeParser
 ) {
   /**
    * Setup
@@ -25,6 +25,15 @@ var controller = function(
   /**
    * Watched variables
    */
+  $scope.$watch('currentVideo.link', function(newVal, oldVal) {
+    if(newVal && newVal != oldVal) {
+      YoutubeParser.query(newVal).then(function(response) {
+        var yt = YoutubeParser.build(response.data);
+        $scope.currentVideo.title = yt.title;
+        $scope.currentVideo.api_thumbnail_medium_url = yt.thumbnail_medium_url;
+      }).catch(Notice.handleErrors);
+    }
+  });
 
   /**
    * Scope Methods
@@ -43,7 +52,7 @@ var controller = function(
 
 controller.$inject = [
   '$scope', '$routeParams',
-  'Video', 'Notice'
+  'Video', 'Notice', 'YoutubeParser'
 ];
 
 var VideoForm = function() {

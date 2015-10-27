@@ -41,6 +41,14 @@
           ng-model="currentVideo.end_time"
         />
       </div>
+      <div class="form-group">
+        <img
+          holder="holder.js/320x180?text=Youtube Video Thumbnail"
+          class="img-thumbnail"
+          alt="Youtube Video Thumbnail"
+          src="{{currentVideo.api_thumbnail_medium_url}}"
+        />
+      </div>
       <button
         type="submit"
         class="btn btn-default btn-success"
