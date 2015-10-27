@@ -1,0 +1,61 @@
+/**
+ * @ngdoc directive
+ * @name NewVideo
+ * @module VideoApp
+ *
+ * @description
+ * This directive displays the add new video form
+ *
+ * ### Usage
+ * <new-video></new-video>
+ */
+(function() {
+'use strict';
+
+var controller = function(
+  $scope, $routeParams,
+  Video, Notice
+) {
+  /**
+   * Setup
+   */
+  $scope.show_id = $routeParams.show_id;
+  $scope.currentVideo = Video.build({show_id: $scope.show_id});
+
+  /**
+   * Watched variables
+   */
+
+  /**
+   * Scope Methods
+   */
+  $scope.save = function() {
+    $scope.currentVideo.save().then(function() {
+      Notice.setSuccesses('Successfully Added Video');
+      $scope.currentVideo = Video.build({ show_id: $scope.show_id});
+
+      $scope.queryNewVideos();
+    }).catch(Notice.handleErrors);
+  };
+};
+
+controller.$inject = [
+  '$scope', '$routeParams',
+  'Video', 'Notice'
+];
+
+var NewVideo = function() {
+  return {
+    restrict: 'E',
+    scope: {
+      queryNewVideos: '&'
+    },
+    controller: controller,
+    templateUrl: '<%= asset_path("apps/videos/templates/new_video_form.html") %>'
+  };
+};
+
+angular.module('VideoApp')
+       .directive('newVideo', NewVideo);
+}());
+

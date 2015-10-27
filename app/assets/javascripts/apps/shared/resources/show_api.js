@@ -1,7 +1,7 @@
 /**
  * @ngdoc service
  * @name ShowApi
- * @module ShowApp
+ * @module shared
  *
  * @description
  * This service communicates with the /shows and associated http json endpoints
@@ -26,6 +26,6 @@ var ShowApi = function($resource) {
 
 ShowApi.$inject = ['$resource'];
 
-angular.module('ShowApp')
+angular.module('shared')
        .factory("ShowApi", ShowApi);
 })();

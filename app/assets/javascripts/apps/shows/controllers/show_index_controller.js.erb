@@ -8,7 +8,7 @@
   "use strict";
 
 var ShowIndexCtrl = function( 
-  $scope, $location,
+  $scope, $location, $window,
   ShowApp, Show
   ) {
 
@@ -73,10 +73,15 @@ var ShowIndexCtrl = function(
 
   // Lookup initial list of shows
   $scope.fetchShows();
+
+  // Redirect to the video list for this show
+  $scope.videos = function(show) {
+    $window.location.href = '/videos#shows/' + show.id;
+  };
 };
 
 ShowIndexCtrl.$inject = [
-  '$scope', '$location',
+  '$scope', '$location', '$window',
   'ShowApp', 'Show'
 ];
 

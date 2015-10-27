@@ -1,6 +1,17 @@
-<div class="row">
+<div class="page-header">
+  <h1>
+    Video Queue
+  <div class="pull-right">
+    {{ show.title }} [{{ show.air_date }}]
+  </div>
+  </h1>
+</div>
+<new-video
+  query-new-videos='queryNewVideos()'
+></new-video>
+<div>
   <div class="list-group" ui-sortable ng-model="videos">
-    <div ng-repeat="video in videos" class="panel panel-primary">
+    <div ng-repeat="video in videos" class="panel panel-info">
       <div class="panel-heading">
         <h3 class="panel-title">{{ video.title }}</h3>
       </div>

@@ -5,12 +5,13 @@
   </h1>
 </div>
 <notices notices="notices"></notices>
-<table class="table table-striped" ts-wrapper>
+<table class="table table-striped table-bordered" ts-wrapper>
   <thead>
     <tr>
       <th ts-criteria="id" ts-default="descending">#</th>
       <th ts-criteria="title|lowercase">Title</th>
       <th ts-criteria="air_date" ts-default="descending">Air Date</th>
+      <th>Video Count</th>
       <th>&nbsp;</th>
     </tr>
   </thead>
@@ -18,11 +19,13 @@
     <tr ng-repeat="show in shows" ts-repeat>
       <td>{{ show.id }}</td>
       <td>{{ show.title }}</td>
-      <td>{{ show.air_date }}</td>
-      <td class="text-right">
+      <td class="text-center">{{ show.air_date }}</td>
+      <td class="text-center">{{ show.video_count || 0 }}</td>
+      <td class="text-center">
         <span
           class="glyphicon glyphicon-film"
           aria-hidden="true"
+          ng-click="videos(show)"
         ></span>
         <span
           class="glyphicon glyphicon-edit"

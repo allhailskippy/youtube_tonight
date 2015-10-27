@@ -19,8 +19,8 @@ var ShowFormCtrl = function(
   $scope.currentShow = Show.setCurrentShow(Show.build({}));
 
   // Grab show from server
-  if($routeParams.id) {
-    Show.find($routeParams.id).then(function(response) {
+  if($routeParams.show_id) {
+    Show.find($routeParams.show_id).then(function(response) {
       Show.setCurrentShow(Show.build(response.data));
     });
   }

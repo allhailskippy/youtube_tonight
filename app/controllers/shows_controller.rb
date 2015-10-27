@@ -2,12 +2,17 @@ class ShowsController < ApplicationController
   # GET /shows
   # GET /shows.json
   def index
-    @shows = Show.all
     respond_to do |format|
       format.html
       format.json do
+        shows = Show.all
+        shows_by_id = shows.inject({}){|acc, show| acc[show.id] = show; acc}
+        Video.where(show_id: shows_by_id.keys).group(:show_id).count.each do |show_id, count|
+          shows_by_id[show_id].video_count = count
+        end
+
         render json: {
-          data: @shows.as_json
+          data: shows_by_id.values.as_json(Show.as_json_hash)
         }
       end
     end

@@ -86,6 +86,6 @@ var Show = function(ShowApi) {
 
 Show.$inject = ['ShowApi'];
 
-angular.module('ShowApp')
+angular.module('shared')
        .service('Show', Show);
 }());

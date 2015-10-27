@@ -1,0 +1,73 @@
+/**
+ * @ngdoc controller
+ * @name IndexCtrl
+ *
+ * @description Controller for the index page of the videos app
+ */
+(function() {
+  "use strict";
+
+var IndexCtrl = function(
+  $scope, $location, $routeParams,
+  VideoApp, Video, Show, Notice
+  ) {
+  /**
+   * Setup
+   */
+  $scope.last_id = 0;
+  $scope.page = 1;
+  $scope.per_page = 10000;
+  $scope.retrieving = true;
+  $scope.show = Show.build({});
+  $scope.videos = [];
+  
+  /**
+   * Scope Methods
+   */
+  // Look up list of videos
+  $scope.queryVideos = function(check_for_latest) {
+    check_for_latest = check_for_latest || false;
+
+    if($routeParams.show_id) {
+      Show.find($routeParams.show_id).then(function(response) {
+        $scope.show = Show.build(response.data);
+        var params = {
+          page: $scope.page,
+          per_page: $scope.per_page,
+          show_id: $routeParams.show_id
+        };
+
+        // Just check for new videos
+        if(check_for_latest) {
+          params['q[id_gt]'] = $scope.last_id;
+        }
+
+        Video.query(params).then(function(response) {
+          angular.forEach(response.data, function(video) {
+            $scope.videos.push(Video.build(video));
+          });
+
+          $scope.last_id = Math.max.apply(Math,$scope.videos.map(function(o){return o.id;}));
+
+          $scope.retrieving = false;
+        });
+      }).catch(Notice.handleErrors);
+    }
+  };
+  // Make actual lookup
+  $scope.queryVideos();
+
+  $scope.queryNewVideos = function() {
+    console.log("I got called!!!!!!!!!");
+    $scope.queryVideos(true);
+  }; 
+};
+
+IndexCtrl.$inject = [
+  '$scope', '$location', '$routeParams',
+  'VideoApp', 'Video', 'Show', 'Notice'
+];
+
+angular.module("VideoApp")
+       .controller('IndexCtrl', IndexCtrl);
+}());

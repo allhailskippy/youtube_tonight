@@ -5,6 +5,9 @@ gem 'bundler', '>= 1.8.4'
 
 gem 'mysql2'
 gem 'date_validator'
+gem 'ransack'
+gem 'will_paginate', '3.0.7'
+gem 'validate_url'
 
 # Javascript gems
 gem 'jquery-rails', '2.3.0'

@@ -1,5 +1,6 @@
 //= require_self
 //= require_tree ./directives
+//= require_tree ./resources
 //= require_tree ./services
 
 /**
