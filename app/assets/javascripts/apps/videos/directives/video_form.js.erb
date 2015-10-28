@@ -27,9 +27,9 @@ var controller = function(
    * Watched variables
    */
   $scope.$watch('currentVideo.search', function(newVal, oldVal) {
-    if(newVal && newVal != oldVal || newVal == '') {
-      // Clear out any existing thumbnail
-      $scope.currentVideo.api_thumbnail_medium_url = '';
+    if(newVal == '') {
+      // Clear current video if we clear the search
+      $scope.currentVideo = Video.build({});
     }
 
     if(newVal && newVal != oldVal) {
