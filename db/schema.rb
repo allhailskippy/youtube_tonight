@@ -11,13 +11,26 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151025152420) do
+ActiveRecord::Schema.define(:version => 20151028145844) do
 
   create_table "shows", :force => true do |t|
     t.date     "air_date"
     t.string   "title"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "users", :force => true do |t|
+    t.string   "facebook_id"
+    t.string   "display_name"
+    t.string   "name"
+    t.string   "email"
+    t.string   "profile_image"
+    t.string   "auth_hash"
+    t.string   "token"
+    t.integer  "expires_at",    :limit => 8
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
   end
 
   create_table "videos", :force => true do |t|

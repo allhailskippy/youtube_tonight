@@ -21,7 +21,9 @@ source 'https://rails-assets.org' do
 end
 gem 'ng-rails-csrf'
 
+# APIs
 gem 'google-api-client'
+gem 'omniauth-facebook'
 
 # Gems used only for assets and not required
 # in production environments by default.

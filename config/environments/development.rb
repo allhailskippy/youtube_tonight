@@ -39,5 +39,10 @@ Youtubetonight::Application.configure do
   # Expands the lines which load the assets
   config.assets.debug = true
 
+  # YouTube
   YOUTUBE_API_KEY = credentials['youtube_api_key']
+
+  # Facebook
+  FACEBOOK_KEY = credentials['facebook_key']
+  FACEBOOK_SECRET = credentials['facebook_secret']
 end
