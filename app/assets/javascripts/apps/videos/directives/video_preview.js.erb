@@ -1,0 +1,45 @@
+/**
+ * @ngdoc directive
+ * @name VideoPreview
+ * @module VideoApp
+ *
+ * @description
+ * This directive displays the video
+ *
+ * ### Usage
+ * <video-preview video="video"></video-preview>
+ */
+(function() {
+'use strict';
+
+var controller = function(
+  $scope, $sce,
+  Video
+) {
+  /**
+   * Scope Methods
+   */
+  $scope.youtubeUrl = function() {
+    return $sce.trustAsResourceUrl('https://www.youtube.com/embed/' + $scope.video.video_id + '?autoplay=1');
+  };
+};
+
+controller.$inject = [
+  '$scope', '$sce',
+  'Video'
+];
+
+var VideoPreview = function() {
+  return {
+    restrict: 'E',
+    scope: {
+      video: '='
+    },
+    controller: controller,
+    templateUrl: '<%= asset_path("apps/videos/templates/video_preview.html") %>'
+  };
+};
+
+angular.module('VideoApp')
+       .directive('videoPreview', VideoPreview);
+}());

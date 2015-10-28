@@ -4,28 +4,31 @@
       holder="holder.js/320x180?text=Youtube Video Thumbnail"
       class="img-thumbnail"
       alt="Youtube Video Thumbnail"
-      ng-src="{{currentVideo.api_thumbnail_medium_url}}"
-      ng-show="currentVideo.api_thumbnail_medium_url"
+      ng-src="{{video.api_thumbnail_medium_url}}"
+      ng-show="video.api_thumbnail_medium_url && !previewing"
     />
+    <div ng-if="previewing" class="preview_container">
+      <video-preview video="video"></video-preview>
+    </div>
   </div>
   <div class="col-md-8">
     <p ng-show="">
-      <label>Youtube Title:</label> {{ currentVideo.api_title }}
+      <label>Youtube Title:</label> {{ video.api_title }}
     </p>
-    <p ng-show="currentVideo.link">
-      <label>URL:</label> {{ currentVideo.link }}
+    <p ng-show="video.link">
+      <label>URL:</label> {{ video.link }} : <a href="javascript:void(0)" ng-click="togglePreview()">Preview</a>
     </p>
-    <p ng-show="currentVideo.start_time">
-      <span ng-show="currentVideo.start_time"><label>Start At:</label> {{ currentVideo.start_time }}</span>
+    <p ng-show="video.start_time">
+      <span ng-show="video.start_time"><label>Start At:</label> {{ video.start_time }}</span>
     </p>
-    <p ng-show="currentVideo.end_time">
-      <span ng-show="currentVideo.end_time"><label>End At:</label> {{ currentVideo.end_time }}</span>
+    <p ng-show="video.end_time">
+      <span ng-show="video.end_time"><label>End At:</label> {{ video.end_time }}</span>
     </p>
-    <p ng-show="currentVideo.channel">
-      <label>Channel:</label> {{ currentVideo.api_channel_title }}
+    <p ng-show="video.channel">
+      <label>Channel:</label> {{ video.api_channel_title }}
     </p>
-    <p ng-show="currentVideo.api_description">
-      <label>Description:</label> {{ currentVideo.api_description }}
+    <p ng-show="video.api_description">
+      <label>Description:</label> {{ video.api_description }}
     </p>
   </div>
 </div>

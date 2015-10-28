@@ -36,3 +36,8 @@ body {
 .glyphicon.destructive {
   color: #C00;
 }
+
+/* For Video preview in apps/videos/templates/video_preview.html  */
+.preview_container {
+  width: 320px;
+}

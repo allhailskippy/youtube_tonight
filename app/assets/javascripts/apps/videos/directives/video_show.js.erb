@@ -7,7 +7,7 @@
  * This directive displays the video
  *
  * ### Usage
- * <video-show current-video="currentVideo"></video-show>
+ * <video-show video="video"></video-show>
  */
 (function() {
 'use strict';
@@ -19,14 +19,14 @@ var controller = function(
   /**
    * Setup
    */
-
-  /**
-   * Watched variables
-   */
+  $scope.previewing = false;
 
   /**
    * Scope Methods
    */
+  $scope.togglePreview = function() {
+    $scope.previewing = !$scope.previewing;
+  };
 };
 
 controller.$inject = [
@@ -38,7 +38,7 @@ var VideoShow = function() {
   return {
     restrict: 'E',
     scope: {
-      currentVideo: '='
+      video: '='
     },
     controller: controller,
     templateUrl: '<%= asset_path("apps/videos/templates/video_show.html") %>'
