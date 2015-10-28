@@ -12,7 +12,7 @@ class Show < ActiveRecord::Base
   ##
   # Relations
   #
-  has_many :videos
+  has_many :videos, :dependent => :destroy
 
   ##
   # Methods
