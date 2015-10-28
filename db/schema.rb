@@ -11,26 +11,44 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151028145844) do
+ActiveRecord::Schema.define(:version => 20151028161159) do
+
+  create_table "roles", :force => true do |t|
+    t.string   "title"
+    t.integer  "user_id"
+    t.integer  "creator_id"
+    t.integer  "updater_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "shows", :force => true do |t|
     t.date     "air_date"
     t.string   "title"
+    t.integer  "creator_id"
+    t.integer  "updater_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
 
   create_table "users", :force => true do |t|
-    t.string   "facebook_id"
-    t.string   "display_name"
+    t.string   "provider"
+    t.string   "uid"
     t.string   "name"
     t.string   "email"
     t.string   "profile_image"
     t.string   "auth_hash"
-    t.string   "token"
-    t.integer  "expires_at",    :limit => 8
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
+    t.integer  "expires_at",         :limit => 8
+    t.integer  "creator_id"
+    t.integer  "updater_id"
+    t.datetime "created_at",                                      :null => false
+    t.datetime "updated_at",                                      :null => false
+    t.string   "encrypted_password",              :default => "", :null => false
+    t.integer  "sign_in_count",                   :default => 0
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string   "current_sign_in_ip"
+    t.string   "last_sign_in_ip"
   end
 
   create_table "videos", :force => true do |t|
@@ -49,6 +67,8 @@ ActiveRecord::Schema.define(:version => 20151028145844) do
     t.string   "api_thumbnail_default_url"
     t.string   "api_thumbnail_high_url"
     t.string   "api_title"
+    t.integer  "creator_id"
+    t.integer  "updater_id"
     t.datetime "created_at",                :null => false
     t.datetime "updated_at",                :null => false
   end

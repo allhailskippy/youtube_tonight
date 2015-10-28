@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'rails', '3.2.21'
 gem 'bundler', '>= 1.8.4'
 
+
 gem 'mysql2'
 gem 'date_validator'
 gem 'ransack'
@@ -21,9 +22,14 @@ source 'https://rails-assets.org' do
 end
 gem 'ng-rails-csrf'
 
+# Permission Gems
+gem 'devise'
+gem 'declarative_authorization'
+gem 'omniauth-facebook'
+gem 'userstamp', :path => './lib/plugins/userstamp'
+
 # APIs
 gem 'google-api-client'
-gem 'omniauth-facebook'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -37,19 +43,8 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
-
-
-
-
-
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
-
-# To use Jbuilder templates for JSON
-# gem 'jbuilder'
-
-# Use unicorn as the app server
-# gem 'unicorn'
 
 # Deploy with Capistrano
 # gem 'capistrano'

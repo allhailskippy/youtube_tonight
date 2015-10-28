@@ -1,0 +1,27 @@
+authorization do
+  role :guest do
+    has_permission_on :callbacks, :to => :facebook
+    has_permission_on :callbacks, :to => :failure
+
+    # Devise requires update privs to users, users still need to be logged in to access
+    # controller actions so this should be safe
+    has_permission_on :users, :to => :update
+    has_permission_on :devise_sessions, :to => :manage
+  end
+
+  # permissions on other roles, such as
+  role :admin do
+    has_permission_on :videos, :to => :manage
+    has_permission_on :shows, :to => :manage
+    has_permission_on :youtube_parser, :to => :read
+  end
+end
+
+privileges do
+  # default privilege hierarchies to facilitate RESTful Rails apps
+  privilege :manage, :includes => [:create, :read, :update, :delete]
+  privilege :create, :includes => :new
+  privilege :read, :includes => [:index, :show]
+  privilege :update, :includes => :edit
+  privilege :delete, :includes => :destroy
+end

@@ -17,6 +17,7 @@ class Videos < ActiveRecord::Migration
       t.string :api_thumbnail_default_url
       t.string :api_thumbnail_high_url
       t.string :api_title
+      t.userstamps
       t.timestamps
     end
   end
