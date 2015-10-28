@@ -3,12 +3,13 @@ source 'https://rubygems.org'
 gem 'rails', '3.2.21'
 gem 'bundler', '>= 1.8.4'
 
-
 gem 'mysql2'
 gem 'date_validator'
 gem 'ransack'
 gem 'will_paginate', '3.0.7'
 gem 'validate_url'
+gem 'acts_as_versioned', :path => 'vendor/gems/acts_as_versioned' # https://github.com/technoweenie/acts_as_versioned
+gem 'rails3_acts_as_paranoid'
 
 # Javascript gems
 gem 'jquery-rails', '2.3.0'
@@ -34,12 +35,8 @@ gem 'google-api-client'
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
-  gem 'sass-rails',   '~> 3.2.3'
+  gem 'sass-rails', '~> 3.2.3'
   gem 'coffee-rails', '~> 3.2.1'
-
-  # See https://github.com/sstephenson/execjs#readme for more supported runtimes
-  # gem 'therubyracer', :platforms => :ruby
-
   gem 'uglifier', '>= 1.0.3'
 end
 

@@ -5,10 +5,13 @@ class CreateShows < ActiveRecord::Migration
       t.string :title
       t.userstamps
       t.timestamps
+      t.datetime :deleted_at, :default => nil
     end
+    Show.create_versioned_table
   end
 
   def down
     drop_table :shows
+    drop_table :show_versions
   end
 end

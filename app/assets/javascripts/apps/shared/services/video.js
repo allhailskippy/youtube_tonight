@@ -20,7 +20,7 @@ var Video = function(VideoApi) {
     'sort_order',
     'start_time',
     'title',
-    'video_id'
+    'api_video_id'
   ];
 
   self.build = function(video) {
@@ -56,7 +56,7 @@ var Video = function(VideoApi) {
     video.setFromYoutubeParser = function(yt) {
       // Set values based on lookup results
       video.title = yt.title;
-      video.video_id = yt.video_id;
+      video.api_video_id = yt.video_id;
       video.start_time = yt.start_time;
       video.end_time = yt.end_time;
       video.api_published_at = yt.published_at;

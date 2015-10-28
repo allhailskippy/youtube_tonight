@@ -1,4 +1,6 @@
 class User < ActiveRecord::Base
+  acts_as_paranoid_versioned
+
   model_stamper
 
   attr_accessible :auth_hash, :email, :expires_at, :facebook_id, :name, :profile_image, :provider
@@ -23,18 +25,19 @@ class User < ActiveRecord::Base
     user = where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
       user.provider = auth.provider
       user.uid = auth.uid
-      user.email = auth.info.email
-      user.name = auth.info.name
-      user.profile_image = auth.info.image
-      user.password = Devise.friendly_token[0,20]
     end
-    user.update_attribute(:expires_at, auth.credentials.expires_at)
+    user.expires_at = auth.credentials.expires_at
+    user.email = auth.info.email
+    user.name = auth.info.name
+    user.profile_image = auth.info.image
+    user.password = Devise.friendly_token[0,20]
+    user.save!
     user
   end
 
   # To determine if our token has expired
   def token_expired?(new_time = nil)
-    return Time.at(expires_at) < Time.now
+    return Time.at(expires_at) < Time.now rescue true
   end
 
   # Used for finding out what roles a user has (declarative authorization)

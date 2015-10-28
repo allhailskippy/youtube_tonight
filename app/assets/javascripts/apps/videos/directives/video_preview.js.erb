@@ -21,7 +21,7 @@ var controller = function(
    */
   $scope.youtubeUrl = function() {
     var url = 'https://www.youtube.com/embed/'
-      + $scope.video.video_id
+      + $scope.video.api_video_id
       + '?autoplay=1&version=3&rel=0';
     if($scope.video.start_time) {
       url += '&start=' + $scope.video.start_time;

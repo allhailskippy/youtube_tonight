@@ -4,6 +4,12 @@ PATH
     userstamp (0.0.1)
       rails (~> 3.2.8)
 
+PATH
+  remote: vendor/gems/acts_as_versioned
+  specs:
+    acts_as_versioned (0.6.0)
+      activerecord (>= 3.0.9)
+
 GEM
   remote: https://rubygems.org/
   remote: https://rails-assets.org/
@@ -149,6 +155,8 @@ GEM
     rails-assets-holderjs (2.9.0)
     rails-assets-jquery (2.1.4)
     rails-assets-leaflet (0.7.5)
+    rails3_acts_as_paranoid (0.2.5)
+      activerecord (~> 3.2)
     railties (3.2.21)
       actionpack (= 3.2.21)
       activesupport (= 3.2.21)
@@ -200,6 +208,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  acts_as_versioned!
   bundler (>= 1.8.4)
   coffee-rails (~> 3.2.1)
   date_validator
@@ -216,6 +225,7 @@ DEPENDENCIES
   rails-assets-bootstrap!
   rails-assets-holderjs!
   rails-assets-leaflet!
+  rails3_acts_as_paranoid
   ransack
   sass-rails (~> 3.2.3)
   uglifier (>= 1.0.3)

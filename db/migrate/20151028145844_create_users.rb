@@ -10,15 +10,14 @@ class CreateUsers < ActiveRecord::Migration
       t.integer :expires_at, :limit => 8
       t.userstamps
       t.timestamps
+      t.datetime :deleted_at, :default => nil
     end
 
-    user = User.new
-    user.provider = 'facebook'
-    user.uid = '10156150575875244'
-    user.save!
+    User.create_versioned_table
   end
 
   def down
     drop_table :users
+    drop_table :user_versions
   end
 end

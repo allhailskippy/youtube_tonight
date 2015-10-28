@@ -6,13 +6,6 @@ class CreateRoles < ActiveRecord::Migration
       t.userstamps
       t.timestamps
     end
-
-    User.reset_column_information
-    Authorization.current_user = User.find(1)
-    role = Role.new
-    role.title = 'admin'
-    role.user_id = 1
-    role.save!
   end
 
   def down
