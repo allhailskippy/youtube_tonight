@@ -28,13 +28,23 @@
       <div class="col-md-2">
         <div class="form-group">
           <label for="start_time">Start At (Seconds):</label>
-          <spin value="currentVideo.start_time" min="0" max="10000" step="1" />
+          <input
+            class="form-control"
+            type="number"
+            min="0"
+            ng-model="currentVideo.start_time"
+          />
         </div>
       </div>
       <div class="col-md-2">
         <div class="form-group">
           <label for="end_time">End At (Seconds):</label>
-          <spin value="currentVideo.end_time" min="0" max="10000" step="1" />
+          <input
+            class="form-control"
+            type="number"
+            min="0"
+            ng-model="currentVideo.end_time"
+          />
         </div>
       </div>
       <div class="col-md-8">&nbsp;</div>
