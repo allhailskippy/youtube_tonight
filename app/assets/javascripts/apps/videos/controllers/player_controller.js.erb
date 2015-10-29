@@ -1,0 +1,51 @@
+/**
+ * @ngdoc controller
+ * @name PlayerCtrl
+ *
+ * @description Controller for the video player
+ */
+(function() {
+  "use strict";
+
+var PlayerCtrl = function(
+  $scope,
+  VideoApp, Video
+  ) {
+  /**
+   * Setup
+   */
+  $scope.currentVideo = null;
+
+  // Setup
+  $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
+  $scope.channel = $scope.dispatcher.subscribe('video_player');
+
+  // Notify once conection's been established
+  $scope.dispatcher.on_open = function(data) {
+    // TODO: Notify that player is ready
+  };
+
+  /**
+   * Scope Methods
+   */
+  // Wait for notice to play video
+  $scope.channel.bind('play', function(message) {
+    Video.find(message.video_id).then(function(response) {
+      $scope.currentVideo = Video.build(response.data);
+    });
+    console.log(message);
+  })
+
+  // Pause the video
+  $scope.channel.bind('pause', function() {
+  });
+};
+
+PlayerCtrl.$inject = [
+  '$scope',
+  'VideoApp', 'Video'
+];
+
+angular.module("VideoApp")
+       .controller('PlayerCtrl', PlayerCtrl);
+}());

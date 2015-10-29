@@ -39,6 +39,9 @@ Youtubetonight::Application.configure do
   # Expands the lines which load the assets
   config.assets.debug = true
 
+  # Removing for websocket-rails gem
+  config.middleware.delete Rack::Lock
+
   # YouTube
   YOUTUBE_API_KEY = credentials['youtube_api_key']
 

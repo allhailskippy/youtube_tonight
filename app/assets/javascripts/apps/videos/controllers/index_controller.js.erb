@@ -21,6 +21,9 @@ var IndexCtrl = function(
   $scope.retrieving = true;
   $scope.show = Show.build({});
   $scope.videos = [];
+
+  $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
+  $scope.channel = $scope.dispatcher.subscribe('video_player');
   
   /**
    * Scope Methods
@@ -35,22 +38,11 @@ var IndexCtrl = function(
     }
   };
 
-
-  // Clears the full screen video
-  $scope.clearCurrentVideo = function() {
-    $scope.currentVideo = null;
-  }
-
-  // Sets the video to play full screen
-  $scope.playFull = function(video) {
-    $scope.currentVideo = video;
+  $scope.playVideo = function(video){
+    var success = function(response) { console.log("Success: "+response.message); }
+    var failure = function(response) { console.log("Failure: "+response.message); }
+    $scope.dispatcher.trigger('video_player.play', {'video_id': video.id}, success, failure);
   };
-
-  $('body').bind("keyup", function (e) {
-    $scope.$apply(function (){
-      if(e.which == 27) { $scope.clearCurrentVideo(); }
-    });
-  });
 
   // Look up list of videos
   $scope.queryVideos = function(check_for_latest) {

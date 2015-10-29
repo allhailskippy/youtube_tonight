@@ -1,6 +1,7 @@
 class VideosController < ApplicationController
   before_filter :set_class_variables
 
+  # GET /videos.json
   def index
     respond_to do |format|
       format.html
@@ -10,6 +11,34 @@ class VideosController < ApplicationController
         render json: {
           data: @videos.as_json
         }
+      end
+    end
+  end
+
+  # GET /videos/:id.json
+  def show
+    respond_to do |format|
+      begin
+        @video = Video.find(params[:id])
+        format.json do
+          render json: {
+            data: @video.as_json
+          }
+        end
+      rescue ActiveRecord::RecordNotFound
+        format.json do
+          render json: {
+            errors: 'Not Found'
+          },
+          status: :unprocessable_entity
+        end
+      rescue Exception => e
+        format.json do
+          render json: {
+            errors: e.to_s
+          },
+          status: :unprocessable_entity
+        end
       end
     end
   end
