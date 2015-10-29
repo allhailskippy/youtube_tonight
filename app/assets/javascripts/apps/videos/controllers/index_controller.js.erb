@@ -14,6 +14,7 @@ var IndexCtrl = function(
   /**
    * Setup
    */
+  $scope.currentVideo = null;
   $scope.last_id = 0;
   $scope.page = 1;
   $scope.per_page = 10000;
@@ -33,6 +34,23 @@ var IndexCtrl = function(
       }).catch();
     }
   };
+
+
+  // Clears the full screen video
+  $scope.clearCurrentVideo = function() {
+    $scope.currentVideo = null;
+  }
+
+  // Sets the video to play full screen
+  $scope.playFull = function(video) {
+    $scope.currentVideo = video;
+  };
+
+  $('body').bind("keyup", function (e) {
+    $scope.$apply(function (){
+      if(e.which == 27) { $scope.clearCurrentVideo(); }
+    });
+  });
 
   // Look up list of videos
   $scope.queryVideos = function(check_for_latest) {

@@ -25,8 +25,8 @@ module ActiveRecord
                 tmp.class.unscoped.update_all({tmp.class.version_column => deleted_version}, :id => self.id)
                 
                 # Update object in memory
-                tmp.write_attribute(tmp.class.version_column, deleted_version)
-                self.write_attribute(tmp.class.version_column, deleted_version)
+                tmp.send(:"#{tmp.class.version_column}=", deleted_version)
+                self.send(:"#{tmp.class.version_column}=", deleted_version)
                 
                 # run it through the equivalent of acts_as_versioned's
                 # save_version(). We used to call that function but it is a
