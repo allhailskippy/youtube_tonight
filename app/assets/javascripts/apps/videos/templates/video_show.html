@@ -12,7 +12,7 @@
     </div>
   </div>
   <div class="col-md-8">
-    <p ng-show="">
+    <p ng-show="video.api_title">
       <label>Youtube Title:</label> {{ video.api_title }}
     </p>
     <p ng-show="video.link">
@@ -24,7 +24,7 @@
     <p ng-show="video.end_time">
       <span ng-show="video.end_time"><label>End At:</label> {{ video.end_time }}</span>
     </p>
-    <p ng-show="video.channel">
+    <p ng-show="video.api_channel_title">
       <label>Channel:</label> {{ video.api_channel_title }}
     </p>
     <p ng-show="video.api_description">
