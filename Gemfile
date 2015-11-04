@@ -5,7 +5,7 @@ gem 'bundler', '>= 1.8.4'
 gem 'capistrano'
 gem 'capistrano-rails'
 gem 'capistrano-rvm'
-gem 'capistrano-bundler'
+gem 'capistrano-passenger'
 
 gem 'mysql2'
 gem 'date_validator'
