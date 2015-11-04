@@ -1,3 +1,7 @@
+yml_section = Rails.env.to_s
+yml_file = YAML.load(File.open(File.join(Rails.root.to_s, 'config', 'environments', 'credentials.yml')))
+credentials = yml_file[yml_section]
+
 Youtubetonight::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -64,4 +68,11 @@ Youtubetonight::Application.configure do
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
+
+  # YouTube
+  YOUTUBE_API_KEY = credentials['youtube_api_key']
+
+  # Facebook
+  FACEBOOK_KEY = credentials['facebook_key']
+  FACEBOOK_SECRET = credentials['facebook_secret']
 end
