@@ -30,7 +30,7 @@ protected
         redirect_to new_user_session_path
       else
         # auth_token overrides the session to log in a different user
-        sign_out(current_user) if params[:auth_token].present? && current_user
+#        sign_out(current_user) if params[:auth_token].present? && current_user
 
         authenticate_user!
         Authorization.current_user = current_user
