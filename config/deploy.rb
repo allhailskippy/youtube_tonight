@@ -38,11 +38,12 @@ set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
-namespace :deploy do
+after 'deploy:publishing', 'deploy:restart'
 
-  after :restart, :clear_cache do
-    on roles(:web), in: :groups, limit: 3, wait: 10 do
-      run "touch #{current_path}/tmp/restart.txt"
+namespace :deploy do
+  task :restart do
+    on roles(fetch(:web)) do
+      execute "touch #{ current_path }/tmp/restart.txt"
     end
   end
 
