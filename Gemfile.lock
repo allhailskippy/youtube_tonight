@@ -56,6 +56,9 @@ GEM
       i18n
       rake (>= 10.0.0)
       sshkit (~> 1.3)
+    capistrano-bundler (1.1.4)
+      capistrano (~> 3.1)
+      sshkit (~> 1.2)
     capistrano-rvm (0.1.2)
       capistrano (~> 3.0)
       sshkit (~> 1.2)
@@ -255,6 +258,7 @@ DEPENDENCIES
   acts_as_versioned!
   bundler (>= 1.8.4)
   capistrano
+  capistrano-bundler
   capistrano-rvm
   coffee-rails (~> 3.2.1)
   date_validator
