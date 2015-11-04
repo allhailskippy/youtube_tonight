@@ -42,13 +42,20 @@ namespace :deploy do
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
-      # Here we can do anything such as:
-      # within release_path do
-      #   execute :rake, 'cache:clear'
-      # end
+      run "touch #{current_path}/tmp/restart.txt"
     end
   end
 
+  desc "reload the database with seed data"
+  task :seed do
+    on primary :db do
+      within current_path do
+        with rails_env: fetch(:stage) do
+          execute :rake, 'db:seed'
+        end
+      end
+    end
+  end
 end
 
 namespace :upload do
