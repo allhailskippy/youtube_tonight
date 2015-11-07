@@ -39,11 +39,34 @@ var IndexCtrl = function(
   };
 
   $scope.playVideo = function(video){
-    $scope.dispatcher.trigger('video_player.load', {'video_id': video.id});
+    $scope.dispatcher.trigger('video_player.load', {video_id: video.id});
+  };
+
+  $scope.pauseVideo = function(video){
+    $scope.dispatcher.trigger('video_player.pause', {
+      video_key: video.video_key,
+      video_id: video.id
+    });
+  };
+
+  $scope.stopVideo = function(video){
+    $scope.dispatcher.trigger('video_player.stop', {
+      video_key: video.video_key,
+      video_id: video.id
+    });
   };
 
   $scope.channel.bind('ready', function(message) {
-    $scope.dispatcher.trigger('video_player.play', {'video_key': message.video_key});
+    // Find video in videos list and update its video_key
+    angular.forEach($scope.videos, function(video) {
+      if(video.id == message.video_id) {
+        video.video_key = message.video_key;
+      }
+    });
+    $scope.dispatcher.trigger('video_player.play', {
+      video_id: message.video_id,
+      video_key: message.video_key
+    });
   });
 
   // Look up list of videos

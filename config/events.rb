@@ -10,5 +10,7 @@ WebsocketRails::EventMap.describe do
     subscribe :load, 'video_player#load'
     subscribe :ready, 'video_player#ready'
     subscribe :play, 'video_player#play'
+    subscribe :pause, 'video_player#pause'
+    subscribe :stop, 'video_player#stop'
   end
 end

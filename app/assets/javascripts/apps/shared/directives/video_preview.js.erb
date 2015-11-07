@@ -31,6 +31,18 @@ var controller = function(
       $scope.player.playVideo();
     }
   });
+
+  $scope.channel.bind('pause', function(message) {
+    if(message.video_key == $scope.video_key) {
+      $scope.player.pauseVideo();
+    }
+  });
+
+  $scope.channel.bind('stop', function(message) {
+    if(message.video_key == $scope.video_key) {
+      $scope.player.stopVideo();
+    }
+  });
 };
 
 controller.$inject = [
@@ -79,7 +91,10 @@ var VideoPreview = function($window) {
           },
           events: {
             'onReady': function() {
-              $scope.dispatcher.trigger('video_player.ready', {'video_key': $scope.video_key});
+              $scope.dispatcher.trigger('video_player.ready', {
+                'video_id': $scope.video.id,
+                'video_key': $scope.video_key
+              });
             }
           }
         };

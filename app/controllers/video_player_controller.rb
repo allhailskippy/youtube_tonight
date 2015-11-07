@@ -12,19 +12,19 @@ class VideoPlayerController < WebsocketRails::BaseController
   end
 
   def ready
-    WebsocketRails[:video_player].trigger(:ready, { :video_key => message["video_key"]})
+    WebsocketRails[:video_player].trigger(:ready, { :video_id => message["video_id"], :video_key => message["video_key"]})
   end
 
   def play
-    WebsocketRails[:video_player].trigger(:play, { :video_key => message["video_key"]})
+    WebsocketRails[:video_player].trigger(:play, { :video_id => message["video_id"], :video_key => message["video_key"]})
   end
 
   def pause
-    WebsocketRails[:video_player].trigger(:pause, {})
+    WebsocketRails[:video_player].trigger(:pause, { :video_id => message["video_id"], :video_key => message["video_key"]})
   end
 
   def stop
-    WebsocketRails[:video_player].trigger(:stop, {})
+    WebsocketRails[:video_player].trigger(:stop, { :video_id => message["video_id"], :video_key => message["video_key"]})
   end
 
   def mute
