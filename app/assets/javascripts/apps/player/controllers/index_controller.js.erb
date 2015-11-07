@@ -14,7 +14,7 @@ var IndexCtrl = function(
   /**
    * Setup
    */
-  $scope.currentVideo = null;
+  $scope.video = null;
 
   // Setup
   $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
@@ -28,21 +28,16 @@ var IndexCtrl = function(
   /**
    * Scope Methods
    */
-  // Wait for notice to play video
-  $scope.channel.bind('play', function(message) {
+  // Wait for notice to load video
+  $scope.channel.bind('load', function(message) {
     Video.find(message.video_id).then(function(response) {
-      $scope.currentVideo = Video.build(response.data);
+      $scope.video = Video.build(response.data);
     });
-    console.log(message);
   })
 
-  // Pause the video
-  $scope.channel.bind('pause', function() {
+  $scope.channel.bind('ready', function(message) {
+    $scope.dispatcher.trigger('video_player.play', {});
   });
-
-  $window.onYouTubeIframeAPIReady = function() {
-    console.log("READY!!!");
-  };
 };
 
 IndexCtrl.$inject = [

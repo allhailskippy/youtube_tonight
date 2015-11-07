@@ -1,5 +1,5 @@
 class VideoPlayerController < WebsocketRails::BaseController
-  def play
+  def load
     begin
       video = Video.find(message[:video_id])
       trigger_success({ :message => video.api_video_id })
@@ -8,7 +8,17 @@ class VideoPlayerController < WebsocketRails::BaseController
     rescue Exception => e
       trigger_failure({ :message => e.to_s })
     end
-    WebsocketRails[:video_player].trigger(:play, {:video_id => video.id })
+    WebsocketRails[:video_player].trigger(:load, {:video_id => video.id })
+  end
+
+  def ready
+    trigger_success({})
+    WebsocketRails[:video_player].trigger(:ready, {})
+  end
+
+  def play
+    trigger_success({})
+    WebsocketRails[:video_player].trigger(:play, {})
   end
 
   def pause

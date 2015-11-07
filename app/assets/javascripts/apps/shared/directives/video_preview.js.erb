@@ -17,19 +17,20 @@ var controller = function(
   Video
 ) {
   /**
+   * Setup
+   */
+  $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
+  $scope.channel = $scope.dispatcher.subscribe('video_player');
+
+  /**
    * Scope Methods
    */
-  $scope.youtubeUrl = function() {
-    var url = 'https://www.youtube.com/embed/'
-      + $scope.video.api_video_id
-      + '?autoplay=1&version=3&rel=0';
-    if($scope.video.start_time) {
-      url += '&start=' + $scope.video.start_time;
-    }
-    if($scope.video.end_time) {
-      url += '&end=' + $scope.video.end_time;
-    }
-    return $sce.trustAsResourceUrl(url);
+  $scope.channel.bind('play', function(message) {
+    $scope.player.playVideo();
+  });
+
+  $scope.ready = function() {
+    $scope.dispatcher.trigger('video_player.ready', {});
   };
 };
 
@@ -38,14 +39,42 @@ controller.$inject = [
   'Video'
 ];
 
-var VideoPreview = function() {
+var VideoPreview = function($window) {
   return {
     restrict: 'E',
     scope: {
       video: '='
     },
     controller: controller,
-    templateUrl: '<%= asset_path("apps/shared/templates/video_preview.html") %>'
+    templateUrl: '<%= asset_path("apps/shared/templates/video_preview.html") %>',
+    link: function($scope, $element, $attrs, $controller) {
+      var tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      $window.onYouTubeIframeAPIReady = function() {
+        $scope.player = new YT.Player($element.find('.video_preview').get(0), {
+          videoId: $scope.video.api_video_id,
+          autoplay: 0,
+          html5: 1,
+          theme: "light",
+          modesbranding: 0,
+          color: "white",
+          iv_load_policy: 3,
+          showinfo: 0,
+          controls: 1,
+          rel: 0,
+          start: $scope.video.start_time,
+          end: $scope.video.end_time,
+          events: {
+            'onReady': function() {
+              $scope.ready();
+            }
+          }
+        });
+      };
+    }
   };
 };
 

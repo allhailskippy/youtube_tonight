@@ -7,6 +7,8 @@ WebsocketRails::EventMap.describe do
   #   subscribe :client_connected, :to => Controller, :with_method => :method_name
 
   namespace :video_player do 
+    subscribe :load, 'video_player#load'
+    subscribe :ready, 'video_player#ready'
     subscribe :play, 'video_player#play'
   end
 end
