@@ -8,7 +8,11 @@
       ng-show="video.api_thumbnail_medium_url && !previewing"
     />
     <div ng-if="previewing" class="preview_container">
-      <video-preview video="video"></video-preview>
+      <video-preview
+        video="video"
+        width="320"
+        height="180"
+      ></video-preview>
     </div>
   </div>
   <div class="col-md-7">

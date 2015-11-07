@@ -12,13 +12,11 @@ class VideoPlayerController < WebsocketRails::BaseController
   end
 
   def ready
-    trigger_success({})
-    WebsocketRails[:video_player].trigger(:ready, {})
+    WebsocketRails[:video_player].trigger(:ready, { :video_key => message["video_key"]})
   end
 
   def play
-    trigger_success({})
-    WebsocketRails[:video_player].trigger(:play, {})
+    WebsocketRails[:video_player].trigger(:play, { :video_key => message["video_key"]})
   end
 
   def pause

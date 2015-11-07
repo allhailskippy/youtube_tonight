@@ -36,7 +36,7 @@ var IndexCtrl = function(
   })
 
   $scope.channel.bind('ready', function(message) {
-    $scope.dispatcher.trigger('video_player.play', {});
+    $scope.dispatcher.trigger('video_player.play', {video_key: message.video_key});
   });
 };
 

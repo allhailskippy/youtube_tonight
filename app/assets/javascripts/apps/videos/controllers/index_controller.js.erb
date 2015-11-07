@@ -23,6 +23,7 @@ var IndexCtrl = function(
   $scope.videos = [];
 
   $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
+  $scope.channel = $scope.dispatcher.subscribe('video_player');
   
   /**
    * Scope Methods
@@ -38,10 +39,12 @@ var IndexCtrl = function(
   };
 
   $scope.playVideo = function(video){
-    var success = function(response) { console.log("Success: "+response.message); }
-    var failure = function(response) { console.log("Failure: "+response.message); }
-    $scope.dispatcher.trigger('video_player.load', {'video_id': video.id}, success, failure);
+    $scope.dispatcher.trigger('video_player.load', {'video_id': video.id});
   };
+
+  $scope.channel.bind('ready', function(message) {
+    $scope.dispatcher.trigger('video_player.play', {'video_key': message.video_key});
+  });
 
   // Look up list of videos
   $scope.queryVideos = function(check_for_latest) {

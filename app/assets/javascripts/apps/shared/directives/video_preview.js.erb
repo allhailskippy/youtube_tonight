@@ -13,71 +13,101 @@
 'use strict';
 
 var controller = function(
-  $scope, $sce,
-  Video
+  $scope,
+  Video, VideoPreviewService
 ) {
   /**
    * Setup
    */
   $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
   $scope.channel = $scope.dispatcher.subscribe('video_player');
+  $scope.video_key = null;
 
   /**
    * Scope Methods
    */
   $scope.channel.bind('play', function(message) {
-    $scope.player.playVideo();
+    if(message.video_key == $scope.video_key) {
+      $scope.player.playVideo();
+    }
   });
-
-  $scope.ready = function() {
-    $scope.dispatcher.trigger('video_player.ready', {});
-  };
 };
 
 controller.$inject = [
-  '$scope', '$sce',
-  'Video'
+  '$scope',
+  'Video', 'VideoPreviewService'
 ];
 
 var VideoPreview = function($window) {
   return {
     restrict: 'E',
     scope: {
-      video: '='
+      video: '=',
+      width: '=',
+      height: '='
     },
     controller: controller,
-    templateUrl: '<%= asset_path("apps/shared/templates/video_preview.html") %>',
+    template: '',
     link: function($scope, $element, $attrs, $controller) {
       var tag = document.createElement('script');
       tag.src = "https://www.youtube.com/iframe_api";
       var firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-      $window.onYouTubeIframeAPIReady = function() {
-        $scope.player = new YT.Player($element.find('.video_preview').get(0), {
+      // Create the div to hold the video and give it a unique id
+      var preview = document.createElement('div');
+      var random_seed = 1 + Math.floor(Math.random() * 100000);
+      preview.id = $scope.video.id + '-' + random_seed;
+      $scope.video_key = preview.id; // Store key for later use
+      $element.append(preview);
+
+      $scope.newPlayer = function(preview_elem) {
+        var params = {
           videoId: $scope.video.api_video_id,
-          autoplay: 0,
-          html5: 1,
-          theme: "light",
-          modesbranding: 0,
-          color: "white",
-          iv_load_policy: 3,
-          showinfo: 0,
-          controls: 1,
-          rel: 0,
-          start: $scope.video.start_time,
-          end: $scope.video.end_time,
+          width: $scope.width,
+          height: $scope.height,
+          playerVars: {
+            autoplay: 0,
+            html5: 1,
+            modesbranding: 1,
+            iv_load_policy: 3,
+            showinfo: 0,
+            controls: 0,
+            rel: 0,
+            start: $scope.video.start_time,
+            end: $scope.video.end_time
+          },
           events: {
             'onReady': function() {
-              $scope.ready();
+              $scope.dispatcher.trigger('video_player.ready', {'video_key': $scope.video_key});
             }
           }
-        });
+        };
+        $scope.player = new YT.Player(preview_elem, params);
       };
+
+      if(VideoPreviewService.ready) {
+        $scope.newPlayer(preview);
+      } else {
+        $window.onYouTubeIframeAPIReady = function() {
+          VideoPreviewService.ready = true;
+          $scope.newPlayer(preview);
+        };
+      }
     }
   };
 };
 
+// Service for storing shared states
+var VideoPreviewService  = function() {
+  var self = this;
+
+  // Determines if the YT Iframe Api has been loaded
+  self.ready = false;
+};
+VideoPreviewService.$inject = [];
+
 angular.module('shared')
-       .directive('videoPreview', VideoPreview);
+       .directive('videoPreview', VideoPreview)
+       .service('VideoPreviewService', VideoPreviewService);
 }());
