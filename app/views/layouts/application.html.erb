@@ -19,29 +19,31 @@
     <%= csrf_meta_tags %>
   </head>
   <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="/shows#/index">YouTube Tonight</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <% if user_signed_in? %>
-            <ul class="nav navbar-nav">
-              <li class="active"><a href="/shows#/index">Shows</a></li>
+    <% unless @hide_nav %>
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="/shows#/index">YouTube Tonight</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <% if user_signed_in? %>
+              <ul class="nav navbar-nav">
+                <li class="active"><a href="/shows#/index">Shows</a></li>
+              </ul>
+            <% end %>
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+                <% if user_signed_in? %>
+                  <%= link_to('Logout', destroy_user_session_path, :method => :delete) %>
+                <% else %>
+                  <%= link_to('Login', new_user_session_path)  %>
+                <% end %>
+              </li>
             </ul>
-          <% end %>
-          <ul class="nav navbar-nav navbar-right">
-            <li>
-              <% if user_signed_in? %>
-                <%= link_to('Logout', destroy_user_session_path, :method => :delete) %>
-              <% else %>
-                <%= link_to('Login', new_user_session_path)  %>
-              <% end %>
-            </li>
-          </ul>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    <% end %>
     <div class="container" role="main">
       <% if notice %>
         <p class="notice"><%= notice %></p>

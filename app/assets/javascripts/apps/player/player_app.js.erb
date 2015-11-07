@@ -1,0 +1,27 @@
+//= require_self
+//= require_tree ./controllers
+/**
+ * @ngdoc overview
+ * @name Player App
+ *
+ * @description The PlayerApp is used for playing videos.
+ * This file is where the routes are defined for this app
+ */
+(function(){
+'use strict';
+
+var routesConfig = function($routeProvider) {
+  $routeProvider.
+  when('/index', {
+    controller: 'IndexCtrl',
+    templateUrl: '<%= asset_path("apps/player/templates/index.html") %>'
+  }).
+  otherwise({
+    redirectTo: '/index'
+  });
+};
+routesConfig.$inject = ['$routeProvider'];
+
+angular.module('PlayerApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf'])
+       .config(routesConfig);
+})();

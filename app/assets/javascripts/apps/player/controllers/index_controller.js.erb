@@ -1,15 +1,15 @@
 /**
  * @ngdoc controller
- * @name PlayerCtrl
+ * @name IndexCtrl
  *
  * @description Controller for the video player
  */
 (function() {
   "use strict";
 
-var PlayerCtrl = function(
-  $scope,
-  VideoApp, Video
+var IndexCtrl = function(
+  $scope, $window,
+  Video
   ) {
   /**
    * Setup
@@ -39,13 +39,17 @@ var PlayerCtrl = function(
   // Pause the video
   $scope.channel.bind('pause', function() {
   });
+
+  $window.onYouTubeIframeAPIReady = function() {
+    console.log("READY!!!");
+  };
 };
 
-PlayerCtrl.$inject = [
-  '$scope',
-  'VideoApp', 'Video'
+IndexCtrl.$inject = [
+  '$scope', '$window',
+  'Video'
 ];
 
-angular.module("VideoApp")
-       .controller('PlayerCtrl', PlayerCtrl);
+angular.module("PlayerApp")
+       .controller('IndexCtrl', IndexCtrl);
 }());
