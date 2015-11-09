@@ -21,6 +21,7 @@ var IndexCtrl = function(
   $scope.retrieving = true;
   $scope.show = Show.build({});
   $scope.videos = [];
+  $scope.currentVideoOrder = [];
 
   $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
   $scope.channel = $scope.dispatcher.subscribe('video_player');
@@ -91,7 +92,9 @@ var IndexCtrl = function(
 
         Video.query(params).then(function(response) {
           angular.forEach(response.data, function(video) {
-            $scope.videos.push(Video.build(video));
+            var newVideo = Video.build(video);
+            $scope.videos.push(newVideo);
+            $scope.currentVideoOrder.push(newVideo.id);
           });
 
           $scope.last_id = Math.max.apply(Math,$scope.videos.map(function(o){return o.id;}));
@@ -113,10 +116,16 @@ var IndexCtrl = function(
   $scope.sortableOptions = {
     stop: function(e, ui) {
       // this callback has the changed model
-      var logEntry = $scope.videos.map(function(o, i){
-        o.sort_order = i;
-        o.save();
+      var newVideoOrder = $scope.videos.map(function(o) {
+        return o.id;
       });
+
+      if(newVideoOrder.join() != $scope.currentVideoOrder.join()) {
+        $scope.videos.map(function(o, i){
+          o.sort_order = i;
+          o.save();
+        });
+      }
     }
   };
 };
