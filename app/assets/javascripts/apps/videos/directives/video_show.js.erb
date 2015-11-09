@@ -19,13 +19,13 @@ var controller = function(
   /**
    * Setup
    */
-  $scope.previewing = false;
+  $scope.currentVideo = null;
 
   /**
    * Scope Methods
    */
-  $scope.togglePreview = function() {
-    $scope.previewing = !$scope.previewing;
+  $scope.togglePreview = function(video) {
+    $scope.currentVideo = video;
   };
 };
 

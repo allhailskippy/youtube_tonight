@@ -44,3 +44,18 @@ body {
   left: 0;
   top: 0px;
 }
+
+.player_controls a {
+  color: #000;
+}
+
+.player_controls a:hover {
+  text-decoration: none;
+  color: #000;
+}
+
+glyphicon.disabled {
+  opacity: 0.8;
+  filter: grayscale( 100% );
+  -webkit-filter: grayscale( 1 );
+}

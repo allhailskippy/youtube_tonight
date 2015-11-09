@@ -21,28 +21,50 @@ var controller = function(
    */
   $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
   $scope.channel = $scope.dispatcher.subscribe('video_player');
-  $scope.video_key = null;
+  $scope.video = null;
+  $scope.ready = false;
 
   /**
    * Scope Methods
    */
+  // Wait for notice to load video
+  $scope.channel.bind('load', function(message) {
+    if(message.player_id == $scope.playerId) {
+      // Clear current video before loading next video
+      $scope.video = null;
+      Video.find(message.video_id).then(function(response) {
+        $scope.video = Video.build(response.data);
+      });
+    };
+  })
+
+  $scope.channel.bind('ready', function(message) {
+    if(message.player_id == $scope.playerId) {
+      $scope.dispatcher.trigger('video_player.play', {
+        video_id: $scope.video.id,
+        player_id: $scope.playerId
+      });
+    }
+  });
+
   $scope.channel.bind('play', function(message) {
-    if(message.video_key == $scope.video_key) {
+    if(message.player_id == $scope.playerId) {
       $scope.player.playVideo();
     }
   });
 
   $scope.channel.bind('pause', function(message) {
-    if(message.video_key == $scope.video_key) {
+    if(message.player_id == $scope.playerId) {
       $scope.player.pauseVideo();
     }
   });
 
   $scope.channel.bind('stop', function(message) {
-    if(message.video_key == $scope.video_key) {
+    if(message.player_id == $scope.playerId) {
       $scope.player.stopVideo();
     }
   });
+
 };
 
 controller.$inject = [
@@ -54,6 +76,7 @@ var VideoPreview = function($window) {
   return {
     restrict: 'E',
     scope: {
+      playerId: '@',
       video: '=',
       width: '=',
       height: '='
@@ -61,18 +84,33 @@ var VideoPreview = function($window) {
     controller: controller,
     template: '',
     link: function($scope, $element, $attrs, $controller) {
+      /**
+       * Local Functions
+       */
+      // Can take a tiny bit before the api is ready
+      function waitForReady(preview) {
+        if(!VideoPreviewService.ready) {
+          setTimeout(waitForReady, 200, preview);
+        } else {
+          $scope.newPlayer(preview);
+        }
+      }
+
+      /**
+       * Setup
+       */
+      // Initialize the YT iframe api script
       var tag = document.createElement('script');
       tag.src = "https://www.youtube.com/iframe_api";
       var firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-      // Create the div to hold the video and give it a unique id
-      var preview = document.createElement('div');
-      var random_seed = 1 + Math.floor(Math.random() * 100000);
-      preview.id = $scope.video.id + '-' + random_seed;
-      $scope.video_key = preview.id; // Store key for later use
-      $element.append(preview);
+      // When the iframe api is loaded,
+      $window.onYouTubeIframeAPIReady = function() {
+        VideoPreviewService.ready = true;
+      };
 
+      // Creates a new YT player object
       $scope.newPlayer = function(preview_elem) {
         var params = {
           videoId: $scope.video.api_video_id,
@@ -92,23 +130,37 @@ var VideoPreview = function($window) {
           events: {
             'onReady': function() {
               $scope.dispatcher.trigger('video_player.ready', {
-                'video_id': $scope.video.id,
-                'video_key': $scope.video_key
+                video_id: $scope.video.id,
+                player_id: $scope.playerId
               });
+              $scope.ready = true;
             }
           }
         };
         $scope.player = new YT.Player(preview_elem, params);
       };
 
-      if(VideoPreviewService.ready) {
-        $scope.newPlayer(preview);
-      } else {
-        $window.onYouTubeIframeAPIReady = function() {
-          VideoPreviewService.ready = true;
-          $scope.newPlayer(preview);
-        };
-      }
+      /**
+       * Watched variables
+       */
+      // When the video changes, remove old players, and build
+      // a new player object to work with
+      $scope.$watch('video', function(newVideo, oldVideo) {
+        if(newVideo) {
+          // Clear out any existing players
+          $element.children().remove();
+
+          // Create the div to hold the video and give it a unique id
+          var preview = document.createElement('div');
+          var random_seed = 1 + Math.floor(Math.random() * 100000);
+          preview.id = newVideo.id + '-' + random_seed;
+
+          // Add new div for player
+          $element.append(preview);
+
+          waitForReady(preview);
+        }
+      });
     }
   };
 };

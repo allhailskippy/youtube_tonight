@@ -24,10 +24,27 @@
         </h3>
       </div>
       <div class="panel-body">
-        <div class="col-md-2 text-center">
-          <a href="javascript:void(0)" ng-click="playVideo(video)">Play this video</a><br />
-          <a href="javascript:void(0)" ng-click="pauseVideo(video)">Pause this video</a><br />
-          <a href="javascript:void(0)" ng-click="stopVideo(video)">Stop this video</a><br />
+        <div class="col-md-2 text-center player_controls">
+          <h1>
+            <a
+              href="javascript:void(0)"
+              class="glyphicon glyphicon-play"
+              ng-click="playVideo(video)"
+              ng-show="!isCurrentlyPlaying(video)"
+            ></a>
+            <a
+              href="javascript:void(0)"
+              class="glyphicon glyphicon-pause"
+              ng-click="pauseVideo(video)"
+              ng-show="isCurrentlyPlaying(video)"
+            ></a>
+            <a
+              href="javascript:void(0)"
+              class="glyphicon glyphicon-stop"
+              ng-click="stopVideo(video)"
+              ng-show="isCurrentlyPlaying(video)"
+            ></a>
+          </h1>
         </div>
         <div class="col-md-10">
           <video-show video="video"></video-show>

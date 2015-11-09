@@ -8,41 +8,12 @@
   "use strict";
 
 var IndexCtrl = function(
-  $scope, $window,
-  Video
+  $scope
   ) {
-  /**
-   * Setup
-   */
-  $scope.video = null;
-
-  // Setup
-  $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
-  $scope.channel = $scope.dispatcher.subscribe('video_player');
-
-  // Notify once conection's been established
-  $scope.dispatcher.on_open = function(data) {
-    // TODO: Notify that player is ready
-  };
-
-  /**
-   * Scope Methods
-   */
-  // Wait for notice to load video
-  $scope.channel.bind('load', function(message) {
-    Video.find(message.video_id).then(function(response) {
-      $scope.video = Video.build(response.data);
-    });
-  })
-
-  $scope.channel.bind('ready', function(message) {
-    $scope.dispatcher.trigger('video_player.play', {video_key: message.video_key});
-  });
 };
 
 IndexCtrl.$inject = [
-  '$scope', '$window',
-  'Video'
+  '$scope'
 ];
 
 angular.module("PlayerApp")
