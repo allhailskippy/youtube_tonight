@@ -146,10 +146,10 @@ var VideoPreview = function($window) {
       // When the video changes, remove old players, and build
       // a new player object to work with
       $scope.$watch('video', function(newVideo, oldVideo) {
-        if(newVideo) {
-          // Clear out any existing players
-          $element.children().remove();
+        // Clear out any existing players
+        $element.children().remove();
 
+        if(newVideo) {
           // Create the div to hold the video and give it a unique id
           var preview = document.createElement('div');
           var random_seed = 1 + Math.floor(Math.random() * 100000);

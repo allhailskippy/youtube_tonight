@@ -20,7 +20,15 @@
       <label>Youtube Title:</label> {{ video.api_title }}
     </p>
     <p ng-show="video.link">
-      <label>URL:</label> {{ video.link }} : <a href="javascript:void(0)" ng-click="togglePreview(video)">Preview</a>
+      <label>URL:</label> {{ video.link }} :
+	  <a href="javascript:void(0)"
+	    ng-click="startPreview(video)"
+		ng-show="!currentVideo"
+	  >Preview</a>
+	  <a href="javascript:void(0)"
+	    ng-click="stopPreview(video)"
+		ng-show="currentVideo"
+	  >Stop Preview</a>
     </p>
     <p ng-show="video.start_time">
       <span ng-show="video.start_time"><label>Start At:</label> {{ video.start_time }}</span>

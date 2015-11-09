@@ -24,8 +24,12 @@ var controller = function(
   /**
    * Scope Methods
    */
-  $scope.togglePreview = function(video) {
+  $scope.startPreview = function(video) {
     $scope.currentVideo = video;
+  };
+
+  $scope.stopPreview = function(video) {
+    $scope.currentVideo = null;
   };
 };
 
