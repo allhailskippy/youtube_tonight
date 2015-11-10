@@ -25,7 +25,7 @@ var controller = function(
   $scope.ready = false;
 
   /**
-   * Scope Methods
+   * Event Handlers
    */
   // Wait for notice to load video
   $scope.channel.bind('load', function(message) {
@@ -147,6 +147,11 @@ var VideoPreview = function(
               if($scope.mute) {
                 e.target.mute();
               };
+              $scope.dispatcher.trigger('video_player.state_change', {
+                state: e.data,
+                video_id: $scope.video.id,
+                player_id: $scope.playerId
+              });
             }
           }
         };

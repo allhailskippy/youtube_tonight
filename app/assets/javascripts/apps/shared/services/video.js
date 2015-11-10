@@ -25,11 +25,6 @@ var Video = function(VideoApi) {
 
   self.build = function(video) {
     /**
-     * Setup
-     */
-    video.video_key = null;
-
-    /**
      * Instance Methods
      */
     // Delete video

@@ -15,6 +15,13 @@ class VideoPlayerController < WebsocketRails::BaseController
     })
   end
 
+  def player_ready
+    WebsocketRails[:video_player].trigger(:player_ready, {
+      :video_id => message["video_id"],
+      :player_id => message["player_id"]
+    })
+  end
+
   def play
     WebsocketRails[:video_player].trigger(:play, {
       :video_id => message["video_id"],
@@ -59,6 +66,14 @@ class VideoPlayerController < WebsocketRails::BaseController
       :volume => message["volume"],
       :video_id => message["video_id"],
       :player_id => message["player_id"]
+    })
+  end
+
+  def state_change
+    WebsocketRails[:video_player].trigger(:state_change, {
+      :video_id => message["video_id"],
+      :player_id => message["player_id"],
+      :state => message["state"]
     })
   end
 end

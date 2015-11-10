@@ -23,42 +23,58 @@ var controller = function(
   $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
   $scope.channel = $scope.dispatcher.subscribe('video_player');
   $scope.muted = true;
+  $scope.playerId = 'preview-' + $scope.video.id;
+  $scope.playerReady = false;
 
   /**
    * Scope Methods
    */
   $scope.startPreview = function(video) {
+    $scope.playerReady = false;
     $scope.currentVideo = video;
   };
 
   $scope.stopPreview = function(video) {
+    $scope.playerReady = false;
     $scope.currentVideo = null;
     $scope.muted = true;
   };
 
   // Mute Preview
   $scope.mute = function() {
-    $scope.dispatcher.trigger('video_player.mute', {
-      video_id: $scope.currentVideo.id,
-      player_id: 'preview-' + $scope.currentVideo.id
-    }, function() {
-      //Success
-      $scope.muted = true;
-      $scope.$applyAsync();
-    });
+    $scope.toggleMute(true);
   };
 
   // Unmute Preview
   $scope.unMute = function() {
-    $scope.dispatcher.trigger('video_player.unmute', {
-      video_id: $scope.currentVideo.id,
-      player_id: 'preview-' + $scope.currentVideo.id
-    }, function() {
-      //Success
-      $scope.muted = false;
-      $scope.$applyAsync();
-    });
+    $scope.toggleMute(false);
   };
+
+  $scope.toggleMute = function(mute) {
+    if($scope.playerReady) {
+      var trigger = 'video_player.' + (mute ? "mute" : "unmute");
+      $scope.dispatcher.trigger(trigger, {
+        video_id: $scope.currentVideo.id,
+        player_id: $scope.playerId
+      }, function() {
+        //Success
+        $scope.muted = mute;
+        $scope.$applyAsync();
+      });
+    }
+  };
+
+  /**
+   * Event Handlers
+   */
+  $scope.channel.bind('state_change', function(message) {
+    if(message.player_id == $scope.playerId) {
+      if(message.state == YT.PlayerState.PLAYING) {
+        $scope.playerReady = true;
+        $scope.$applyAsync();
+      }
+    }
+  });
 };
 
 controller.$inject = [

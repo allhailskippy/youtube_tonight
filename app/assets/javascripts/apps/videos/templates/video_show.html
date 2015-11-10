@@ -28,14 +28,11 @@
       class="btn btn-danger"
     >Stop Preview</a>
     <a
-      class="btn btn-default glyphicon glyphicon-volume-up disabled"
+      class="btn glyphicon glyphicon-volume-up"
       aria-hidden="true"
-      ng-show="!currentVideo"
-    ></a>
-    <a
-      class="btn btn-success glyphicon glyphicon-volume-up"
-      aria-hidden="true"
-      ng-show="currentVideo && muted"
+      ng-class="{'btn-success': playerReady, 'btn-default': !playerReady}"
+      ng-show="muted"
+      ng-disabled="!playerReady"
       ng-click="unMute()"
     ></a>
     <a
@@ -43,6 +40,7 @@
       class="btn btn-danger glyphicon glyphicon-volume-off"
       aria-hidden="true"
       ng-show="currentVideo && !muted"
+      ng-disabled="!playerReady"
       ng-click="mute()"
     ></a>
   </p>
