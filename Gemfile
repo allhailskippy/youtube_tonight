@@ -4,7 +4,7 @@ gem 'rails', '3.2.21'
 gem 'bundler', '>= 1.8.4'
 gem 'capistrano'
 gem 'capistrano-rails'
-gem 'capistrano-rbenv'
+gem 'capistrano-rvm'
 gem 'capistrano-passenger'
 gem 'capistrano-bundler'
 
