@@ -4,15 +4,17 @@ lock '3.3.5'
 set :application, 'youtube_tonight'
 set :repo_url, 'git@github.com:allhailskippy/youtube_tonight.git'
 
-set :user, 'allhailskippy_vps1'  # Your dreamhost account's username
+set :user, 'allhailskippy'  # Your dreamhost account's username
 set :domain, 'youtube_tonight.thatsps.com'  # Dreamhost servername where your account is located 
-set :tmp_dir, '/home/allhailskippy_vps1/tmp'
+set :tmp_dir, '/home/allhailskippy/tmp'
 
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
 
 # Default deploy_to directory is /var/www/my_app_name
-set :deploy_to, "/home/allhailskippy_vps1/youtubetonight.thatsps.com"  # The standard Dreamhost setup
+set :deploy_to, "/home/allhailskippy/youtubetonight.thatsps.com"  # The standard Dreamhost setup
+
+#set :rbenv_ruby, File.read('.ruby-version').strip
 
 # Default value for :scm is :git
 # set :scm, :git

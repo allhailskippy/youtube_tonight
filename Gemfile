@@ -4,8 +4,9 @@ gem 'rails', '3.2.21'
 gem 'bundler', '>= 1.8.4'
 gem 'capistrano'
 gem 'capistrano-rails'
-gem 'capistrano-rvm'
+gem 'capistrano-rbenv'
 gem 'capistrano-passenger'
+gem 'capistrano-bundler'
 
 gem 'mysql2'
 gem 'date_validator'
@@ -14,6 +15,7 @@ gem 'will_paginate', '3.0.7'
 gem 'validate_url'
 gem 'acts_as_versioned', :path => 'vendor/gems/acts_as_versioned' # https://github.com/technoweenie/acts_as_versioned
 gem 'rails3_acts_as_paranoid'
+gem 'therubyracer'
 
 # Javascript gems
 gem 'jquery-rails', '2.3.0'
