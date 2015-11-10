@@ -15,7 +15,7 @@ gem 'will_paginate', '3.0.7'
 gem 'validate_url'
 gem 'acts_as_versioned', :path => 'vendor/gems/acts_as_versioned' # https://github.com/technoweenie/acts_as_versioned
 gem 'rails3_acts_as_paranoid'
-gem 'therubyracer'
+gem 'therubyracer', :platforms => :ruby
 
 # Javascript gems
 gem 'jquery-rails', '2.3.0'
