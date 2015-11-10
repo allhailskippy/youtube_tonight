@@ -4,9 +4,9 @@
 # is considered to be the first unless any hosts have the primary
 # property set.  Don't declare `role :all`, it's a meta role.
 
-role :app, %w{allhailskippy_vps@ps483433.dreamhostps.com}
-role :web, %w{allhailskippy_vps@ps483433.dreamhostps.com}
-role :db, %w{allhailskippy_vps@ps483433.dreamhostps.com}
+role :app, %w{allhailskippy_vps1@ps483644.dreamhostps.com}
+role :web, %w{allhailskippy_vps1@ps483644.dreamhostps.com}
+role :db, %w{allhailskippy_vps1@ps483644.dreamhostps.com}
 
 
 # Extended Server Syntax
@@ -19,7 +19,7 @@ set :ssh_options, {
   keys: %w(/Users/paul/.ssh/github_rsa)
 }
 
-server 'ps483433.dreamhostps.com', user: 'allhailskippy_vps', roles: %w{web app}
+server 'ps483644.dreamhostps.com', user: 'allhailskippy_vps1', roles: %w{web app}
 
 set :rails_env, "production"
 
