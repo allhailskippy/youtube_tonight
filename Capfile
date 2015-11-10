@@ -8,7 +8,7 @@ require 'capistrano/deploy'
 require 'capistrano/rails'
 #require 'capistrano/rbenv'
 require 'capistrano/bundler'
-require 'capistrano/passenger'
+#require 'capistrano/passenger'
 
 #
 # For documentation on these, see for example:
