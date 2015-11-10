@@ -147,11 +147,23 @@ var VideoPreview = function(
               if($scope.mute) {
                 e.target.mute();
               };
+              // Send state changed notice
               $scope.dispatcher.trigger('video_player.state_change', {
                 state: e.data,
                 video_id: $scope.video.id,
                 player_id: $scope.playerId
               });
+
+              // If the playback has started, and is now stopped
+              // remove the player
+              if ($scope.playbackStarted && e.data <= YT.PlayerState.ENDED) {
+                //Get rid of the player
+                e.target.destroy();
+                $scope.playbackStarted = false;
+              }
+              if(e.data > 0) {
+                $scope.playbackStarted = true;
+              }
             }
           }
         };
@@ -163,11 +175,11 @@ var VideoPreview = function(
        */
       // When the video changes, remove old players, and build
       // a new player object to work with
-      $scope.$watch('video', function(newVideo, oldVideo) {
-        // Clear out any existing players
-        $element.children().remove();
-
+      $scope.$watch('video', function(newVideo) {
         if(newVideo) {
+          // Clear out any existing players
+          $element.children().remove();
+
           // Create the div to hold the video and give it a unique id
           var preview = document.createElement('div');
           var random_seed = 1 + Math.floor(Math.random() * 100000);
@@ -197,9 +209,10 @@ var VideoPreviewService = function() {
   self.ready = false;
 
   // Can take a tiny bit before the api is ready
-  self.waitForReady = function(callback) {
+  self.waitForReady = function(callback, delay) {
+    delay = delay || 200
     if(!self.ready) {
-      setTimeout(self.waitForReady, 200, callback);
+      setTimeout(self.waitForReady, delay, callback);
     } else {
       callback();
     }

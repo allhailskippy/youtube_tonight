@@ -3,12 +3,11 @@
     holder="holder.js/120x90?text=Youtube Video Thumbnail"
     alt="YouTube Video Thumbnail"
     ng-src="{{video.api_thumbnail_default_url}}"
-    ng-show="video.api_thumbnail_default_url && !currentVideo"
+    ng-show="video.api_thumbnail_default_url && !showVideo"
   />
   <div class="preview_container">
     <video-preview
       player-id="preview-{{video.id}}"
-      video="currentVideo"
       width="120"
       height="90"
       mute="true"
@@ -18,13 +17,14 @@
 <div class="col-md-10">
   <p>
     <a href="javascript:void(0)"
-      ng-click="startPreview(video)"
-      ng-show="!currentVideo"
+      ng-click="startPreview()"
+      ng-show="!showVideo"
       class="btn btn-success"
     >Preview</a>
     <a href="javascript:void(0)"
-      ng-click="stopPreview(video)"
-      ng-show="currentVideo"
+      ng-click="stopPreview()"
+      ng-show="showVideo"
+	  ng-disabled="!playerReady"
       class="btn btn-danger"
     >Stop Preview</a>
     <a
@@ -39,7 +39,7 @@
       href="javascript:void(0)"
       class="btn btn-danger glyphicon glyphicon-volume-off"
       aria-hidden="true"
-      ng-show="currentVideo && !muted"
+      ng-show="showVideo && !muted"
       ng-disabled="!playerReady"
       ng-click="mute()"
     ></a>
