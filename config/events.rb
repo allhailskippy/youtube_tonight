@@ -12,5 +12,8 @@ WebsocketRails::EventMap.describe do
     subscribe :play, 'video_player#play'
     subscribe :pause, 'video_player#pause'
     subscribe :stop, 'video_player#stop'
+    subscribe :mute, 'video_player#mute'
+    subscribe :unmute, 'video_player#unmute'
+    subscribe :set_volume, 'video_player#set_volume'
   end
 end

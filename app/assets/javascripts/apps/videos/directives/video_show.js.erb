@@ -20,6 +20,9 @@ var controller = function(
    * Setup
    */
   $scope.currentVideo = null;
+  $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
+  $scope.channel = $scope.dispatcher.subscribe('video_player');
+  $scope.muted = true;
 
   /**
    * Scope Methods
@@ -30,6 +33,31 @@ var controller = function(
 
   $scope.stopPreview = function(video) {
     $scope.currentVideo = null;
+    $scope.muted = true;
+  };
+
+  // Mute Preview
+  $scope.mute = function() {
+    $scope.dispatcher.trigger('video_player.mute', {
+      video_id: $scope.currentVideo.id,
+      player_id: 'preview-' + $scope.currentVideo.id
+    }, function() {
+      //Success
+      $scope.muted = true;
+      $scope.$applyAsync();
+    });
+  };
+
+  // Unmute Preview
+  $scope.unMute = function() {
+    $scope.dispatcher.trigger('video_player.unmute', {
+      video_id: $scope.currentVideo.id,
+      player_id: 'preview-' + $scope.currentVideo.id
+    }, function() {
+      //Success
+      $scope.muted = false;
+      $scope.$applyAsync();
+    });
   };
 };
 

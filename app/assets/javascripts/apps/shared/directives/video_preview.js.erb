@@ -65,6 +65,23 @@ var controller = function(
     }
   });
 
+  $scope.channel.bind('mute', function(message) {
+    if(message.player_id == $scope.playerId) {
+      $scope.player.mute();
+    }
+  });
+
+  $scope.channel.bind('unmute', function(message) {
+    if(message.player_id == $scope.playerId) {
+      $scope.player.unMute();
+    }
+  });
+
+  $scope.channel.bind('set_volume', function(message) {
+    if(message.player_id == $scope.playerId) {
+      $scope.player.setVolume(message.volume);
+    }
+  });
 };
 
 controller.$inject = [
@@ -72,30 +89,21 @@ controller.$inject = [
   'Video', 'VideoPreviewService'
 ];
 
-var VideoPreview = function($window) {
+var VideoPreview = function(
+  $window,
+  VideoPreviewService) {
   return {
     restrict: 'E',
     scope: {
       playerId: '@',
       video: '=',
       width: '=',
-      height: '='
+      height: '=',
+      mute: '@'
     },
     controller: controller,
     template: '',
     link: function($scope, $element, $attrs, $controller) {
-      /**
-       * Local Functions
-       */
-      // Can take a tiny bit before the api is ready
-      function waitForReady(preview) {
-        if(!VideoPreviewService.ready) {
-          setTimeout(waitForReady, 200, preview);
-        } else {
-          $scope.newPlayer(preview);
-        }
-      }
-
       /**
        * Setup
        */
@@ -134,6 +142,11 @@ var VideoPreview = function($window) {
                 player_id: $scope.playerId
               });
               $scope.ready = true;
+            },
+            'onStateChange': function(e) {
+              if($scope.mute) {
+                e.target.mute();
+              };
             }
           }
         };
@@ -158,23 +171,38 @@ var VideoPreview = function($window) {
           // Add new div for player
           $element.append(preview);
 
-          waitForReady(preview);
+          VideoPreviewService.waitForReady(function() {
+            $scope.newPlayer(preview);
+          });
         }
       });
     }
   };
 };
+VideoPreview.$inject = [
+  '$window',
+  'VideoPreviewService'
+]
 
 // Service for storing shared states
-var VideoPreviewService  = function() {
+var VideoPreviewService = function() {
   var self = this;
 
   // Determines if the YT Iframe Api has been loaded
   self.ready = false;
+
+  // Can take a tiny bit before the api is ready
+  self.waitForReady = function(callback) {
+    if(!self.ready) {
+      setTimeout(self.waitForReady, 200, callback);
+    } else {
+      callback();
+    }
+  };
 };
 VideoPreviewService.$inject = [];
 
 angular.module('shared')
-       .directive('videoPreview', VideoPreview)
-       .service('VideoPreviewService', VideoPreviewService);
+       .service('VideoPreviewService', VideoPreviewService)
+       .directive('videoPreview', VideoPreview);
 }());
