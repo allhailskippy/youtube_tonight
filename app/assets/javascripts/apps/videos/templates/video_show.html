@@ -1,59 +1,55 @@
-<div class="row">
-  <div class="col-md-3 text-center">
-    <img
-      holder="holder.js/120x90?text=Youtube Video Thumbnail"
-      alt="Youtube Video Thumbnail"
-      ng-src="{{video.api_thumbnail_default_url}}"
-      ng-show="video.api_thumbnail_default_url && !currentVideo"
-    />
-    <div class="preview_container">
-      <video-preview
-        player-id="preview-{{video.id}}"
-        video="currentVideo"
-        width="120"
-        height="90"
-        mute="true"
-      ></video-preview><br />
-      <a href="javascript:void(0)"
-        ng-click="startPreview(video)"
-        ng-show="!currentVideo"
-        class="btn btn-success"
-      >Preview</a>
-      <a href="javascript:void(0)"
-        ng-click="stopPreview(video)"
-        ng-show="currentVideo"
-        class="btn btn-danger"
-      >Stop Preview</a>
-      <a
-        class="btn btn-default glyphicon glyphicon-volume-up disabled"
-        aria-hidden="true"
-        ng-show="!currentVideo"
-      ></a>
-      <a
-        class="btn btn-success glyphicon glyphicon-volume-up"
-        aria-hidden="true"
-        ng-show="currentVideo && muted"
-        ng-click="unMute()"
-      ></a>
-      <a
-        href="javascript:void(0)"
-        class="btn btn-danger glyphicon glyphicon-volume-off"
-        aria-hidden="true"
-        ng-show="currentVideo && !muted"
-        ng-click="mute()"
-      ></a>
-    </div>
+<div class="col-md-2 text-center">
+  <img
+    holder="holder.js/120x90?text=Youtube Video Thumbnail"
+    alt="YouTube Video Thumbnail"
+    ng-src="{{video.api_thumbnail_default_url}}"
+    ng-show="video.api_thumbnail_default_url && !currentVideo"
+  />
+  <div class="preview_container">
+    <video-preview
+      player-id="preview-{{video.id}}"
+      video="currentVideo"
+      width="120"
+      height="90"
+      mute="true"
+    ></video-preview>
   </div>
-  <div class="col-md-9">
-    <p ng-show="video.api_title">
-      <label>Youtube Title:</label> {{ video.api_title }}
-    </p>
-    <p ng-show="video.api_channel_title">
-      <label>Channel:</label> {{ video.api_channel_title }}
-    </p>
-    <p ng-show="video.start_time || video.end_time">
-      <span ng-show="video.start_time"><label>Start At:</label> {{ video.start_time }}</span>
-      <span ng-show="video.end_time"><label>End At:</label> {{ video.end_time }}</span>
-    </p>
-  </div>
+</div>
+<div class="col-md-10">
+  <p>
+    <a href="javascript:void(0)"
+      ng-click="startPreview(video)"
+      ng-show="!currentVideo"
+      class="btn btn-success"
+    >Preview</a>
+    <a href="javascript:void(0)"
+      ng-click="stopPreview(video)"
+      ng-show="currentVideo"
+      class="btn btn-danger"
+    >Stop Preview</a>
+    <a
+      class="btn btn-default glyphicon glyphicon-volume-up disabled"
+      aria-hidden="true"
+      ng-show="!currentVideo"
+    ></a>
+    <a
+      class="btn btn-success glyphicon glyphicon-volume-up"
+      aria-hidden="true"
+      ng-show="currentVideo && muted"
+      ng-click="unMute()"
+    ></a>
+    <a
+      href="javascript:void(0)"
+      class="btn btn-danger glyphicon glyphicon-volume-off"
+      aria-hidden="true"
+      ng-show="currentVideo && !muted"
+      ng-click="mute()"
+    ></a>
+  </p>
+  <p>
+    <label>Youtube Title:</label> {{ video.api_title }}<br />
+    <label>Channel:</label> {{ video.api_channel_title }}<br />
+    <span ng-show="video.start_time"><label>Start At:</label> {{ video.start_time }}</span>
+    <span ng-show="video.end_time"><label>End At:</label> {{ video.end_time }}</span>
+  </p>
 </div>
