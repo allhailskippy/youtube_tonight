@@ -3,6 +3,8 @@ authorization do
     has_permission_on :callbacks, :to => :facebook
     has_permission_on :callbacks, :to => :failure
 
+    has_permission_on :home, :to => :read
+
     # Devise requires update privs to users, users still need to be logged in to access
     # controller actions so this should be safe
     has_permission_on :users, :to => :update
@@ -11,7 +13,17 @@ authorization do
 
   # permissions on other roles, such as
   role :admin do
-    includes :guest
+    has_permission_on :callbacks, :to => :facebook
+    has_permission_on :callbacks, :to => :failure
+
+    has_permission_on :home, :to => :read
+
+    # Devise requires update privs to users, users still need to be logged in to access
+    # controller actions so this should be safe
+    has_permission_on :users, :to => :update
+    has_permission_on :devise_sessions, :to => :manage
+
+    #includes :guest
     has_permission_on :videos, :to => :manage
     has_permission_on :shows, :to => :manage
     has_permission_on :youtube_parser, :to => :read
