@@ -44,7 +44,7 @@ var IndexCtrl = function(
     $scope.dispatcher.trigger('video_player.load', {
       video_id: video.id,
       player_id: 'broadcast',
-      sender_id: 'video-' + video_id
+      sender_id: 'video-' + video.id
     });
   };
 
