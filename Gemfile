@@ -5,8 +5,10 @@ gem 'bundler', '>= 1.8.4'
 gem 'capistrano'
 gem 'capistrano-rails'
 gem 'capistrano-rvm'
-#gem 'capistrano-passenger'
 gem 'capistrano-bundler'
+group :production do
+  gem 'fcgi'
+end
 
 gem 'mysql2'
 gem 'date_validator'
