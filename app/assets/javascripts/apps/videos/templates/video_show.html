@@ -3,16 +3,8 @@
     holder="holder.js/120x90?text=Youtube Video Thumbnail"
     alt="YouTube Video Thumbnail"
     ng-src="{{video.api_thumbnail_default_url}}"
-    ng-show="video.api_thumbnail_default_url && !showVideo"
+    ng-show="video.api_thumbnail_default_url"
   />
-  <div class="preview_container">
-    <video-preview
-      player-id="preview-{{video.id}}"
-      width="120"
-      height="90"
-      mute="true"
-    ></video-preview>
-  </div>
 </div>
 <div class="col-md-10">
   <p>
@@ -24,7 +16,7 @@
     <a href="javascript:void(0)"
       ng-click="stopPreview()"
       ng-show="showVideo"
-	  ng-disabled="!playerReady"
+      ng-disabled="!playerReady"
       class="btn btn-danger"
     >Stop Preview</a>
     <a

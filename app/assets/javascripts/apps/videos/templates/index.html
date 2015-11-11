@@ -1,53 +1,72 @@
-<div class="page-header">
-  <h1>
-    Video Queue
-  <div class="pull-right">
-    {{ show.title }} [{{ show.air_date }}]
-  </div>
-  </h1>
-</div>
-<video-form
-  query-new-videos='queryNewVideos()'
-></video-form>
-<div>
-  <div class="list-group" ui-sortable="sortableOptions" ng-model="videos">
-    <div ng-repeat="video in videos" class="panel panel-primary">
-      <div class="panel-heading">
-        <h3 class="panel-title">{{ video.title }}
-          <span class="pull-right">
-            <span
-              class="glyphicon glyphicon-remove"
-              aria-hidden="true"
-              ng-click="destroy(video)"
-            ></span>
-          </span>
-        </h3>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3 sidebar">
+      <h3>{{ show.title }}</h3>
+      <img
+        data-src="holder.js/302x170?text=Preview&bg=666&fg=ccc"
+        class="img-thumbnail"
+        alt="Preview"
+        ng-show="!showPreview"
+      >
+      <div class="preview_container">
+        <video-preview
+          player-id="preview"
+          width="302"
+          height="170"
+          mute="true"
+          ng-show="showPreview"
+        ></video-preview>
       </div>
-      <div class="panel-body">
-        <div class="col-md-10">
-          <video-show video="video"></video-show>
-        </div>
-        <div class="col-md-2 text-center player_controls">
-          <h1>
-            <a
-              href="javascript:void(0)"
-              class="glyphicon glyphicon-play"
-              ng-click="playVideo(video)"
-              ng-show="!isCurrentlyPlaying(video)"
-            ></a>
-            <a
-              href="javascript:void(0)"
-              class="glyphicon glyphicon-pause"
-              ng-click="pauseVideo(video)"
-              ng-show="isCurrentlyPlaying(video)"
-            ></a>
-            <a
-              href="javascript:void(0)"
-              class="glyphicon glyphicon-stop"
-              ng-click="stopVideo(video)"
-              ng-show="isCurrentlyPlaying(video)"
-            ></a>
-          </h1>
+    </div>
+    <div class="col-md-9 col-md-offset-3 main" ng-show="false">
+      <video-form
+        ng-show="false"
+        query-new-videos='queryNewVideos()'
+      ></video-form>
+    </div>
+    <div class="col-md-9 col-md-offset-3 main">
+      <div>
+        <div class="list-group" ui-sortable="sortableOptions" ng-model="videos">
+          <div ng-repeat="video in videos" class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">{{ video.title }}
+                <span class="pull-right">
+                  <span
+                    class="glyphicon glyphicon-remove"
+                    aria-hidden="true"
+                    ng-click="destroy(video)"
+                  ></span>
+                </span>
+              </h3>
+            </div>
+            <div class="panel-body">
+              <div class="col-md-10">
+                <video-show video="video"></video-show>
+              </div>
+              <div class="col-md-2 text-center player_controls">
+                <h1>
+                  <a
+                    href="javascript:void(0)"
+                    class="glyphicon glyphicon-play"
+                    ng-click="playVideo(video)"
+                    ng-show="!isCurrentlyPlaying(video)"
+                  ></a>
+                  <a
+                    href="javascript:void(0)"
+                    class="glyphicon glyphicon-pause"
+                    ng-click="pauseVideo(video)"
+                    ng-show="isCurrentlyPlaying(video)"
+                  ></a>
+                  <a
+                    href="javascript:void(0)"
+                    class="glyphicon glyphicon-stop"
+                    ng-click="stopVideo(video)"
+                    ng-show="isCurrentlyPlaying(video)"
+                  ></a>
+                </h1>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

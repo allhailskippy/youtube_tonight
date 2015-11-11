@@ -21,6 +21,7 @@ var controller = function(
    */
   $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
   $scope.channel = $scope.dispatcher.subscribe('video_player');
+  $scope.senderId = null;
   $scope.video = null;
   $scope.ready = false;
 
@@ -34,6 +35,7 @@ var controller = function(
       $scope.video = null;
       Video.find(message.video_id).then(function(response) {
         $scope.video = Video.build(response.data);
+        $scope.senderId = message.sender_id;
       });
     };
   })
@@ -42,7 +44,8 @@ var controller = function(
     if(message.player_id == $scope.playerId) {
       $scope.dispatcher.trigger('video_player.play', {
         video_id: $scope.video.id,
-        player_id: $scope.playerId
+        player_id: $scope.playerId,
+        sender_id: $scope.senderId
       });
     }
   });
@@ -139,7 +142,8 @@ var VideoPreview = function(
             'onReady': function() {
               $scope.dispatcher.trigger('video_player.ready', {
                 video_id: $scope.video.id,
-                player_id: $scope.playerId
+                player_id: $scope.playerId,
+                sender_id: $scope.senderId
               });
               $scope.ready = true;
             },
@@ -151,7 +155,8 @@ var VideoPreview = function(
               $scope.dispatcher.trigger('video_player.state_change', {
                 state: e.data,
                 video_id: $scope.video.id,
-                player_id: $scope.playerId
+                player_id: $scope.playerId,
+                sender_id: $scope.senderId
               });
 
               // If the playback has started, and is now stopped

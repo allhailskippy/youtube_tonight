@@ -10,6 +10,7 @@
     <title>Youtube Tonight</title>
     <%= stylesheet_link_tag "application", :media => "all" %>
     <%= stylesheet_link_tag "tablesort", :media => "all" %>
+    <%= stylesheet_link_tag "dashboard", :media => "all" %>
 
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
@@ -44,14 +45,6 @@
         </div>
       </nav>
     <% end %>
-    <div class="container" role="main">
-      <% if notice %>
-        <p class="notice"><%= notice %></p>
-      <% end %>
-      <% if alert %>
-        <p class="alert"><%= alert %></p>
-      <% end %>
-      <%= yield %>
-    </div>
+    <%= yield %>
   </body>
 </html>
