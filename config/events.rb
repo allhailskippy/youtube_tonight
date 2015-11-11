@@ -9,6 +9,7 @@ WebsocketRails::EventMap.describe do
   namespace :video_player do 
     subscribe :load, 'video_player#load'
     subscribe :ready, 'video_player#ready'
+    subscribe :not_ready, 'video_player#not_ready'
     subscribe :play, 'video_player#play'
     subscribe :pause, 'video_player#pause'
     subscribe :stop, 'video_player#stop'

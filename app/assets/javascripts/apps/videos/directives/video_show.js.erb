@@ -30,13 +30,11 @@ var controller = function(
    * Scope Methods
    */
   $scope.startPreview = function() {
-    $scope.playerReady = false;
     $scope.dispatcher.trigger('video_player.load', {
       video_id: $scope.video.id,
       player_id: $scope.playerId,
       sender_id: $scope.senderId
     });
-    $scope.showVideo = true;
   };
 
   $scope.stopPreview = function() {
@@ -77,7 +75,17 @@ var controller = function(
   /**
    * Event Handlers
    */
+  $scope.channel.bind('not_ready', function(message) {
+    if(message.sender_id == $scope.senderId) {
+      $scope.showVideo = false;
+      $scope.playerReady = false;
+      $scope.muted = true;
+    }
+  });
+
   $scope.channel.bind('state_change', function(message) {
+    $scope.showVideo = (message.sender_id == $scope.senderId);
+
     if(message.sender_id == $scope.senderId) {
       // Show the video player
       if(message.state == YT.PlayerState.PLAYING) {

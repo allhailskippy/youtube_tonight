@@ -28,18 +28,6 @@ var controller = function(
   /**
    * Event Handlers
    */
-  // Wait for notice to load video
-  $scope.channel.bind('load', function(message) {
-    if(message.player_id == $scope.playerId) {
-      // Clear current video before loading next video
-      $scope.video = null;
-      Video.find(message.video_id).then(function(response) {
-        $scope.video = Video.build(response.data);
-        $scope.senderId = message.sender_id;
-      });
-    };
-  })
-
   $scope.channel.bind('ready', function(message) {
     if(message.player_id == $scope.playerId) {
       $scope.dispatcher.trigger('video_player.play', {
@@ -94,7 +82,7 @@ controller.$inject = [
 
 var VideoPreview = function(
   $window,
-  VideoPreviewService) {
+  Video, VideoPreviewService) {
   return {
     restrict: 'E',
     scope: {
@@ -162,8 +150,6 @@ var VideoPreview = function(
               // If the playback has started, and is now stopped
               // remove the player
               if ($scope.playbackStarted && e.data <= YT.PlayerState.ENDED) {
-                //Get rid of the player
-                e.target.destroy();
                 $scope.playbackStarted = false;
               }
               if(e.data > 0) {
@@ -178,32 +164,46 @@ var VideoPreview = function(
       /**
        * Watched variables
        */
-      // When the video changes, remove old players, and build
-      // a new player object to work with
-      $scope.$watch('video', function(newVideo) {
-        if(newVideo) {
-          // Clear out any existing players
-          $element.children().remove();
+      // Wait for notice to load video
+      $scope.channel.bind('load', function(message) {
+        if(message.player_id == $scope.playerId) {
+          // If we get a new sender, tell the old sender
+          // we're no longer ready
+          if($scope.senderId != message.sender_id) {
+            $scope.dispatcher.trigger('video_player.not_ready', {
+              player_id: $scope.playerId,
+              sender_id: $scope.senderId
+            });
+          }
 
-          // Create the div to hold the video and give it a unique id
-          var preview = document.createElement('div');
-          var random_seed = 1 + Math.floor(Math.random() * 100000);
-          preview.id = newVideo.id + '-' + random_seed;
+          Video.find(message.video_id).then(function(response) {
+            $scope.video = Video.build(response.data);
+            $scope.senderId = message.sender_id;
 
-          // Add new div for player
-          $element.append(preview);
+            // Clear out any existing players
+            $element.children().remove();
 
-          VideoPreviewService.waitForReady(function() {
-            $scope.newPlayer(preview);
+            // Create the div to hold the video and give it a unique id
+            var preview = document.createElement('div');
+            var random_seed = 1 + Math.floor(Math.random() * 100000);
+            preview.id = $scope.video.id + '-' + random_seed;
+
+            // Add new div for player
+            $element.append(preview);
+
+            VideoPreviewService.waitForReady(function() {
+              $scope.newPlayer(preview);
+            });
           });
-        }
-      });
+        };
+      })
+
     }
   };
 };
 VideoPreview.$inject = [
   '$window',
-  'VideoPreviewService'
+  'Video', 'VideoPreviewService'
 ]
 
 // Service for storing shared states
