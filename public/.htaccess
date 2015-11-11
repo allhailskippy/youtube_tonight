@@ -1,0 +1,5 @@
+AddHandler fastcgi-script fcgi
+RewriteEngine On
+RewriteBase /
+RewriteCond %{request_uri} !^/favicon.ico
+RewriteRule ^(.*)$ dispatch.fcgi [QSA,L]
