@@ -36,9 +36,11 @@ class Video < ActiveRecord::Base
   def validate_start_end_time
     if start_time && end_time && start_time >= end_time
       errors.add(:base, "Start At cannot be greater than End At")
-      return false
     end
-    return true
+
+    if end_time.to_i > api_duration_seconds.to_i
+      errors.add(:base, "End At cannot be longer than the video duration: " + api_duration_seconds.to_s)
+    end
   end
 
   def stop_all_playing
