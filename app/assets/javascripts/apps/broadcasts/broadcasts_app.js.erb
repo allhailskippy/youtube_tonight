@@ -2,9 +2,9 @@
 //= require_tree ./controllers
 /**
  * @ngdoc overview
- * @name Player App
+ * @name Broadcasts App
  *
- * @description The PlayerApp is used for playing videos.
+ * @description The BroadcastsApp is used for playing videos.
  * This file is where the routes are defined for this app
  */
 (function(){
@@ -12,9 +12,9 @@
 
 var routesConfig = function($routeProvider) {
   $routeProvider.
-  when('/index', {
+  when('/shows/:show_id', {
     controller: 'IndexCtrl',
-    templateUrl: '<%= asset_path("apps/player/templates/index.html") %>'
+    templateUrl: '<%= asset_path("apps/broadcasts/templates/index.html") %>'
   }).
   otherwise({
     redirectTo: '/index'
@@ -22,6 +22,6 @@ var routesConfig = function($routeProvider) {
 };
 routesConfig.$inject = ['$routeProvider'];
 
-angular.module('PlayerApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf'])
+angular.module('BroadcastsApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf'])
        .config(routesConfig);
 })();

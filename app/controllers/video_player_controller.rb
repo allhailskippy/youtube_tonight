@@ -3,7 +3,8 @@ class VideoPlayerController < WebsocketRails::BaseController
     WebsocketRails[:video_player].trigger(:load, {
       :video => message["video"],
       :player_id => message["player_id"],
-      :sender_id => message["sender_id"]
+      :sender_id => message["sender_id"],
+      :show_id => message["show_id"]
     })
   end
 
@@ -11,7 +12,8 @@ class VideoPlayerController < WebsocketRails::BaseController
     WebsocketRails[:video_player].trigger(:ready, {
       :video => message["video"],
       :player_id => message["player_id"],
-      :sender_id => message["sender_id"]
+      :sender_id => message["sender_id"],
+      :show_id => message["show_id"]
     })
   end
 
@@ -19,7 +21,8 @@ class VideoPlayerController < WebsocketRails::BaseController
     WebsocketRails[:video_player].trigger(:not_ready, {
       :video => message["video"],
       :player_id => message["player_id"],
-      :sender_id => message["sender_id"]
+      :sender_id => message["sender_id"],
+      :show_id => message["show_id"]
     })
   end
 
@@ -27,7 +30,8 @@ class VideoPlayerController < WebsocketRails::BaseController
     WebsocketRails[:video_player].trigger(:play, {
       :video => message["video"],
       :player_id => message["player_id"],
-      :sender_id => message["sender_id"]
+      :sender_id => message["sender_id"],
+      :show_id => message["show_id"]
     })
   end
 
@@ -35,7 +39,8 @@ class VideoPlayerController < WebsocketRails::BaseController
     WebsocketRails[:video_player].trigger(:pause, {
       :video => message["video"],
       :player_id => message["player_id"],
-      :sender_id => message["sender_id"]
+      :sender_id => message["sender_id"],
+      :show_id => message["show_id"]
     })
   end
 
@@ -43,7 +48,8 @@ class VideoPlayerController < WebsocketRails::BaseController
     WebsocketRails[:video_player].trigger(:stop, {
       :video => message["video"],
       :player_id => message["player_id"],
-      :sender_id => message["sender_id"]
+      :sender_id => message["sender_id"],
+      :show_id => message["show_id"]
     })
   end
 
@@ -51,7 +57,8 @@ class VideoPlayerController < WebsocketRails::BaseController
     resp = {
       :video => message["video"],
       :player_id => message["player_id"],
-      :sender_id => message["sender_id"]
+      :sender_id => message["sender_id"],
+      :show_id => message["show_id"]
     }
     trigger_success resp
     WebsocketRails[:video_player].trigger(:mute, resp)
@@ -61,7 +68,8 @@ class VideoPlayerController < WebsocketRails::BaseController
     resp = {
       :video => message["video"],
       :player_id => message["player_id"],
-      :sender_id => message["sender_id"]
+      :sender_id => message["sender_id"],
+      :show_id => message["show_id"]
     }
     trigger_success resp
     WebsocketRails[:video_player].trigger(:unmute, resp)
@@ -72,7 +80,8 @@ class VideoPlayerController < WebsocketRails::BaseController
       :volume => message["volume"],
       :video => message["video"],
       :player_id => message["player_id"],
-      :sender_id => message["sender_id"]
+      :sender_id => message["sender_id"],
+      :show_id => message["show_id"]
     })
   end
 
@@ -81,7 +90,8 @@ class VideoPlayerController < WebsocketRails::BaseController
       :video => message["video"],
       :player_id => message["player_id"],
       :state => message["state"],
-      :sender_id => message["sender_id"]
+      :sender_id => message["sender_id"],
+      :show_id => message["show_id"]
     })
   end
 end

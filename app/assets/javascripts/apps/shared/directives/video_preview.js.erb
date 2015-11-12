@@ -29,41 +29,48 @@ var controller = function(
    * Event Handlers
    */
   $scope.channel.bind('ready', function(message) {
-    if(message.player_id == $scope.playerId) {
+    if(message.show_id == $scope.showId
+      && message.player_id == $scope.playerId) {
       $scope.dispatcher.trigger('video_player.play', {
         video: $scope.video,
         player_id: $scope.playerId,
-        sender_id: $scope.senderId
+        sender_id: $scope.senderId,
+        show_id: $scope.showId
       });
     }
   });
 
   $scope.channel.bind('play', function(message) {
-    if(message.player_id == $scope.playerId) {
+    if(message.show_id == $scope.showId
+      && message.player_id == $scope.playerId) {
       $scope.player.playVideo();
     }
   });
 
   $scope.channel.bind('pause', function(message) {
-    if(message.player_id == $scope.playerId) {
+    if(message.show_id == $scope.showId
+      && message.player_id == $scope.playerId) {
       $scope.player.pauseVideo();
     }
   });
 
   $scope.channel.bind('mute', function(message) {
-    if(message.player_id == $scope.playerId) {
+    if(message.show_id == $scope.showId
+      &&message.player_id == $scope.playerId) {
       $scope.player.mute();
     }
   });
 
   $scope.channel.bind('unmute', function(message) {
-    if(message.player_id == $scope.playerId) {
+    if(message.show_id == $scope.showId
+      && message.player_id == $scope.playerId) {
       $scope.player.unMute();
     }
   });
 
   $scope.channel.bind('set_volume', function(message) {
-    if(message.player_id == $scope.playerId) {
+    if(message.show_id == $scope.showId
+      && message.player_id == $scope.playerId) {
       $scope.player.setVolume(message.volume);
     }
   });
@@ -81,6 +88,7 @@ var VideoPreview = function(
     restrict: 'E',
     scope: {
       playerId: '@',
+      showId: '=',
       video: '=',
       width: '=',
       height: '=',
@@ -125,7 +133,8 @@ var VideoPreview = function(
               $scope.dispatcher.trigger('video_player.ready', {
                 video: $scope.video,
                 player_id: $scope.playerId,
-                sender_id: $scope.senderId
+                sender_id: $scope.senderId,
+                show_id: $scope.showId
               });
               $scope.ready = true;
             },
@@ -138,7 +147,8 @@ var VideoPreview = function(
                 state: e.data,
                 video: $scope.video,
                 player_id: $scope.playerId,
-                sender_id: $scope.senderId
+                sender_id: $scope.senderId,
+                show_id: $scope.showId
               });
 
               // If the playback has started, and is now stopped
@@ -166,7 +176,8 @@ var VideoPreview = function(
           if($scope.senderId != message.sender_id) {
             $scope.dispatcher.trigger('video_player.not_ready', {
               player_id: $scope.playerId,
-              sender_id: $scope.senderId
+              sender_id: $scope.senderId,
+              show_id: $scope.showId
             });
           }
 

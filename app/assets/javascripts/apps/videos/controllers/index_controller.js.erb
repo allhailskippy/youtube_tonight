@@ -120,7 +120,8 @@ var IndexCtrl = function(
     $scope.dispatcher.trigger('video_player.load', {
       video: video,
       player_id: 'broadcast',
-      sender_id: 'video-' + video.id
+      sender_id: 'video-' + video.id,
+      show_id: $scope.showId
     });
   };
 
@@ -128,7 +129,8 @@ var IndexCtrl = function(
     $scope.dispatcher.trigger('video_player.pause', {
       video: video,
       player_id: 'broadcast',
-      sender_id: 'video-' + video.id
+      sender_id: 'video-' + video.id,
+      show_id: $scope.showId
     });
   };
 
@@ -136,32 +138,37 @@ var IndexCtrl = function(
     $scope.dispatcher.trigger('video_player.stop', {
       video: video,
       player_id: 'broadcast',
-      sender_id: 'video-' + video.id
+      sender_id: 'video-' + video.id,
+      show_id: $scope.showId
     });
   };
 
   $scope.channel.bind('play', function(message) {
-    if(message.player_id == 'broadcast') {
+    if(message.show_id == $scope.showId
+      && message.player_id == 'broadcast') {
       $scope.currentlyPlaying = message.video;
       $scope.$applyAsync();
     }
   });
 
   $scope.channel.bind('ready', function(message) {
-    if(message.player_id == 'preview') {
+    if(message.show_id == $scope.showId
+      && message.player_id == 'preview') {
       $scope.showPreview = true;
     };
   });
 
   $scope.channel.bind('stop', function(message) {
-    if(message.player_id == 'preview'
+    if(message.show_id == $scope.showId
+      && message.player_id == 'preview'
       || (message.video.id == $scope.currentlyPlaying.id && message.force)) {
       $scope.showPreview = false;
     };
   });
 
   $scope.channel.bind('update_video_list', function(message) {
-    if(message.show_id == $scope.showId) {
+    if(message.show_id == $scope.showId
+      && message.show_id == $scope.showId) {
       $scope.queryVideos();
     }
   });

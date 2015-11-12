@@ -24,7 +24,7 @@ authorization do
     has_permission_on :videos, :to => :manage
     has_permission_on :shows, :to => :manage
     has_permission_on :youtube_parser, :to => :read
-    has_permission_on :player, :to => :read
+    has_permission_on :broadcasts, :to => :read
   end
 end
 

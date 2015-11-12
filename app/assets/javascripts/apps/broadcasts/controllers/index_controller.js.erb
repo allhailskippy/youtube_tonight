@@ -1,0 +1,34 @@
+/**
+ * @ngdoc controller
+ * @name IndexCtrl
+ *
+ * @description Controller for the video player
+ */
+(function() {
+  "use strict";
+
+var IndexCtrl = function(
+  $scope, $routeParams,
+  Show
+  ) {
+  /**
+   * Setup
+   */
+  $scope.show = Show.build({});
+  $scope.showId = $routeParams.show_id;
+
+  if($scope.showId) {
+    Show.find($scope.showId).then(function(response) {
+      $scope.show = Show.build(response.data);
+    });
+  }
+};
+
+IndexCtrl.$inject = [
+  '$scope', '$routeParams',
+  'Show'
+];
+
+angular.module("BroadcastsApp")
+       .controller('IndexCtrl', IndexCtrl);
+}());

@@ -14,17 +14,9 @@
 
 var routesConfig = function($locationProvider, $routeProvider) {
   $routeProvider.
-  when('/index', {
-    controller: 'IndexCtrl',
-    templateUrl: '<%= asset_path("apps/videos/templates/index.html") %>'
-  }).
   when('/shows/:show_id', {
     controller: 'IndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/index.html") %>'
-  }).
-  when('/player', {
-    controller: 'PlayerCtrl',
-    templateUrl: '<%= asset_path("apps/videos/templates/player.html") %>'
   }).
   otherwise({
     redirectTo: '/index'
