@@ -14,13 +14,13 @@
 
 var controller = function(
   $scope,
-  Video, ApplicationConstants
+  VideoApp, Video
 ) {
   /**
    * Setup
    */
-  $scope.dispatcher = new WebSocketRails(ApplicationConstants.WEBSOCKET_URL);
-  $scope.channel = $scope.dispatcher.subscribe('video_player');
+  $scope.dispatcher = VideoApp.getDispatcher();
+  $scope.channel = VideoApp.getChannel('video_player');
   $scope.muted = true;
   $scope.playerId = 'preview';
   $scope.senderId = 'video-' + $scope.video.id + '-' + Math.floor(Math.random() * 1000000);
@@ -107,7 +107,7 @@ var controller = function(
 
 controller.$inject = [
   '$scope',
-  'Video', 'ApplicationConstants'
+  'VideoApp', 'Video'
 ];
 
 var VideoShow = function() {
