@@ -52,7 +52,7 @@ var Video = function(VideoApi) {
       var d,str = '';
       if(video.api_duration) {
         d = moment.duration(video.api_duration);
-        str = d.humanize() + ' (' + d.toString().replace(/^PT/, '') + ')';
+        str = d.humanize() + ' (' + d.toString().replace(/^PT/, '').toLowerCase() + ')';
       }
       return str;
     };
