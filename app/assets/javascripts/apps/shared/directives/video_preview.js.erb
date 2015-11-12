@@ -50,16 +50,6 @@ var controller = function(
     }
   });
 
-  $scope.channel.bind('stop', function(message) {
-    if(message.player_id == $scope.playerId
-      || ($scope.video
-        && message.video.id == $scope.video.id
-        && message.force
-      )) {
-      $scope.player.stopVideo();
-    }
-  });
-
   $scope.channel.bind('mute', function(message) {
     if(message.player_id == $scope.playerId) {
       $scope.player.mute();
@@ -204,6 +194,15 @@ var VideoPreview = function(
       // If we got a request for forcefully stop a video
       // clean out its player
       $scope.channel.bind('stop', function(message) {
+        if(message.player_id == $scope.playerId
+          || ($scope.video
+            && message.video.id == $scope.video.id
+            && message.force
+          )) {
+          if($scope.player) {
+            $scope.player.stopVideo();
+          }
+        }
         if($scope.video
             && message.video.id == $scope.video.id
             && message.force

@@ -14,12 +14,14 @@
 
 var controller = function(
   $scope, $routeParams, $timeout,
-  Video, Notice, YoutubeParser
+  VideoApp, Video, Notice, YoutubeParser
 ) {
   /**
    * Setup
    */
   $scope.show_id = $routeParams.show_id;
+  $scope.dispatcher = VideoApp.getDispatcher();
+  $scope.channel = VideoApp.getChannel('video_player');
   $scope.currentVideo = Video.build({show_id: $scope.show_id});
   var searchTimeout;
 
@@ -64,14 +66,20 @@ var controller = function(
   };
 
   $scope.cancel = function() {
+    $scope.dispatcher.trigger('video_player.stop', {
+      video: $scope.currentVideo,
+      player_id: 'preview',
+      force: true
+    });
     Notice.reset();
     $scope.closeForm();
+    $scope.currentVideo = Video.build({});
   };
 };
 
 controller.$inject = [
   '$scope', '$routeParams', '$timeout',
-  'Video', 'Notice', 'YoutubeParser'
+  'VideoApp', 'Video', 'Notice', 'YoutubeParser'
 ];
 
 var VideoForm = function() {

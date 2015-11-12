@@ -39,7 +39,9 @@ var IndexCtrl = function(
 
   $scope.closeForm = function() {
     $scope.currentVideo = null;
-    $scope.showForm = false;
+    if($scope.videos.length > 0) {
+      $scope.showForm = false;
+    }
   };
 
   // Deletes a video from the queue
