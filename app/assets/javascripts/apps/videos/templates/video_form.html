@@ -60,7 +60,14 @@
             type="submit"
             class="btn btn-success"
             ng-click="save()"
+            ng-show="!currentVideo.id"
           >Add To Queue</button>
+          <button
+            type="submit"
+            class="btn btn-success"
+            ng-click="update()"
+            ng-show="currentVideo.id"
+          >Update</button>
         </div>
       </div>
     </form>

@@ -25,7 +25,21 @@ var Video = function(VideoApi) {
     'api_duration_seconds'
   ];
 
+  self.formatAttributes = [
+    {'start_time': parseInt},
+    {'end_time': parseInt}
+  ];
+
   self.build = function(video) {
+    /**
+     * Format attributes
+     */
+    angular.forEach(self.formatAttributes, function(formatter) {
+      angular.forEach(formatter, function(func, attr) {
+        video[attr] = func(video[attr]);
+      });
+    });
+
     /**
      * Instance Methods
      */

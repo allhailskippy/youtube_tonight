@@ -29,8 +29,8 @@
     </div>
     <div class="col-md-9 col-md-offset-3 main" ng-show="shouldShowForm()">
       <video-form
-        query-new-videos='queryNewVideos()'
-        video="currentVideo"
+        query-videos='queryVideos()'
+        current-video="currentVideo"
         close-form="closeForm()"
       ></video-form>
     </div>
@@ -38,42 +38,35 @@
       <div>
         <div class="list-group" ui-sortable="sortableOptions" ng-model="videos">
           <div ng-repeat="video in videos" class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">{{ video.title }}
-                <span class="pull-right">
-                  <span
-                    class="glyphicon glyphicon-remove"
-                    aria-hidden="true"
-                    ng-click="destroy(video)"
-                  ></span>
-                </span>
-              </h3>
-            </div>
-            <div class="panel-body">
-              <div class="col-md-10">
+            <div class="panel-body row">
+              <div class="col-md-9">
                 <video-show video="video"></video-show>
               </div>
-              <div class="col-md-2 text-center player_controls">
-                <h1>
+              <div class="col-md-3 text-right">
                   <a
+                    title="Start Broadcast"
                     href="javascript:void(0)"
-                    class="glyphicon glyphicon-play"
+                    class="btn btn-success glyphicon"
                     ng-click="playVideo(video)"
                     ng-show="!isCurrentlyPlaying(video)"
-                  ></a>
+                  >BROADCAST</a>
                   <a
                     href="javascript:void(0)"
-                    class="glyphicon glyphicon-pause"
-                    ng-click="pauseVideo(video)"
-                    ng-show="isCurrentlyPlaying(video)"
-                  ></a>
-                  <a
-                    href="javascript:void(0)"
-                    class="glyphicon glyphicon-stop"
+                    class="btn btn-danger glyphicon"
                     ng-click="stopVideo(video)"
                     ng-show="isCurrentlyPlaying(video)"
+                  >STOP BROADCAST</a>
+                  <br />
+                  <hr />
+                  <a href="javascript:void(0)"
+                    class="btn btn-default glyphicon glyphicon-pencil"
+                    ng-click="editVideo(video)"
                   ></a>
-                </h1>
+                  <a
+                    class="btn btn-danger glyphicon glyphicon-trash"
+                    aria-hidden="true"
+                    ng-click="destroy(video)"
+                  ></a>
               </div>
             </div>
           </div>

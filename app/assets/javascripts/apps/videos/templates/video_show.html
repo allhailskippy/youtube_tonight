@@ -1,4 +1,4 @@
-<div class="col-md-2 text-center">
+<div class="col-md-3 text-center">
   <img
     holder="holder.js/120x90?text=Youtube Video Thumbnail"
     alt="YouTube Video Thumbnail"
@@ -6,7 +6,7 @@
     ng-show="video.api_thumbnail_default_url"
   />
 </div>
-<div class="col-md-10">
+<div class="col-md-9">
   <p>
     <a href="javascript:void(0)"
       ng-click="startPreview()"
@@ -38,7 +38,7 @@
     ></a>
   </p>
   <p>
-    <label>Youtube Title:</label> {{ video.api_title }}<br />
+    <label>Title:</label> {{ video.title }}<br />
     <label>Channel:</label> {{ video.api_channel_title }}<br />
     <label>Duration:</label> {{ video.durationStr() }}<br />
     <span ng-show="video.start_time"><label>Start At:</label> {{ video.start_time }}</span>

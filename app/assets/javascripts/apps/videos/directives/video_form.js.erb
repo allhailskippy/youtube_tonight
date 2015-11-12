@@ -19,10 +19,10 @@ var controller = function(
   /**
    * Setup
    */
-  $scope.show_id = $routeParams.show_id;
+  $scope.showId = $routeParams.show_id;
   $scope.dispatcher = VideoApp.getDispatcher();
   $scope.channel = VideoApp.getChannel('video_player');
-  $scope.currentVideo = Video.build({show_id: $scope.show_id});
+  $scope.currentVideo = $scope.currentVideo || Video.build({show_id: $scope.showId });
   var searchTimeout;
 
   /**
@@ -31,7 +31,7 @@ var controller = function(
   $scope.$watch('currentVideo.search', function(newVal, oldVal) {
     if(newVal == '') {
       // Clear current video if we clear the search
-      $scope.currentVideo = Video.build({show_id: $scope.show_id});
+      $scope.currentVideo = Video.build({show_id: $scope.showId });
     }
 
     if(newVal && newVal != oldVal) {
@@ -55,13 +55,25 @@ var controller = function(
    * Scope Methods
    */
   $scope.save = function() {
+    $scope.currentVideo.show_id = $scope.showId;
     $scope.currentVideo.save().then(function() {
-      $scope.currentVideo = Video.build({ show_id: $scope.show_id});
+      $scope.currentVideo = Video.build({ show_id: $scope.showId });
 
       // This is called on the parent controller.
       // Is defined in the scope section below
       $scope.closeForm();
-      $scope.queryNewVideos();
+      $scope.queryVideos();
+    }).catch(Notice.handleErrors);
+  };
+
+  $scope.update = function() {
+    $scope.currentVideo.save().then(function() {
+      $scope.currentVideo = Video.build({ show_id: $scope.showId });
+
+      // This is called on the parent controller.
+      // Is defined in the scope section below
+      $scope.closeForm();
+      $scope.queryVideos();
     }).catch(Notice.handleErrors);
   };
 
@@ -73,7 +85,7 @@ var controller = function(
     });
     Notice.reset();
     $scope.closeForm();
-    $scope.currentVideo = Video.build({ show_id: $scope.show_id });
+    $scope.currentVideo = Video.build({ show_id: $scope.showId });
   };
 };
 
@@ -86,7 +98,8 @@ var VideoForm = function() {
   return {
     restrict: 'E',
     scope: {
-      queryNewVideos: '&',
+      currentVideo: '=',
+      queryVideos: '&',
       closeForm: '&'
     },
     controller: controller,
