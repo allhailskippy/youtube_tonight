@@ -50,3 +50,11 @@ glyphicon.disabled {
   filter: grayscale( 100% );
   -webkit-filter: grayscale( 1 );
 }
+
+.panel {
+  background-color: #f5f5f5 !important;
+}
+
+.panel-primary {
+  border-color: #ccc !important;
+}
