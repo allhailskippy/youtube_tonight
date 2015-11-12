@@ -33,7 +33,8 @@ var controller = function(
     $scope.dispatcher.trigger('video_player.load', {
       video: $scope.video,
       player_id: $scope.playerId,
-      sender_id: $scope.senderId
+      sender_id: $scope.senderId,
+      show_id: $scope.video.show_id
     });
   };
 
@@ -42,7 +43,8 @@ var controller = function(
       $scope.dispatcher.trigger('video_player.stop', {
         video: $scope.video,
         player_id: $scope.playerId,
-        sender_id: $scope.senderId
+        sender_id: $scope.senderId,
+        show_id: $scope.video.show_id
       });
     }
   };
@@ -63,7 +65,8 @@ var controller = function(
       $scope.dispatcher.trigger(trigger, {
         video: $scope.video,
         player_id: $scope.playerId,
-        sender_id: $scope.senderId
+        sender_id: $scope.senderId,
+        show_id: $scope.video.show_id
       }, function() {
         //Success
         $scope.muted = mute;
