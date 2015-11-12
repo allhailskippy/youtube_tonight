@@ -24,6 +24,8 @@ class Video < ActiveRecord::Base
   before_create :set_sort_order
   before_create :stop_all_playing
   before_destroy :stop_all_playing
+  after_save :send_video_update_request
+  after_destroy :send_video_update_request
 
   ##
   # Methods
@@ -48,5 +50,9 @@ class Video < ActiveRecord::Base
       :video => self.as_json,
       :force => true
     })
+  end
+
+  def send_video_update_request
+    WebsocketRails[:video_player].trigger(:update_video_list, {:show_id => show_id})
   end
 end

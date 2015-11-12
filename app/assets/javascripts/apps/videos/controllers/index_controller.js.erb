@@ -159,6 +159,12 @@ var IndexCtrl = function(
       $scope.showPreview = false;
     };
   });
+
+  $scope.channel.bind('update_video_list', function(message) {
+    if(message.show_id == $scope.showId) {
+      $scope.queryVideos();
+    }
+  });
 };
 
 IndexCtrl.$inject = [
