@@ -84,7 +84,9 @@ class ShowsController < ApplicationController
       begin
         @show.update_attributes!(params[:show])
         format.json do
-          render json: @show.as_json
+          render json: {
+            data: @show.as_json
+          }
         end
       rescue ActiveRecord::RecordInvalid
         format.json do

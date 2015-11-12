@@ -9,7 +9,7 @@
 
 var IndexCtrl = function(
   $scope, $location, $window,
-  ShowApp, Show
+  ShowApp, Show, Notice
   ) {
 
   /**
@@ -27,6 +27,8 @@ var IndexCtrl = function(
    */
   // Grabs all of the shows
   $scope.addNew = function() {
+    Notice.reset();
+
     // Clear out any existing show first
     Show.resetCurrentShow();
 
@@ -36,6 +38,8 @@ var IndexCtrl = function(
 
   // Edit a show
   $scope.edit = function(show) {
+    Notice.reset();
+
     // Set the show to work on
     Show.setCurrentShow(show);
 
@@ -82,7 +86,7 @@ var IndexCtrl = function(
 
 IndexCtrl.$inject = [
   '$scope', '$location', '$window',
-  'ShowApp', 'Show'
+  'ShowApp', 'Show', 'Notice'
 ];
 
 angular.module("ShowApp")

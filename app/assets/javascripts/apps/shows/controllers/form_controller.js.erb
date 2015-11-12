@@ -83,8 +83,12 @@ var FormCtrl = function(
 
       var show = Show.build(response.data);
 
-      // Redirect back to index
-      $window.location.href = '/videos#/shows/' + show.id;
+      if(newRecord) {
+        // Redirect back to index
+        $window.location.href = '/videos#/shows/' + show.id;
+      } else {
+        $location.path('/index');
+      }
     }).catch(handleErrors);
   };
 };
