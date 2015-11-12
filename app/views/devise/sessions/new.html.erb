@@ -1,12 +1,12 @@
-<div class="page-header">
-  <h1>
-    Sign In
-  </h1>
-</div>
-<div>
-  <% if devise_mapping.omniauthable? %>
-    <% resource_class.omniauth_providers.each do |provider| %>
-      <%= link_to image_tag('fb_sign_in.png'), omniauth_authorize_path(resource_name, provider) %>
+<div class="row">
+  <div class="col-md-3 sidebar">
+    <h1>Sign In</h1>
+  </div>
+  <div class="col-md-9 col-md-offset-3 main">
+    <% if devise_mapping.omniauthable? %>
+      <% resource_class.omniauth_providers.each do |provider| %>
+        <%= link_to image_tag('fb_sign_in.png'), omniauth_authorize_path(resource_name, provider) %>
+      <% end %>
     <% end %>
-  <% end %>
+  </div>
 </div>

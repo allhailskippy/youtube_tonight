@@ -21,8 +21,8 @@
   </head>
   <body>
     <% unless @hide_nav %>
-      <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
+      <div class="container-fluid">
+        <nav class="navbar navbar-inverse navbar-fixed-top">
           <div class="navbar-header">
             <a class="navbar-brand" href="/shows#/index">YouTube Tonight</a>
           </div>
@@ -32,7 +32,7 @@
                 <li class="active"><a href="/shows#/index">Shows</a></li>
               </ul>
             <% end %>
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav">
               <li>
                 <% if user_signed_in? %>
                   <%= link_to('Logout', destroy_user_session_path, :method => :delete) %>
@@ -42,9 +42,9 @@
               </li>
             </ul>
           </div>
-        </div>
-      </nav>
-    <% end %>
-    <%= yield %>
+        </nav>
+      <% end %>
+      <%= yield %>
+    </div>
   </body>
 </html>
