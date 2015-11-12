@@ -48,4 +48,7 @@ Youtubetonight::Application.configure do
   # Facebook
   FACEBOOK_KEY = credentials['facebook_key']
   FACEBOOK_SECRET = credentials['facebook_secret']
+
+  # Websockets
+  WEBSOCKET_URL = credentials['websocket_url']
 end

@@ -2,6 +2,7 @@
 //= require_tree ./directives
 //= require_tree ./resources
 //= require_tree ./services
+//= require_tree ./constants
 
 /**
  * @ngdoc module

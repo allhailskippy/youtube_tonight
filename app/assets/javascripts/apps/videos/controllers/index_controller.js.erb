@@ -9,7 +9,7 @@
 
 var IndexCtrl = function(
   $scope, $location, $routeParams,
-  VideoApp, Video, Show, Notice
+  VideoApp, Video, Show, Notice, ApplicationConstants
   ) {
   /**
    * Setup
@@ -24,7 +24,7 @@ var IndexCtrl = function(
   $scope.currentVideoOrder = [];
   $scope.showPreview = false;
 
-  $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
+  $scope.dispatcher = new WebSocketRails(ApplicationConstants.WEBSOCKET_URL);
   $scope.channel = $scope.dispatcher.subscribe('video_player');
 
   /**
@@ -148,7 +148,7 @@ var IndexCtrl = function(
 
 IndexCtrl.$inject = [
   '$scope', '$location', '$routeParams',
-  'VideoApp', 'Video', 'Show', 'Notice'
+  'VideoApp', 'Video', 'Show', 'Notice', 'ApplicationConstants'
 ];
 
 angular.module("VideoApp")

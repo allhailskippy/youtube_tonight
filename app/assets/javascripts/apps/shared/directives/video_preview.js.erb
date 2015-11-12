@@ -14,12 +14,12 @@
 
 var controller = function(
   $scope,
-  Video, VideoPreviewService
+  Video, VideoPreviewService, ApplicationConstants
 ) {
   /**
    * Setup
    */
-  $scope.dispatcher = new WebSocketRails('localhost:3000/websocket');
+  $scope.dispatcher = new WebSocketRails(ApplicationConstants.WEBSOCKET_URL);
   $scope.channel = $scope.dispatcher.subscribe('video_player');
   $scope.senderId = null;
   $scope.video = null;
@@ -77,7 +77,7 @@ var controller = function(
 
 controller.$inject = [
   '$scope',
-  'Video', 'VideoPreviewService'
+  'Video', 'VideoPreviewService', 'ApplicationConstants'
 ];
 
 var VideoPreview = function(
