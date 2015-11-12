@@ -120,13 +120,19 @@ var IndexCtrl = function(
         }
 
         Video.query(params).then(function(response) {
-          angular.forEach(response.data, function(video) {
-            var newVideo = Video.build(video);
-            $scope.videos.push(newVideo);
-            $scope.currentVideoOrder.push(newVideo.id);
-          });
+          // If we don't have any videos, then
+          // show the new video form
+          if(response.data.length == 0) {
+            $scope.showForm = true;
+          } else {
+            angular.forEach(response.data, function(video) {
+              var newVideo = Video.build(video);
+              $scope.videos.push(newVideo);
+              $scope.currentVideoOrder.push(newVideo.id);
+            });
 
-          $scope.last_id = Math.max.apply(Math,$scope.videos.map(function(o){return o.id;}));
+            $scope.last_id = Math.max.apply(Math,$scope.videos.map(function(o){return o.id;}));
+          }
 
           $scope.retrieving = false;
         });

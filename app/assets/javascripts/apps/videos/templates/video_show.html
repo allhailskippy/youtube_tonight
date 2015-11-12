@@ -40,6 +40,7 @@
   <p>
     <label>Youtube Title:</label> {{ video.api_title }}<br />
     <label>Channel:</label> {{ video.api_channel_title }}<br />
+    <label>Duration:</label> {{ video.durationStr() }}<br />
     <span ng-show="video.start_time"><label>Start At:</label> {{ video.start_time }}</span>
     <span ng-show="video.end_time"><label>End At:</label> {{ video.end_time }}</span>
   </p>

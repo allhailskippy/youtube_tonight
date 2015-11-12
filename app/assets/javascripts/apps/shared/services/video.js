@@ -20,7 +20,9 @@ var Video = function(VideoApi) {
     'sort_order',
     'start_time',
     'title',
-    'api_video_id'
+    'api_video_id',
+    'api_duration',
+    'api_duration_seconds'
   ];
 
   self.build = function(video) {
@@ -30,6 +32,15 @@ var Video = function(VideoApi) {
     // Delete video
     video.destroy = function() {
       return VideoApi.delete({id: video.id}).$promise;
+    };
+
+    video.durationStr = function() {
+      var d,str = '';
+      if(video.api_duration) {
+        d = moment.duration(video.api_duration);
+        str = d.humanize() + ' (' + d.toString().replace(/^PT/, '') + ')';
+      }
+      return str;
     };
 
     // Save model to server side
@@ -70,6 +81,8 @@ var Video = function(VideoApi) {
       video.api_thumbnail_default_url = yt.thumbnail_default_url;
       video.api_thumbnail_high_url = yt.thumbnail_high_url;
       video.api_title = yt.title;
+      video.api_duration = yt.duration;
+      video.api_duration_seconds = yt.duration_seconds;
       video.link = yt.link;
     };
     return video;

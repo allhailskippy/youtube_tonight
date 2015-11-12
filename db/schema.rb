@@ -106,6 +106,8 @@ ActiveRecord::Schema.define(:version => 20151028161159) do
     t.string   "api_thumbnail_default_url"
     t.string   "api_thumbnail_high_url"
     t.string   "api_title"
+    t.string   "api_duration"
+    t.integer  "api_duration_seconds"
     t.integer  "creator_id"
     t.integer  "updater_id"
     t.datetime "created_at"
@@ -131,6 +133,8 @@ ActiveRecord::Schema.define(:version => 20151028161159) do
     t.string   "api_thumbnail_default_url"
     t.string   "api_thumbnail_high_url"
     t.string   "api_title"
+    t.string   "api_duration"
+    t.integer  "api_duration_seconds"
     t.integer  "creator_id"
     t.integer  "updater_id"
     t.datetime "created_at",                :null => false

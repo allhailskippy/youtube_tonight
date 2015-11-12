@@ -12,7 +12,7 @@ class YoutubeApi
         :parameters => {
           :part => 'snippet',
           :q => video,
-          :maxResults => 1
+          :maxResults => 2
         }
       )
 
@@ -20,12 +20,13 @@ class YoutubeApi
       vp = Rack::Utils.parse_nested_query(URI.parse(video).query) rescue {}
 
       resp = {}
+      search_results = {}
       # Add each result to the appropriate list, and then display the lists of
       # matching videos, channels, and playlists.
       search_response.data.items.each do |r|
         case r.id.kind
           when 'youtube#video'
-            resp = {
+            search_results[r.id.videoId] = {
               video_id: r.id.videoId,
               start_time: vp["t"] ? vp["t"] : vp["start"],
               end_time: vp["end"],
@@ -41,10 +42,33 @@ class YoutubeApi
             }
         end
       end
+      search_results = self.video_lookup(search_results) if search_results.present?
+
+      # TODO: Remove this hack!
+      resp = search_results.first.last
     rescue Google::APIClient::TransmissionError => e
       resp = { error: e.to_s }
     end
     resp
+  end
+
+  def self.video_lookup(search_results)
+    client, youtube = get_service
+    video_lookup = client.execute!(
+      :api_method => youtube.videos.list,
+      :parameters => {
+        :part => 'contentDetails',
+        :id => search_results.keys.join(",")
+      }
+    )
+    video_lookup.data["items"].each do |v|
+      duration = v["contentDetails"]["duration"]
+      search_results[v["id"]].merge!({
+        "duration" => duration,
+        "duration_seconds" => ISO8601::Duration.new(duration).to_i
+      })
+    end
+    search_results
   end
 
   def self.get_service
