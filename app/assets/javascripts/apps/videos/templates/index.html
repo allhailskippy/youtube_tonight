@@ -24,13 +24,14 @@
       <a href="javascript:void(0)"
         ng-click="addVideo()"
         class="btn btn-success"
+        ng-disabled="showForm"
       >Add New Video</a>
     </div>
     <div class="col-md-9 col-md-offset-3 main" ng-show="showForm">
       <video-form
         query-new-videos='queryNewVideos()'
         video="currentVideo"
-		close-form="closeForm()"
+        close-form="closeForm()"
       ></video-form>
     </div>
     <div class="col-md-9 col-md-offset-3 main" ng-show="!showForm">

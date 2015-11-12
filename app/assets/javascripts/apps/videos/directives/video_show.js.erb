@@ -31,7 +31,7 @@ var controller = function(
    */
   $scope.startPreview = function() {
     $scope.dispatcher.trigger('video_player.load', {
-      video_id: $scope.video.id,
+      video: $scope.video,
       player_id: $scope.playerId,
       sender_id: $scope.senderId
     });
@@ -40,7 +40,7 @@ var controller = function(
   $scope.stopPreview = function() {
     if($scope.playerReady) {
       $scope.dispatcher.trigger('video_player.stop', {
-        video_id: $scope.video.id,
+        video: $scope.video,
         player_id: $scope.playerId,
         sender_id: $scope.senderId
       });
@@ -61,7 +61,7 @@ var controller = function(
     if($scope.playerReady) {
       var trigger = 'video_player.' + (mute ? "mute" : "unmute");
       $scope.dispatcher.trigger(trigger, {
-        video_id: $scope.video.id,
+        video: $scope.video,
         player_id: $scope.playerId,
         sender_id: $scope.senderId
       }, function() {

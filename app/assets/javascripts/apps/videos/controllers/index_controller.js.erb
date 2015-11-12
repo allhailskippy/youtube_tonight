@@ -53,7 +53,7 @@ var IndexCtrl = function(
 
   $scope.playVideo = function(video){
     $scope.dispatcher.trigger('video_player.load', {
-      video_id: video.id,
+      video: video,
       player_id: 'broadcast',
       sender_id: 'video-' + video.id
     });
@@ -61,23 +61,23 @@ var IndexCtrl = function(
 
   $scope.pauseVideo = function(video){
     $scope.dispatcher.trigger('video_player.pause', {
-      video_id: video.id,
+      video: video,
       player_id: 'broadcast',
-      sender_id: 'video-' + video_id
+      sender_id: 'video-' + video.id
     });
   };
 
   $scope.stopVideo = function(video){
     $scope.dispatcher.trigger('video_player.stop', {
-      video_id: video.id,
+      video: video,
       player_id: 'broadcast',
-      sender_id: 'video-' + video_id
+      sender_id: 'video-' + video.id
     });
   };
 
   $scope.channel.bind('play', function(message) {
     if(message.player_id == 'broadcast') {
-      $scope.currentlyPlaying = message.video_id;
+      $scope.currentlyPlaying = message.video.id;
       $scope.$applyAsync();
     }
   });
