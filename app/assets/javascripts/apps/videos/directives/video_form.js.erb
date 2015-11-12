@@ -31,7 +31,7 @@ var controller = function(
   $scope.$watch('currentVideo.search', function(newVal, oldVal) {
     if(newVal == '') {
       // Clear current video if we clear the search
-      $scope.currentVideo = Video.build({});
+      $scope.currentVideo = Video.build({show_id: $scope.show_id});
     }
 
     if(newVal && newVal != oldVal) {
@@ -73,7 +73,7 @@ var controller = function(
     });
     Notice.reset();
     $scope.closeForm();
-    $scope.currentVideo = Video.build({});
+    $scope.currentVideo = Video.build({ show_id: $scope.show_id });
   };
 };
 

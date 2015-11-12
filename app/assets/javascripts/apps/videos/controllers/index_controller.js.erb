@@ -31,7 +31,6 @@ var IndexCtrl = function(
   /**
    * Scope Methods
    */
-
   $scope.addVideo = function() {
     $scope.currentVideo = Video.build({});
     $scope.showForm = true;
@@ -39,9 +38,7 @@ var IndexCtrl = function(
 
   $scope.closeForm = function() {
     $scope.currentVideo = null;
-    if($scope.videos.length > 0) {
-      $scope.showForm = false;
-    }
+    $scope.showForm = false;
   };
 
   // Deletes a video from the queue
@@ -53,50 +50,6 @@ var IndexCtrl = function(
       }).catch();
     }
   };
-
-  $scope.playVideo = function(video){
-    $scope.dispatcher.trigger('video_player.load', {
-      video: video,
-      player_id: 'broadcast',
-      sender_id: 'video-' + video.id
-    });
-  };
-
-  $scope.pauseVideo = function(video){
-    $scope.dispatcher.trigger('video_player.pause', {
-      video: video,
-      player_id: 'broadcast',
-      sender_id: 'video-' + video.id
-    });
-  };
-
-  $scope.stopVideo = function(video){
-    $scope.dispatcher.trigger('video_player.stop', {
-      video: video,
-      player_id: 'broadcast',
-      sender_id: 'video-' + video.id
-    });
-  };
-
-  $scope.channel.bind('play', function(message) {
-    if(message.player_id == 'broadcast') {
-      $scope.currentlyPlaying = message.video;
-      $scope.$applyAsync();
-    }
-  });
-
-  $scope.channel.bind('ready', function(message) {
-    if(message.player_id == 'preview') {
-      $scope.showPreview = true;
-    };
-  });
-
-  $scope.channel.bind('stop', function(message) {
-    if(message.player_id == 'preview'
-      || (message.video.id == $scope.currentlyPlaying.id && message.force)) {
-      $scope.showPreview = false;
-    };
-  });
 
   $scope.isCurrentlyPlaying = function(video) {
     return $scope.currentlyPlaying && video.id == $scope.currentlyPlaying.id;
@@ -149,6 +102,10 @@ var IndexCtrl = function(
     $scope.queryVideos(true);
   };
 
+  $scope.shouldShowForm = function() {
+    return $scope.videos.length == 0 || $scope.showForm;
+  }
+
   // Haw to save sort order
   $scope.sortableOptions = {
     stop: function(e, ui) {
@@ -165,6 +122,53 @@ var IndexCtrl = function(
       }
     }
   };
+
+  /**
+   * Event Handlers
+   */
+  $scope.playVideo = function(video){
+    $scope.dispatcher.trigger('video_player.load', {
+      video: video,
+      player_id: 'broadcast',
+      sender_id: 'video-' + video.id
+    });
+  };
+
+  $scope.pauseVideo = function(video){
+    $scope.dispatcher.trigger('video_player.pause', {
+      video: video,
+      player_id: 'broadcast',
+      sender_id: 'video-' + video.id
+    });
+  };
+
+  $scope.stopVideo = function(video){
+    $scope.dispatcher.trigger('video_player.stop', {
+      video: video,
+      player_id: 'broadcast',
+      sender_id: 'video-' + video.id
+    });
+  };
+
+  $scope.channel.bind('play', function(message) {
+    if(message.player_id == 'broadcast') {
+      $scope.currentlyPlaying = message.video;
+      $scope.$applyAsync();
+    }
+  });
+
+  $scope.channel.bind('ready', function(message) {
+    if(message.player_id == 'preview') {
+      $scope.showPreview = true;
+    };
+  });
+
+  $scope.channel.bind('stop', function(message) {
+    if(message.player_id == 'preview'
+      || (message.video.id == $scope.currentlyPlaying.id && message.force)) {
+      $scope.showPreview = false;
+    };
+  });
 };
 
 IndexCtrl.$inject = [

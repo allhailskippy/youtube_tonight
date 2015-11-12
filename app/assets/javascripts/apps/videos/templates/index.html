@@ -24,17 +24,17 @@
       <a href="javascript:void(0)"
         ng-click="addVideo()"
         class="btn btn-success"
-        ng-disabled="showForm"
+        ng-disabled="shouldShowForm()"
       >Add New Video</a>
     </div>
-    <div class="col-md-9 col-md-offset-3 main" ng-show="showForm">
+    <div class="col-md-9 col-md-offset-3 main" ng-show="shouldShowForm()">
       <video-form
         query-new-videos='queryNewVideos()'
         video="currentVideo"
         close-form="closeForm()"
       ></video-form>
     </div>
-    <div class="col-md-9 col-md-offset-3 main" ng-show="!showForm">
+    <div class="col-md-9 col-md-offset-3 main" ng-show="!shouldShowForm()">
       <div>
         <div class="list-group" ui-sortable="sortableOptions" ng-model="videos">
           <div ng-repeat="video in videos" class="panel panel-primary">
