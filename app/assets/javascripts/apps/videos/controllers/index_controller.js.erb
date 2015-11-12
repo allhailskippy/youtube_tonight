@@ -30,6 +30,17 @@ var IndexCtrl = function(
   /**
    * Scope Methods
    */
+
+  $scope.addVideo = function() {
+    $scope.currentVideo = Video.build({});
+    $scope.showForm = true;
+  };
+
+  $scope.closeForm = function() {
+    $scope.currentVideo = null;
+    $scope.showForm = false;
+  };
+
   // Deletes a video from the queue
   $scope.destroy = function(video) {
     if(confirm("Are you sure you want to delete this video from the queue?\nThis cannot be undone.")){

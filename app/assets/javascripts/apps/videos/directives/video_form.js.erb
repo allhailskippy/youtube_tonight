@@ -58,6 +58,7 @@ var controller = function(
 
       // This is called on the parent controller.
       // Is defined in the scope section below
+      $scope.closeForm();
       $scope.queryNewVideos();
     }).catch(Notice.handleErrors);
   };
@@ -72,7 +73,8 @@ var VideoForm = function() {
   return {
     restrict: 'E',
     scope: {
-      queryNewVideos: '&'
+      queryNewVideos: '&',
+      closeForm: '&'
     },
     controller: controller,
     templateUrl: '<%= asset_path("apps/videos/templates/video_form.html") %>'
