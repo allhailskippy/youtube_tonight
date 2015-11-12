@@ -15,6 +15,7 @@ var IndexCtrl = function(
    * Setup
    */
   $scope.currentVideo = null;
+  $scope.currentlyPlaying = {};
   $scope.last_id = 0;
   $scope.page = 1;
   $scope.per_page = 10000;
@@ -77,7 +78,7 @@ var IndexCtrl = function(
 
   $scope.channel.bind('play', function(message) {
     if(message.player_id == 'broadcast') {
-      $scope.currentlyPlaying = message.video.id;
+      $scope.currentlyPlaying = message.video;
       $scope.$applyAsync();
     }
   });
@@ -89,13 +90,14 @@ var IndexCtrl = function(
   });
 
   $scope.channel.bind('stop', function(message) {
-    if(message.player_id == 'preview') {
+    if(message.player_id == 'preview'
+      || (message.video.id == $scope.currentlyPlaying.id && message.force)) {
       $scope.showPreview = false;
     };
   });
 
   $scope.isCurrentlyPlaying = function(video) {
-    return video.id == $scope.currentlyPlaying;
+    return $scope.currentlyPlaying && video.id == $scope.currentlyPlaying.id;
   };
 
   // Look up list of videos

@@ -22,6 +22,8 @@ class Video < ActiveRecord::Base
   # Hooks
   #
   before_create :set_sort_order
+  before_create :stop_all_playing
+  before_destroy :stop_all_playing
 
   ##
   # Methods
@@ -37,5 +39,12 @@ class Video < ActiveRecord::Base
       return false
     end
     return true
+  end
+
+  def stop_all_playing
+    WebsocketRails[:video_player].trigger(:stop, {
+      :video => self.as_json,
+      :force => true
+    })
   end
 end

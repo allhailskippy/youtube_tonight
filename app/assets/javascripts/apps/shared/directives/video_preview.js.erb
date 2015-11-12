@@ -51,7 +51,11 @@ var controller = function(
   });
 
   $scope.channel.bind('stop', function(message) {
-    if(message.player_id == $scope.playerId) {
+    if(message.player_id == $scope.playerId
+      || ($scope.video
+        && message.video.id == $scope.video.id
+        && message.force
+      )) {
       $scope.player.stopVideo();
     }
   });
@@ -195,6 +199,18 @@ var VideoPreview = function(
           });
         };
       })
+
+
+      // If we got a request for forcefully stop a video
+      // clean out its player
+      $scope.channel.bind('stop', function(message) {
+        if($scope.video
+            && message.video.id == $scope.video.id
+            && message.force
+          ) {
+          $element.children().remove();
+        }
+      });
 
     }
   };
