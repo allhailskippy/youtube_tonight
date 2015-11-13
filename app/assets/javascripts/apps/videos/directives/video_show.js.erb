@@ -21,88 +21,62 @@ var controller = function(
    */
   $scope.dispatcher = VideoApp.getDispatcher();
   $scope.channel = VideoApp.getChannel('video_player');
-  $scope.muted = true;
-  $scope.playerId = 'preview';
+  $scope.playerId = VideoApp.getPlayerId('preview-' + $scope.video.show_id);
   $scope.senderId = 'video-' + $scope.video.id + '-' + Math.floor(Math.random() * 1000000);
-  $scope.playerReady = false;
+  $scope.muted = true;
+  $scope.playing = false;
 
   /**
    * Scope Methods
    */
-  $scope.startPreview = function() {
-    $scope.dispatcher.trigger('video_player.load', {
+  $scope.play = function() {
+    $scope.dispatcher.trigger('video_player.play', {
       video: $scope.video,
       player_id: $scope.playerId,
-      sender_id: $scope.senderId,
-      show_id: $scope.video.show_id
+      sender_id: $scope.senderId
     });
   };
 
-  $scope.stopPreview = function() {
-    if($scope.playerReady) {
-      $scope.dispatcher.trigger('video_player.stop', {
-        video: $scope.video,
-        player_id: $scope.playerId,
-        sender_id: $scope.senderId,
-        show_id: $scope.video.show_id
-      });
-    }
+  $scope.stop = function() {
+    $scope.dispatcher.trigger('video_player.stop', {
+      player_id: $scope.playerId,
+      sender_id: $scope.senderId
+    });
   };
 
-  // Mute Preview
   $scope.mute = function() {
     $scope.toggleMute(true);
   };
 
-  // Unmute Preview
   $scope.unMute = function() {
     $scope.toggleMute(false);
   };
 
   $scope.toggleMute = function(mute) {
-    if($scope.playerReady) {
-      var trigger = 'video_player.' + (mute ? "mute" : "unmute");
-      $scope.dispatcher.trigger(trigger, {
-        video: $scope.video,
-        player_id: $scope.playerId,
-        sender_id: $scope.senderId,
-        show_id: $scope.video.show_id
-      }, function() {
-        //Success
-        $scope.muted = mute;
-        $scope.$applyAsync();
-      });
-    }
+    var trigger = 'video_player.' + (mute ? "mute" : "unmute");
+    $scope.dispatcher.trigger(trigger, {
+      player_id: $scope.playerId,
+      sender_id: $scope.senderId
+    });
+
+    //Success
+    $scope.muted = mute;
+    $scope.$applyAsync();
   };
 
   /**
    * Event Handlers
    */
-  $scope.channel.bind('not_ready', function(message) {
+  $scope.channel.bind('playing', function(message) {
     if(message.sender_id == $scope.senderId) {
-      $scope.showVideo = false;
-      $scope.playerReady = false;
-      $scope.muted = true;
+      $scope.playing = true;
+      $scope.$applyAsync();
     }
   });
 
-  $scope.channel.bind('state_change', function(message) {
-    $scope.showVideo = (message.sender_id == $scope.senderId);
-
+  $scope.channel.bind('stopped', function(message) {
     if(message.sender_id == $scope.senderId) {
-      // Show the video player
-      if(message.state == YT.PlayerState.PLAYING) {
-        $scope.playerReady = true;
-      }
-
-      // Only stop showing the video if we've already started playing one
-      if($scope.playerReady && message.state <= YT.PlayerState.ENDED) {
-        $scope.showVideo = false;
-        $scope.playerReady = false;
-        $scope.muted = true;
-      }
-
-      // Update any affected data
+      $scope.playing = false;
       $scope.$applyAsync();
     }
   });
@@ -117,7 +91,8 @@ var VideoShow = function() {
   return {
     restrict: 'E',
     scope: {
-      video: '='
+      video: '=',
+      showId: '='
     },
     controller: controller,
     templateUrl: '<%= asset_path("apps/videos/templates/video_show.html") %>'

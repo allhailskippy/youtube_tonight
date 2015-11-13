@@ -9,31 +9,29 @@
 <div class="col-md-9">
   <p>
     <a href="javascript:void(0)"
-      ng-click="startPreview()"
-      ng-show="!showVideo"
-      ng-disabled="!video.api_video_id"
+      ng-click="play()"
+      ng-show="!playing"
       class="btn btn-success"
     >Preview</a>
     <a href="javascript:void(0)"
-      ng-click="stopPreview()"
-      ng-show="showVideo"
-      ng-disabled="!playerReady"
+      ng-click="stop()"
+      ng-show="playing"
       class="btn btn-danger"
     >Stop Preview</a>
     <a
       class="btn glyphicon glyphicon-volume-up"
       aria-hidden="true"
-      ng-class="{'btn-success': playerReady, 'btn-default': !playerReady}"
+      ng-class="{'btn-success': playing, 'btn-default': !playing}"
       ng-show="muted"
-      ng-disabled="!playerReady"
+      ng-disabled="!playing"
       ng-click="unMute()"
     ></a>
     <a
       href="javascript:void(0)"
       class="btn btn-danger glyphicon glyphicon-volume-off"
       aria-hidden="true"
-      ng-show="showVideo && !muted"
-      ng-disabled="!playerReady"
+      ng-show="!muted"
+      ng-disabled="!playing"
       ng-click="mute()"
     ></a>
   </p>

@@ -23,6 +23,7 @@ var controller = function(
   $scope.dispatcher = VideoApp.getDispatcher();
   $scope.channel = VideoApp.getChannel('video_player');
   $scope.currentVideo = $scope.currentVideo || Video.build({show_id: $scope.showId });
+  $scope.searchResults = [];
   var searchTimeout;
 
   /**
@@ -42,10 +43,13 @@ var controller = function(
       searchTimeout = $timeout(function() {
         // Lookup youtube video
         YoutubeParser.query(newVal).then(function(response) {
-          var yt = YoutubeParser.build(response.data);
+          $scope.searchResults = [];
+          angular.forEach(response.data, function(result) {
+            var yt = YoutubeParser.build(result)
+            var video = Video.setFromYoutubeParser(yt, { show_id: $scope.showId });
 
-          // Store the data on the current video object
-          $scope.currentVideo.setFromYoutubeParser(yt);
+            $scope.searchResults.push(video);
+          });
         });
       }, 250);
     }
@@ -66,6 +70,11 @@ var controller = function(
     }).catch(Notice.handleErrors);
   };
 
+  $scope.selectResult = function(video) {
+    console.log(video);
+    $scope.currentVideo = video;
+  };
+
   $scope.update = function() {
     $scope.currentVideo.save().then(function() {
       $scope.currentVideo = Video.build({ show_id: $scope.showId });
@@ -73,6 +82,7 @@ var controller = function(
       // This is called on the parent controller.
       // Is defined in the scope section below
       $scope.closeForm();
+      $scope.searchResults = [];
       $scope.queryVideos();
     }).catch(Notice.handleErrors);
   };
@@ -85,6 +95,7 @@ var controller = function(
     });
     Notice.reset();
     $scope.closeForm();
+    $scope.searchResults = [];
     $scope.currentVideo = Video.build({ show_id: $scope.showId });
   };
 };

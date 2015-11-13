@@ -5,51 +5,58 @@
   <div class="panel-body">
     <notices notices="notices"></notices>
     <form role="form">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group">
+            <label for="search">Search/URL:</label>
+            <input
+              type="text"
+              name="search"
+              class="form-control"
+              ng-model="currentVideo.search"
+            />
+          </div>
+          <div class="form-group">
+            <label for="title">Title:</label>
+            <input
+              type="text"
+              name="title"
+              class="form-control"
+              ng-model="currentVideo.title"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-2">
+          <div class="form-group">
+            <label for="start_time">Start At (Seconds):</label>
+            <input
+              class="form-control"
+              type="number"
+              min="0"
+              ng-model="currentVideo.start_time"
+            />
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="form-group">
+            <label for="end_time">End At (Seconds):</label>
+            <input
+              class="form-control"
+              type="number"
+              min="0"
+              ng-model="currentVideo.end_time"
+            />
+          </div>
+        </div>
+        <div class="col-md-8">&nbsp;</div>
+      </div>
       <div class="col-md-12">
-        <div class="form-group">
-          <label for="search">Search/URL:</label>
-          <input
-            type="text"
-            name="search"
-            class="form-control"
-            ng-model="currentVideo.search"
-          />
-        </div>
-        <div class="form-group">
-          <label for="title">Title:</label>
-          <input
-            type="text"
-            name="title"
-            class="form-control"
-            ng-model="currentVideo.title"
-          />
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="form-group">
-          <label for="start_time">Start At (Seconds):</label>
-          <input
-            class="form-control"
-            type="number"
-            min="0"
-            ng-model="currentVideo.start_time"
-          />
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="form-group">
-          <label for="end_time">End At (Seconds):</label>
-          <input
-            class="form-control"
-            type="number"
-            min="0"
-            ng-model="currentVideo.end_time"
-          />
-        </div>
-      </div>
-      <div class="col-md-8">&nbsp;</div>
-      <div class="col-md-12">
-        <video-show video="currentVideo"></video-show>
+        <video-show
+          video="currentVideo"
+          ng-show="currentVideo.api_video_id"
+        ></video-show>
         <div class="pull-right">
           <button
             type="submit"
@@ -60,6 +67,7 @@
             type="submit"
             class="btn btn-success"
             ng-click="save()"
+            ng-disabled="!currentVideo.api_video_id"
             ng-show="!currentVideo.id"
           >Add To Queue</button>
           <button
@@ -73,3 +81,22 @@
     </form>
   </div>
 </div>
+
+  <div ng-repeat="video in searchResults track by $index" class="panel panel-primary">
+    <div class="row">
+      <div class="col-md-1 text-center">
+        <br />
+        <button
+          type="submit"
+          class="btn btn-success"
+          ng-click="selectResult(video)"
+          ng-disabled="video.api_video_id == currentVideo.api_video_id"
+        >Select</button>
+      </div>
+      <div class="col-md-8">
+        <br />
+        <video-show video="video"></video-show>
+      </div>
+      <div class="col-md-3">&nbsp;</div>
+    </div>
+  </div>

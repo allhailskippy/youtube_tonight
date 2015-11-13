@@ -15,7 +15,9 @@ var YoutubeParser = function(YoutubeParserApi) {
     'thumbnail_high_url',
     'thumbnail_medium_url',
     'title',
-    'video_id'
+    'video_id',
+    'duration',
+    'duration_seconds'
   ];
 
   self.build = function(video) {

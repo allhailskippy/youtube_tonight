@@ -98,8 +98,17 @@ var Video = function(VideoApi) {
       video.api_duration = yt.duration;
       video.api_duration_seconds = yt.duration_seconds;
       video.link = yt.link;
+      return video;
     };
     return video;
+  };
+
+  /**
+   * Class Methods
+   */
+  self.setFromYoutubeParser = function(yt, params) {
+    params = params || {}
+    return self.build(params).setFromYoutubeParser(yt);
   };
 
   self.find = function(id) {

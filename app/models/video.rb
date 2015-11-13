@@ -22,8 +22,6 @@ class Video < ActiveRecord::Base
   # Hooks
   #
   before_create :set_sort_order
-  before_create :stop_all_playing
-  before_destroy :stop_all_playing
   after_save :send_video_update_request
   after_destroy :send_video_update_request
 
@@ -43,13 +41,6 @@ class Video < ActiveRecord::Base
     if end_time.to_i > api_duration_seconds.to_i
       errors.add(:base, "End At cannot be longer than the video duration: " + api_duration_seconds.to_s)
     end
-  end
-
-  def stop_all_playing
-    WebsocketRails[:video_player].trigger(:stop, {
-      :video => self.as_json,
-      :force => true
-    })
   end
 
   def send_video_update_request

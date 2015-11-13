@@ -16,16 +16,24 @@ var IndexCtrl = function(
    */
   $scope.currentVideo = null;
   $scope.currentlyPlaying = {};
+
   $scope.page = 1;
   $scope.per_page = 10000;
   $scope.retrieving = true;
+
+
   $scope.show = Show.build({});
+  $scope.showId = $routeParams.show_id;
+
   $scope.videos = [];
   $scope.currentVideoOrder = [];
-  $scope.showPreview = false;
-  $scope.showId = $routeParams.show_id;
+
   $scope.dispatcher = VideoApp.getDispatcher();
   $scope.channel = VideoApp.getChannel('video_player');
+  $scope.playerId = VideoApp.getPlayerId('preview-' + $scope.showId);
+  $scope.broadcastId = 'broadcast-' + $scope.showId;
+
+  $scope.playing = false;
 
   /**
    * Scope Methods
@@ -116,59 +124,71 @@ var IndexCtrl = function(
   /**
    * Event Handlers
    */
-  $scope.playVideo = function(video){
-    $scope.dispatcher.trigger('video_player.load', {
-      video: video,
-      player_id: 'broadcast',
-      sender_id: 'video-' + video.id,
-      show_id: $scope.showId
-    });
-  };
 
-  $scope.pauseVideo = function(video){
-    $scope.dispatcher.trigger('video_player.pause', {
+  // Broadcast events
+  $scope.playVideo = function(video){
+    $scope.dispatcher.trigger('video_player.play', {
       video: video,
-      player_id: 'broadcast',
-      sender_id: 'video-' + video.id,
-      show_id: $scope.showId
+      player_id: $scope.broadcastId,
+      sender_id: 'video-' + video.id
     });
   };
 
   $scope.stopVideo = function(video){
     $scope.dispatcher.trigger('video_player.stop', {
       video: video,
-      player_id: 'broadcast',
-      sender_id: 'video-' + video.id,
-      show_id: $scope.showId
+      player_id: $scope.broadcastId,
+      sender_id: 'video-' + video.id
     });
   };
 
-  $scope.channel.bind('play', function(message) {
-    if(message.show_id == $scope.showId
-      && message.player_id == 'broadcast') {
+  $scope.channel.bind('playing', function(message) {
+    if(message.player_id == $scope.broadcastId) {
       $scope.currentlyPlaying = message.video;
       $scope.$applyAsync();
     }
   });
 
-  $scope.channel.bind('ready', function(message) {
-    if(message.show_id == $scope.showId
-      && message.player_id == 'preview') {
+  $scope.channel.bind('stopped', function(message) {
+    if(message.player_id == $scope.broadcastId) {
+      $scope.currentlyPlaying = null;
+      $scope.$applyAsync();
+    }
+  });
+
+  // Preview Events
+  $scope.channel.bind('play', function(message) {
+    if(message.player_id == $scope.playerId) {
       $scope.showPreview = true;
+      $scope.$applyAsync();
+    };
+  });
+
+  $scope.channel.bind('playing', function(message) {
+    if(message.player_id == $scope.playerId) {
+      $scope.playing = true;
+      $scope.$applyAsync();
     };
   });
 
   $scope.channel.bind('stop', function(message) {
-    if(message.show_id == $scope.showId
-      && message.player_id == 'preview'
-      || (message.video.id == $scope.currentlyPlaying.id && message.force)) {
+    if(message.player_id == $scope.playerId) {
       $scope.showPreview = false;
+      $scope.$applyAsync();
     };
   });
 
+  $scope.channel.bind('stopped', function(message) {
+    if(message.player_id == $scope.playerId) {
+      $scope.playing = false;
+      $scope.$applyAsync();
+    };
+  });
+
+  // Other Events
+  // Video list changed, need to update
   $scope.channel.bind('update_video_list', function(message) {
-    if(message.show_id == $scope.showId
-      && message.show_id == $scope.showId) {
+    if(message.show_id == $scope.showId) {
       $scope.queryVideos();
     }
   });

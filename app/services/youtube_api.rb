@@ -5,51 +5,44 @@ class YoutubeApi
   def self.get_video_info(video)
     client, youtube = get_service
 
-    begin
-      # Call the search.list method to retrieve results matching the specified query term.
-      search_response = client.execute!(
-        :api_method => youtube.search.list,
-        :parameters => {
-          :part => 'snippet',
-          :q => video,
-          :maxResults => 2
-        }
-      )
+    # Call the search.list method to retrieve results matching the specified query term.
+    search_response = client.execute!(
+      :api_method => youtube.search.list,
+      :parameters => {
+        :part => 'snippet',
+        :q => video,
+        :maxResults => 10
+      }
+    )
 
-      # Parse the query string from the video
-      vp = Rack::Utils.parse_nested_query(URI.parse(video).query) rescue {}
+    # Parse the query string from the video
+    vp = Rack::Utils.parse_nested_query(URI.parse(video).query) rescue {}
 
-      resp = {}
-      search_results = {}
-      # Add each result to the appropriate list, and then display the lists of
-      # matching videos, channels, and playlists.
-      search_response.data.items.each do |r|
-        case r.id.kind
-          when 'youtube#video'
-            search_results[r.id.videoId] = {
-              video_id: r.id.videoId,
-              start_time: vp["t"] ? vp["t"] : vp["start"],
-              end_time: vp["end"],
-              published_at: r.snippet.published_at,
-              channel_id: r.snippet.channel_id,
-              channel_title: r.snippet.channel_title,
-              description: r.snippet.description,
-              thumbnail_default_url: r.snippet.thumbnails.default.url,
-              thumbnail_medium_url: r.snippet.thumbnails.medium.url,
-              thumbnail_high_url: r.snippet.thumbnails.high.url,
-              title: r.snippet.title,
-              link: "https://www.youtube.com/v/#{r.id.videoId}"
-            }
-        end
+    search_results = {}
+    # Add each result to the appropriate list, and then display the lists of
+    # matching videos, channels, and playlists.
+    search_response.data.items.each do |r|
+      case r.id.kind
+        when 'youtube#video'
+          search_results[r.id.videoId] = {
+            video_id: r.id.videoId,
+            start_time: vp["t"] ? vp["t"] : vp["start"],
+            end_time: vp["end"],
+            published_at: r.snippet.published_at,
+            channel_id: r.snippet.channel_id,
+            channel_title: r.snippet.channel_title,
+            description: r.snippet.description,
+            thumbnail_default_url: r.snippet.thumbnails.default.url,
+            thumbnail_medium_url: r.snippet.thumbnails.medium.url,
+            thumbnail_high_url: r.snippet.thumbnails.high.url,
+            title: r.snippet.title,
+            link: "https://www.youtube.com/v/#{r.id.videoId}"
+          }
       end
-      search_results = self.video_lookup(search_results) if search_results.present?
-
-      # TODO: Remove this hack!
-      resp = search_results.first.last
-    rescue Google::APIClient::TransmissionError => e
-      resp = { error: e.to_s }
     end
-    resp
+    search_results = self.video_lookup(search_results) if search_results.present?
+
+    search_results.values
   end
 
   def self.video_lookup(search_results)

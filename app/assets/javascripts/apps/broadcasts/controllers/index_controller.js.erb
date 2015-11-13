@@ -16,6 +16,7 @@ var IndexCtrl = function(
    */
   $scope.show = Show.build({});
   $scope.showId = $routeParams.show_id;
+  $scope.playerId = 'broadcast-' + $scope.showId;
 
   if($scope.showId) {
     Show.find($scope.showId).then(function(response) {

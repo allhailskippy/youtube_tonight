@@ -23,54 +23,12 @@ var controller = function(
   $scope.channel = $scope.dispatcher.subscribe('video_player');
   $scope.senderId = null;
   $scope.video = null;
-  $scope.ready = false;
 
   /**
    * Event Handlers
    */
-  $scope.channel.bind('ready', function(message) {
-    if(message.show_id == $scope.showId
-      && message.player_id == $scope.playerId) {
-      $scope.dispatcher.trigger('video_player.play', {
-        video: $scope.video,
-        player_id: $scope.playerId,
-        sender_id: $scope.senderId,
-        show_id: $scope.showId
-      });
-    }
-  });
-
-  $scope.channel.bind('play', function(message) {
-    if(message.show_id == $scope.showId
-      && message.player_id == $scope.playerId) {
-      $scope.player.playVideo();
-    }
-  });
-
-  $scope.channel.bind('pause', function(message) {
-    if(message.show_id == $scope.showId
-      && message.player_id == $scope.playerId) {
-      $scope.player.pauseVideo();
-    }
-  });
-
-  $scope.channel.bind('mute', function(message) {
-    if(message.show_id == $scope.showId
-      &&message.player_id == $scope.playerId) {
-      $scope.player.mute();
-    }
-  });
-
-  $scope.channel.bind('unmute', function(message) {
-    if(message.show_id == $scope.showId
-      && message.player_id == $scope.playerId) {
-      $scope.player.unMute();
-    }
-  });
-
   $scope.channel.bind('set_volume', function(message) {
-    if(message.show_id == $scope.showId
-      && message.player_id == $scope.playerId) {
+    if(message.player_id == $scope.playerId) {
       $scope.player.setVolume(message.volume);
     }
   });
@@ -88,7 +46,6 @@ var VideoPreview = function(
     restrict: 'E',
     scope: {
       playerId: '@',
-      showId: '=',
       video: '=',
       width: '=',
       height: '=',
@@ -111,6 +68,9 @@ var VideoPreview = function(
         VideoPreviewService.ready = true;
       };
 
+      /**
+       * Scope methods
+       */
       // Creates a new YT player object
       $scope.newPlayer = function(preview_elem) {
         var params = {
@@ -126,38 +86,25 @@ var VideoPreview = function(
             controls: 0,
             rel: 0,
             start: $scope.video.start_time,
-            end: $scope.video.end_time
+            end: $scope.video.end_time,
+            origin: 'http://localhost:3000'
           },
           events: {
             'onReady': function() {
-              $scope.dispatcher.trigger('video_player.ready', {
-                video: $scope.video,
-                player_id: $scope.playerId,
-                sender_id: $scope.senderId,
-                show_id: $scope.showId
-              });
-              $scope.ready = true;
+              // Play the video
+              $scope.player.playVideo();
             },
             'onStateChange': function(e) {
               if($scope.mute) {
                 e.target.mute();
               };
-              // Send state changed notice
-              $scope.dispatcher.trigger('video_player.state_change', {
-                state: e.data,
-                video: $scope.video,
-                player_id: $scope.playerId,
-                sender_id: $scope.senderId,
-                show_id: $scope.showId
-              });
-
-              // If the playback has started, and is now stopped
-              // remove the player
-              if ($scope.playbackStarted && e.data <= YT.PlayerState.ENDED) {
-                $scope.playbackStarted = false;
-              }
-              if(e.data > 0) {
-                $scope.playbackStarted = true;
+              // We're playing!
+              if(e.data == YT.PlayerState.PLAYING) {
+                $scope.dispatcher.trigger('video_player.playing', {
+                  video: $scope.video,
+                  player_id: $scope.playerId,
+                  sender_id: $scope.senderId
+                });
               }
             }
           }
@@ -166,21 +113,11 @@ var VideoPreview = function(
       };
 
       /**
-       * Watched variables
+       * Event Handlers
        */
-      // Wait for notice to load video
-      $scope.channel.bind('load', function(message) {
+      // Wait for notice to play video
+      $scope.channel.bind('play', function(message) {
         if(message.player_id == $scope.playerId) {
-          // If we get a new sender, tell the old sender
-          // we're no longer ready
-          if($scope.senderId != message.sender_id) {
-            $scope.dispatcher.trigger('video_player.not_ready', {
-              player_id: $scope.playerId,
-              sender_id: $scope.senderId,
-              show_id: $scope.showId
-            });
-          }
-
           $scope.video = message.video;
           $scope.senderId = message.sender_id;
 
@@ -199,29 +136,39 @@ var VideoPreview = function(
             $scope.newPlayer(preview);
           });
         };
-      })
+      });
 
-
-      // If we got a request for forcefully stop a video
-      // clean out its player
+      // Notice to stop a video
       $scope.channel.bind('stop', function(message) {
-        if(message.player_id == $scope.playerId
-          || ($scope.video
-            && message.video.id == $scope.video.id
-            && message.force
-          )) {
+        if(message.player_id == $scope.playerId) {
           if($scope.player) {
             $scope.player.stopVideo();
           }
         }
-        if($scope.video
-            && message.video.id == $scope.video.id
-            && message.force
-          ) {
-          $element.children().remove();
+        // Clear out player
+        $element.children().remove();
+
+        // Notify that we've stopped
+        $scope.dispatcher.trigger('video_player.stopped', {
+          video: $scope.video,
+          player_id: $scope.playerId,
+          sender_id: $scope.senderId
+        });
+      });
+
+      // Mute player
+      $scope.channel.bind('mute', function(message) {
+        if(message.player_id == $scope.playerId && $scope.player) {
+          $scope.player.mute();
         }
       });
 
+      // Unmute player
+      $scope.channel.bind('unmute', function(message) {
+        if(message.player_id == $scope.playerId && $scope.player) {
+          $scope.player.unMute();
+        }
+      });
     }
   };
 };
