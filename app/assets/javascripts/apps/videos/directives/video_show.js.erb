@@ -68,9 +68,14 @@ var controller = function(
    * Event Handlers
    */
   $scope.channel.bind('playing', function(message) {
-    if(message.sender_id == $scope.senderId) {
-      $scope.playing = true;
-      $scope.$applyAsync();
+    if(message.player_id == $scope.playerId) {
+      if(message.sender_id == $scope.senderId) {
+        $scope.playing = true;
+        $scope.$applyAsync();
+      } else {
+        $scope.playing = false;
+        $scope.$applyAsync();
+      }
     }
   });
 
