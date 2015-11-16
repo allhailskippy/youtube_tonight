@@ -9,6 +9,7 @@ gem 'capistrano-bundler'
 group :production do
   gem 'fcgi'
 end
+  gem 'ruby_parser'
 
 gem 'mysql2'
 gem 'date_validator'
@@ -35,7 +36,7 @@ gem 'ng-rails-csrf'
 
 # Permission Gems
 gem 'devise'
-gem 'declarative_authorization'
+gem 'declarative_authorization', :git => 'git@github.com:stffn/declarative_authorization.git'
 gem 'omniauth-facebook'
 gem 'userstamp', :path => './lib/plugins/userstamp'
 

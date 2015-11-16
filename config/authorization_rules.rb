@@ -1,5 +1,6 @@
 authorization do
   role :guest do
+    has_permission_on :authorization_rules, :to => :read
     has_permission_on :callbacks, :to => :facebook
     has_permission_on :callbacks, :to => :failure
 
