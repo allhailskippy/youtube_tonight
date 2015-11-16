@@ -1,20 +1,4 @@
 GIT
-  remote: git://github.com/moaa/websocket-rails.git
-  revision: 469fe3638c689db5413a9ebfe207bef0908c714b
-  branch: threadsocket-rails
-  specs:
-    websocket-rails (0.7.0)
-      connection_pool
-      faye-websocket
-      hiredis
-      rack
-      rails
-      redis
-      redis-objects
-      uuidtools
-      websocket-rails-js
-
-GIT
   remote: git@github.com:stffn/declarative_authorization.git
   revision: 45e91af20eba71b2828c5c84066bcce3ef032e8a
   specs:
@@ -96,7 +80,7 @@ GEM
       execjs
     coffee-script-source (1.9.1.1)
     colorize (0.7.5)
-    connection_pool (2.2.0)
+    daemons (1.2.3)
     date_validator (0.8.1)
       activemodel
     devise (2.1.4)
@@ -104,6 +88,8 @@ GEM
       orm_adapter (~> 0.1)
       railties (~> 3.1)
       warden (~> 1.2.1)
+    em-synchrony (1.0.4)
+      eventmachine (>= 1.0.0.beta.1)
     erubis (2.7.0)
     eventmachine (1.0.8)
     execjs (2.5.2)
@@ -248,6 +234,10 @@ GEM
     therubyracer (0.12.1)
       libv8 (~> 3.16.14.0)
       ref
+    thin (1.6.4)
+      daemons (~> 1.0, >= 1.0.9)
+      eventmachine (~> 1.0, >= 1.0.4)
+      rack (~> 1.0)
     thor (0.19.1)
     tilt (1.4.1)
     treetop (1.4.15)
@@ -257,7 +247,6 @@ GEM
     uglifier (2.7.1)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
-    uuidtools (2.1.5)
     validate_url (1.0.2)
       activemodel (>= 3.0.0)
       addressable
@@ -266,8 +255,15 @@ GEM
     websocket-driver (0.6.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
-    websocket-rails-js (0.0.1)
+    websocket-rails (0.7.0)
+      em-synchrony
+      faye-websocket
+      hiredis
+      rack
       rails
+      redis
+      redis-objects
+      thin
     will_paginate (3.0.7)
 
 PLATFORMS
@@ -304,5 +300,5 @@ DEPENDENCIES
   uglifier (>= 1.0.3)
   userstamp!
   validate_url
-  websocket-rails!
+  websocket-rails
   will_paginate (= 3.0.7)

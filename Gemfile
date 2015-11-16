@@ -23,8 +23,7 @@ gem 'iso8601'
 # Javascript gems
 gem 'jquery-rails', '2.3.0'
 gem 'jquery-ui-rails'
-# gem 'websocket-rails'
-gem 'websocket-rails', github: 'moaa/websocket-rails', branch: 'threadsocket-rails'
+gem 'websocket-rails'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-bootstrap'
