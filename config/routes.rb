@@ -6,6 +6,12 @@ Youtubetonight::Application.routes.draw do
   resources :videos
   match 'broadcasts' => 'broadcasts#index'
   match 'youtube_parser' => 'youtube_parser#index'
-  resources :authorization_rules, :only => [:index]
+  resources :authorization_rules, :only => [:index] do
+         collection do
+            get :graph
+            get :change
+            get :suggest_change
+          end
+  end
   root :to => 'shows#index'
 end
