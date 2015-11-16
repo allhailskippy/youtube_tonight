@@ -6,6 +6,6 @@ Youtubetonight::Application.routes.draw do
   resources :videos
   match 'broadcasts' => 'broadcasts#index'
   match 'youtube_parser' => 'youtube_parser#index'
-
+  resources :authorization_rules, :only => [:index]
   root :to => 'shows#index'
 end
