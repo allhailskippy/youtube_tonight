@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   include Userstamp
 
   # Permissions
-  filter_access_to :all
+#  filter_access_to :all
 
   # Rails
   protect_from_forgery
