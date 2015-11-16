@@ -144,16 +144,17 @@ var VideoPreview = function(
           if($scope.player) {
             $scope.player.stopVideo();
           }
-        }
-        // Clear out player
-        $element.children().remove();
 
-        // Notify that we've stopped
-        $scope.dispatcher.trigger('video_player.stopped', {
-          video: $scope.video,
-          player_id: $scope.playerId,
-          sender_id: $scope.senderId
-        });
+          // Clear out player
+          $element.children().remove();
+
+          // Notify that we've stopped
+          $scope.dispatcher.trigger('video_player.stopped', {
+            video: $scope.video,
+            player_id: $scope.playerId,
+            sender_id: $scope.senderId
+          });
+        }
       });
 
       // Mute player
