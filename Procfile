@@ -1,1 +1,1 @@
-web: bundle exec puma -p $PORT -e $RAILS_ENV -t 0:5
+web: bundle exec thin start -p $PORT
