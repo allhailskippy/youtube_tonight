@@ -1,5 +1,5 @@
 GIT
-  remote: git@github.com:kimkong/userstamp.git
+  remote: git://github.com/kimkong/userstamp.git
   revision: fbb35ccb5004bb04f87e01cbe9b7a5ccdd06b856
   specs:
     userstamp (2.0.2)
