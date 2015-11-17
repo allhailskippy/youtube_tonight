@@ -8,6 +8,7 @@ gem 'capistrano-rvm'
 gem 'capistrano-bundler'
 group :production do
   gem 'fcgi'
+  gem 'therubyracer', :platforms => :ruby
 end
 
 gem 'mysql2'
@@ -17,7 +18,6 @@ gem 'will_paginate', '3.0.7'
 gem 'validate_url'
 gem 'acts_as_versioned', :path => 'vendor/gems/acts_as_versioned' # https://github.com/technoweenie/acts_as_versioned
 gem 'rails3_acts_as_paranoid'
-gem 'therubyracer', :platforms => :ruby
 gem 'iso8601'
 
 # Javascript gems
@@ -35,7 +35,7 @@ gem 'ng-rails-csrf'
 
 # Permission Gems
 gem 'devise'
-gem 'declarative_authorization', :git => 'git@github.com:stffn/declarative_authorization.git'
+gem 'declarative_authorization'
 gem 'omniauth-facebook'
 gem 'userstamp', :path => './lib/plugins/userstamp'
 
