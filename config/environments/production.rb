@@ -70,6 +70,9 @@ Youtubetonight::Application.configure do
   # with SQLite, MySQL, and PostgreSQL)
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
+  # Removing for websocket-rails gem
+  config.middleware.delete Rack::Lock
+
   # YouTube
   YOUTUBE_API_KEY = credentials['youtube_api_key']
 
