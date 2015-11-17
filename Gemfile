@@ -11,7 +11,7 @@ group :production do
 #  gem 'therubyracer', :platforms => :ruby
 end
 
-gem 'mysql2'
+gem 'pg'
 gem 'date_validator'
 gem 'ransack'
 gem 'will_paginate', '3.0.7'

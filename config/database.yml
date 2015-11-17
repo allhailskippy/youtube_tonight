@@ -1,14 +1,15 @@
 defaults: &defaults
   encoding: utf8
   reconnect: true
-  adapter: mysql2
-  pool: 25
+  adapter: postgresql
+  pool: 5
+  port: 5432
 
 development: &development
   <<: *defaults
   host: localhost
   database: youtube_tonight
-  username: root
+  username: paul
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -17,3 +18,10 @@ test:
   <<: *defaults
   database: youtube_tonight_test
   username: root
+
+production:
+  <<: *defaults
+  database: dem32oi3k838vd
+  username: zvbbapvkwymxlf
+  password: fBYPuCHuZadsgsG9H5DDXhlsaI
+  host: postgres://zvbbapvkwymxlf:fBYPuCHuZadsgsG9H5DDXhlsaI@ec2-54-204-30-115.compute-1.amazonaws.com:5432/dem32oi3k838vd
