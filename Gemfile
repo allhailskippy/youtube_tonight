@@ -1,7 +1,8 @@
 source 'https://rubygems.org'
 ruby "2.2.3"
 
-#gem 'puma'
+gem 'puma'
+gem 'rails_12factor'
 gem 'rails', '3.2.21'
 gem 'test-unit'
 gem 'bundler', '>= 1.8.4'
