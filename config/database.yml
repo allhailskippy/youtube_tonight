@@ -25,4 +25,3 @@ production:
   username: kyhgkkyubjywlq
   password: H8859Kc-Hyk2FNTs0CVC54EaSy
   host: ec2-54-83-29-15.compute-1.amazonaws.com
-#  host: postgres://zvbbapvkwymxlf:fBYPuCHuZadsgsG9H5DDXhlsaI@ec2-54-204-30-115.compute-1.amazonaws.com:5432/dem32oi3k838vd

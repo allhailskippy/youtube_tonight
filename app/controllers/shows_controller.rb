@@ -51,7 +51,7 @@ class ShowsController < ApplicationController
     respond_to do |format|
       begin
         # Create
-        @show = scoped.build(params[:show])
+        @show = scoped.build(show_params)
 
         # TODO: Permissions
         # permitted_to!(:create, @show)
@@ -82,7 +82,7 @@ class ShowsController < ApplicationController
 
     respond_to do |format|
       begin
-        @show.update_attributes!(params[:show])
+        @show.update_attributes!(show_params)
         format.json do
           render json: {
             data: @show.as_json
@@ -131,6 +131,10 @@ class ShowsController < ApplicationController
 
 private
   def scoped
-    Show.scoped
+    Show.where(nil)
+  end
+
+  def show_params
+    params.require(:show).permit(:title, :air_date)
   end
 end

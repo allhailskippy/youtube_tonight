@@ -13,11 +13,9 @@ class CreateUsers < ActiveRecord::Migration
       t.datetime :deleted_at, :default => nil
     end
 
-    User.create_versioned_table
   end
 
   def down
     drop_table :users
-    drop_table :user_versions
   end
 end

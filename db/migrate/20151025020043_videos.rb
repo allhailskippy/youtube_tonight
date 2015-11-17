@@ -22,11 +22,9 @@ class Videos < ActiveRecord::Migration
       t.timestamps
       t.datetime :deleted_at, :default => nil
     end
-    Video.create_versioned_table
   end
 
   def down
     drop_table :videos
-    drop_table :video_versions
   end
 end

@@ -4,29 +4,23 @@ ruby "2.2.3"
 group :production do
   gem 'thin'
 end
+
 gem 'rails_12factor'
-gem 'rails', '3.2.21'
+gem 'rails', '~> 4.0.13'
 gem 'test-unit'
 gem 'bundler', '>= 1.8.4'
-#gem 'capistrano'
-#gem 'capistrano-rails'
-#gem 'capistrano-rvm'
-#gem 'capistrano-bundler'
-group :production do
-#  gem 'therubyracer', :platforms => :ruby
-end
 
 gem 'pg'
 gem 'date_validator'
 gem 'ransack'
-gem 'will_paginate', '3.0.7'
+gem 'will_paginate'
 gem 'validate_url'
-gem 'acts_as_versioned', :path => 'vendor/gems/acts_as_versioned' # https://github.com/technoweenie/acts_as_versioned
-gem 'rails3_acts_as_paranoid'
+gem 'acts_as_versioned'
+gem "paranoia", "~> 2.0"
 gem 'iso8601'
 
 # Javascript gems
-gem 'jquery-rails', '2.3.0'
+gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'websocket-rails'
 
@@ -42,24 +36,17 @@ gem 'ng-rails-csrf'
 gem 'devise'
 gem 'declarative_authorization'
 gem 'omniauth-facebook'
-gem 'userstamp', :path => './lib/plugins/userstamp'
+gem 'userstamp', :git => 'git@github.com:kimkong/userstamp.git'
 
 # APIs
 gem 'google-api-client'
 
-# Gems used only for assets and not required
-# in production environments by default.
-group :assets do
-  gem 'sass-rails', '~> 3.2.3'
-  gem 'coffee-rails', '~> 3.2.1'
-  gem 'uglifier', '>= 1.0.3'
-end
+gem 'sass-rails'
+gem 'coffee-rails'
+gem 'uglifier'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
-
-# Deploy with Capistrano
-# gem 'capistrano'
 
 # To use debugger
 # gem 'debugger'

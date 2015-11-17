@@ -1,7 +1,4 @@
 class Show < ActiveRecord::Base
-  acts_as_paranoid_versioned
-
-  attr_accessible :title, :air_date
   attr_accessor :video_count
 
   ##

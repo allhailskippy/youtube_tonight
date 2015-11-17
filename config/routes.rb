@@ -4,7 +4,7 @@ Youtubetonight::Application.routes.draw do
   resources :home
   resources :shows
   resources :videos
-  match 'broadcasts' => 'broadcasts#index'
-  match 'youtube_parser' => 'youtube_parser#index'
+  get 'broadcasts' => 'broadcasts#index'
+  get 'youtube_parser' => 'youtube_parser#index'
   root :to => 'shows#index'
 end

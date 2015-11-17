@@ -48,7 +48,7 @@ class VideosController < ApplicationController
     respond_to do |format|
       begin
         # Create
-        @video = scoped.build(params[:video])
+        @video = scoped.build(video_params)
 
         # TODO: Permissions
         # permitted_to!(:create, @video)
@@ -77,7 +77,7 @@ class VideosController < ApplicationController
 
     respond_to do |format|
       begin
-        @video.update_attributes!(params[:video])
+        @video.update_attributes!(video_params)
         format.json do
           render json: @video.as_json
         end
@@ -125,7 +125,7 @@ class VideosController < ApplicationController
 private
   def scoped
     if @show
-      @show.videos.scoped
+      @show.videos.where(nil)
     else
       Video.scoped
     end
@@ -136,5 +136,14 @@ private
     params[:q] ||= {}
 
     @show = Show.find(params[:show_id]) rescue nil
+  end
+
+  def video_params
+    params.require(:video).permit(
+      :title, :link, :show_id, :start_time, :end_time, :sort_order,
+      :api_video_id, :api_published_at, :api_channel_id, :api_channel_title,
+      :api_description, :api_thumbnail_medium_url, :api_thumbnail_default_url,
+      :api_thumbnail_high_url, :api_title, :api_duration, :api_duration_seconds
+    )
   end
 end
