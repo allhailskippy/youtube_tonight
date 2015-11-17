@@ -13,5 +13,6 @@ Youtubetonight::Application.routes.draw do
             get :suggest_change
           end
   end
+  resources :authorization_usages
   root :to => 'shows#index'
 end
