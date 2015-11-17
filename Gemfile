@@ -7,8 +7,7 @@ gem 'capistrano-rails'
 gem 'capistrano-rvm'
 gem 'capistrano-bundler'
 group :production do
-  gem 'fcgi'
-  gem 'therubyracer', :platforms => :ruby
+#  gem 'therubyracer', :platforms => :ruby
 end
 
 gem 'mysql2'
