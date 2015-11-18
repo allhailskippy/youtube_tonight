@@ -22,6 +22,7 @@ gem 'iso8601'
 # Javascript gems
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
+gem 'faye-websocket', '0.7.5'
 gem 'websocket-rails'
 
 source 'https://rails-assets.org' do
