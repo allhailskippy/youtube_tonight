@@ -53,15 +53,17 @@ var controller = function(
   };
 
   $scope.toggleMute = function(mute) {
-    var trigger = 'video_player.' + (mute ? "mute" : "unmute");
-    $scope.dispatcher.trigger(trigger, {
-      player_id: $scope.playerId,
-      sender_id: $scope.senderId
-    });
+    if($scope.playing) {
+      var trigger = 'video_player.' + (mute ? "mute" : "unmute");
+      $scope.dispatcher.trigger(trigger, {
+        player_id: $scope.playerId,
+        sender_id: $scope.senderId
+      });
 
-    //Success
-    $scope.muted = mute;
-    $scope.$applyAsync();
+      //Success
+      $scope.muted = mute;
+      $scope.$applyAsync();
+    }
   };
 
   /**
