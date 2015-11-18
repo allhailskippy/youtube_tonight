@@ -100,7 +100,9 @@ var VideoPreview = function(
                 $scope.dispatcher.trigger('video_player.currently_playing', {
                   video: $scope.video,
                   player_id: $scope.playerId,
-                  sender_id: $scope.senderId
+                  sender_id: $scope.senderId,
+                  current_time: $scope.player.getCurrentTime(),
+                  duration: $scope.player.getDuration()
                 });
               }, 200);
             },
