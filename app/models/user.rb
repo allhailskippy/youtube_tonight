@@ -20,9 +20,10 @@ class User < ActiveRecord::Base
   #
   # Stores user info on successful sign in from facebook
   def self.from_omniauth(auth)
-    user = where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
-      user.provider = auth.provider
-      user.uid = auth.uid
+    user = where(provider: auth.provider, uid: auth.uid).first_or_create do |u|
+      u.provider = auth.provider
+      u.uid = auth.uid
+      u.requires_auth = true
     end
     user.expires_at = auth.credentials.expires_at
     user.email = auth.info.email

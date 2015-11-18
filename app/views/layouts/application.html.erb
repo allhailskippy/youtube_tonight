@@ -28,7 +28,7 @@
             <a class="navbar-brand" href="/shows#/index">YouTube Tonight</a>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
-            <% if user_signed_in? %>
+            <% if permitted_to?(:index, :shows) %>
               <ul class="nav navbar-nav">
                 <li class="active"><a href="/shows#/index">Shows</a></li>
               </ul>

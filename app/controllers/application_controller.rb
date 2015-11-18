@@ -1,4 +1,18 @@
 class ApplicationController < ActionController::Base
+
+  def after_sign_in_path_for(user)
+    if user.requires_auth
+      requires_auth_user_path(user)
+    else
+      root_path
+    end
+  end
+
+  def permission_denied
+    sign_out(current_user)
+    redirect_to new_user_session_path
+  end
+
   # If we want to skip devise authentication on current controller/actions specifically, set them up here
   SKIP_DEVISE_AUTHENTICATION = [
     {:controller => :auth, :action => :facebook }
@@ -29,9 +43,6 @@ protected
         sign_out(current_user)
         redirect_to new_user_session_path
       else
-        # auth_token overrides the session to log in a different user
-        sign_out(current_user) if params[:auth_token].present? && current_user
-
         authenticate_user!
         Authorization.current_user = current_user
 

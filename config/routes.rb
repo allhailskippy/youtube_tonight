@@ -4,6 +4,13 @@ Youtubetonight::Application.routes.draw do
   resources :home
   resources :shows
   resources :videos
+
+  resources :users do
+    member do
+      get :requires_auth, :as => 'requires_auth'
+    end
+  end
+
   get 'broadcasts' => 'broadcasts#index'
   get 'youtube_parser' => 'youtube_parser#index'
   root :to => 'shows#index'

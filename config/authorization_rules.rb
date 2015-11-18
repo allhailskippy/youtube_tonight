@@ -9,6 +9,7 @@ authorization do
     # Devise requires update privs to users, users still need to be logged in to access
     # controller actions so this should be safe
     has_permission_on :users, :to => :update
+    has_permission_on :users, :to => :requires_auth
     has_permission_on :devise_sessions, :to => :manage
   end
 
