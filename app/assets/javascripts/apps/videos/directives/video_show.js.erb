@@ -25,16 +25,20 @@ var controller = function(
   $scope.senderId = 'video-' + $scope.video.id + '-' + Math.floor(Math.random() * 1000000);
   $scope.muted = true;
   $scope.playing = false;
+  $scope.previewRequested = false;
 
   /**
    * Scope Methods
    */
   $scope.play = function() {
-    $scope.dispatcher.trigger('video_player.play', {
-      video: $scope.video,
-      player_id: $scope.playerId,
-      sender_id: $scope.senderId
-    });
+    if(!$scope.previewRequested) {
+      $scope.previewRequested = true;
+      $scope.dispatcher.trigger('video_player.play', {
+        video: $scope.video,
+        player_id: $scope.playerId,
+        sender_id: $scope.senderId
+      });
+    }
   };
 
   $scope.stop = function() {
@@ -71,6 +75,7 @@ var controller = function(
    */
   $scope.channel.bind('playing', function(message) {
     if(message.player_id == $scope.playerId) {
+      $scope.previewRequested = false;
       if(message.sender_id == $scope.senderId) {
         $scope.playing = true;
         $scope.$applyAsync();
@@ -82,6 +87,7 @@ var controller = function(
   });
 
   $scope.channel.bind('stopped', function(message) {
+    $scope.previewRequested = false;
     if(message.sender_id == $scope.senderId) {
       $scope.playing = false;
       $scope.$applyAsync();

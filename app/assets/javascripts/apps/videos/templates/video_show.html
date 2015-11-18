@@ -9,21 +9,23 @@
 <div class="col-md-9">
   <p>
     <a href="javascript:void(0)"
+      class="btn btn-success"
       ng-click="play()"
       ng-show="!playing"
-      class="btn btn-success"
+      ng-disabled="previewRequested"
     >Preview</a>
     <a href="javascript:void(0)"
+      class="btn btn-danger"
       ng-click="stop()"
       ng-show="playing"
-      class="btn btn-danger"
+      ng-disabled="previewRequested"
     >Stop Preview</a>
     <a
       class="btn glyphicon glyphicon-volume-up"
       aria-hidden="true"
       ng-class="{'btn-success': playing, 'btn-default': !playing}"
       ng-show="muted"
-      ng-disabled="!playing"
+      ng-disabled="!playing || previewRequested"
       ng-click="unMute()"
     ></a>
     <a
@@ -31,7 +33,7 @@
       class="btn btn-danger glyphicon glyphicon-volume-off"
       aria-hidden="true"
       ng-show="!muted"
-      ng-disabled="!playing"
+      ng-disabled="!playing || previewRequested"
       ng-click="mute()"
     ></a>
   </p>
