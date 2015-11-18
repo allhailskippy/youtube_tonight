@@ -26,7 +26,6 @@ angular.module('ui.bootstrap-slider', [])
         class: '@'
       },
       link: function ($scope, element, attrs, ngModelCtrl, $compile) {
-        console.log(element);
         $('.slider-input', element).addClass($scope.class);
 
         var ngModelDeregisterFn, ngDisabledDeregisterFn;
