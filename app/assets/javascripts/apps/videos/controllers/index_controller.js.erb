@@ -180,6 +180,7 @@ var IndexCtrl = function(
 
   $scope.channel.bind('stopped', function(message) {
     if(message.player_id == $scope.playerId) {
+      $scope.showPreview = false;
       $scope.playing = false;
       $scope.$applyAsync();
     };

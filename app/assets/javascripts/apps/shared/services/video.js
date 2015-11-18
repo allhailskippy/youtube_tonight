@@ -1,7 +1,9 @@
 (function(){
 'use strict';
 
-var Video = function(VideoApi) {
+var Video = function(
+  VideoApp, VideoApi
+  ) {
   var self = this;
 
   self.attributes = [
@@ -45,6 +47,12 @@ var Video = function(VideoApi) {
      */
     // Delete video
     video.destroy = function() {
+      var dispatcher = VideoApp.getDispatcher();
+      dispatcher.trigger('video_player.stop', {
+        video: video,
+        player_id: 'all'
+      });
+
       return VideoApi.delete({id: video.id}).$promise;
     };
 
@@ -120,7 +128,9 @@ var Video = function(VideoApi) {
   };
 };
 
-Video.$inject = ['VideoApi'];
+Video.$inject = [
+  'VideoApp', 'VideoApi'
+];
 
 angular.module('shared')
        .service('Video', Video);

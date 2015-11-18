@@ -87,9 +87,10 @@ var controller = function(
   });
 
   $scope.channel.bind('stopped', function(message) {
-    $scope.previewRequested = false;
     if(message.sender_id == $scope.senderId) {
+      $scope.previewRequested = false;
       $scope.playing = false;
+      $scope.muted = true;
       $scope.$applyAsync();
     }
   });
