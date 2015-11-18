@@ -22,7 +22,7 @@ var controller = function(
   $scope.dispatcher = VideoApp.getDispatcher();
   $scope.channel = VideoApp.getChannel('video_player');
   $scope.playerId = VideoApp.getPlayerId('preview-' + $scope.video.show_id);
-  $scope.senderId = 'video-' + $scope.video.id + '-' + Math.floor(Math.random() * 1000000);
+  $scope.senderId = $scope.senderId || 'video-' + $scope.video.id + '-' + Math.floor(Math.random() * 1000000);
   $scope.muted = true;
   $scope.playing = false;
   $scope.previewRequested = false;
@@ -94,6 +94,14 @@ var controller = function(
       $scope.$applyAsync();
     }
   });
+
+  $scope.channel.bind('currently_playing', function(message) {
+    if(message.sender_id == $scope.senderId) {
+      $scope.previewRequested = false;
+      $scope.playing = true;
+      $scope.$applyAsync();
+    }
+  });
 };
 
 controller.$inject = [
@@ -106,7 +114,7 @@ var VideoShow = function() {
     restrict: 'E',
     scope: {
       video: '=',
-      showId: '='
+      senderId: '='
     },
     controller: controller,
     templateUrl: '<%= asset_path("apps/videos/templates/video_show.html") %>'

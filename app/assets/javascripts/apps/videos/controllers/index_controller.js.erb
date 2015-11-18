@@ -32,6 +32,7 @@ var IndexCtrl = function(
   $scope.channel = VideoApp.getChannel('video_player');
   $scope.playerId = VideoApp.getPlayerId('preview-' + $scope.showId);
   $scope.broadcastId = 'broadcast-' + $scope.showId;
+  $scope.senderIds = {}
 
   $scope.playing = false;
 

@@ -4,7 +4,8 @@ class VideoPlayerController < WebsocketRails::BaseController
     :stop, :stopped,
     :pause, :paused,
     :mute, :muted,
-    :unmute, :unmuted
+    :unmute, :unmuted,
+    :currently_playing
   ]
 
   events.each do |e|

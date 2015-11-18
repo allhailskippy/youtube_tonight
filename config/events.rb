@@ -12,7 +12,8 @@ WebsocketRails::EventMap.describe do
       :stop, :stopped,
       :pause, :paused,
       :mute, :muted,
-      :unmute, :unmuted
+      :unmute, :unmuted,
+      :currently_playing
     ]
     events.each do |e|
       subscribe e, "video_player##{e}"
