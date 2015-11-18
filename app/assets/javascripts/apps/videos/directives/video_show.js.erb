@@ -26,6 +26,10 @@ var controller = function(
   $scope.muted = true;
   $scope.playing = false;
   $scope.previewRequested = false;
+  $scope.sliding = false;
+
+  $scope.currentTime = 0;
+  $scope.duration = 0;
 
   /**
    * Scope Methods
@@ -70,6 +74,18 @@ var controller = function(
     }
   };
 
+  $scope.startSlide = function(t) {
+    $scope.sliding = true;
+  };
+  $scope.endSlide = function(t) {
+    $scope.dispatcher.trigger('video_player.set_time', {
+      video: $scope.video,
+      player_id: $scope.playerId,
+      sender_id: $scope.senderId,
+      time: t
+    });
+  };
+
   /**
    * Event Handlers
    */
@@ -99,7 +115,17 @@ var controller = function(
     if(message.sender_id == $scope.senderId) {
       $scope.previewRequested = false;
       $scope.playing = true;
+      if(!$scope.sliding) {
+        $scope.currentTime = message.current_time;
+      }
+      $scope.duration = message.duration;
       $scope.$applyAsync();
+    }
+  });
+
+  $scope.channel.bind('set_time', function(message) {
+    if(message.sender_id == $scope.senderId) {
+      $scope.sliding = false;
     }
   });
 };

@@ -58,3 +58,24 @@ glyphicon.disabled {
 .panel-primary {
   border-color: #ccc !important;
 }
+
+/* Bootstrap slider style */
+.preview-slider .slider {
+  width: 200px !important;
+}
+
+.preview-slider .slider-selection {
+  background: #d9534f !important;
+}
+.preview-slider .slider-handle {
+  border-bottom-color: #d9534f !important;
+  background: #d9534f !important;
+  width: 10px !important;
+  height: 10px !important;
+  margin-top: 0 !important;
+  margin-left: -5px !important;
+}
+
+.preview-slider .slider-track-high {
+  background: #FFF !important;
+}

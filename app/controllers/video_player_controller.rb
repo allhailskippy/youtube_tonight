@@ -5,7 +5,8 @@ class VideoPlayerController < WebsocketRails::BaseController
     :pause, :paused,
     :mute, :muted,
     :unmute, :unmuted,
-    :currently_playing
+    :currently_playing,
+    :set_time
   ]
 
   events.each do |e|

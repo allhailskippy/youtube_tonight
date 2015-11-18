@@ -11,11 +11,12 @@
     <%= stylesheet_link_tag "application", :media => "all" %>
     <%= stylesheet_link_tag "tablesort", :media => "all" %>
     <%= stylesheet_link_tag "dashboard", :media => "all" %>
+    <%= stylesheet_link_tag "bootstrap-slider", :media => "all" %>
 
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 
-    <%= javascript_include_tag "application", "moment" %>
+    <%= javascript_include_tag "application", "moment", "modernizr", "bootstrap-slider" %>
 
     <%= csrf_meta_tags %>
   </head>

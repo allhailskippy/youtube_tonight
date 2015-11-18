@@ -24,6 +24,6 @@ var routesConfig = function($locationProvider, $routeProvider) {
 };
 routesConfig.$inject = ['$locationProvider', '$routeProvider'];
 
-angular.module('VideoApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf', 'ui.sortable'])
+angular.module('VideoApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf', 'ui.sortable', 'ui.bootstrap-slider'])
        .config(routesConfig);
 })();

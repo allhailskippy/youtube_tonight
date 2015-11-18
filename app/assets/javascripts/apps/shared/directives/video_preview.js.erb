@@ -107,12 +107,24 @@ var VideoPreview = function(
               }, 200);
             },
             'onStateChange': function(e) {
-              if($scope.mute) {
-                e.target.mute();
-              };
               // We're playing!
               if(e.data == YT.PlayerState.PLAYING) {
+                // Mute if requested
+                if($scope.mute) {
+                  e.target.mute();
+                };
+
                 $scope.dispatcher.trigger('video_player.playing', {
+                  video: $scope.video,
+                  player_id: $scope.playerId,
+                  sender_id: $scope.senderId
+                });
+              }
+
+              // We've stopped!
+              if(e.data == YT.PlayerState.ENDED) {
+                $scope.mute = true;
+                $scope.dispatcher.trigger('video_player.stop', {
                   video: $scope.video,
                   player_id: $scope.playerId,
                   sender_id: $scope.senderId
@@ -178,6 +190,7 @@ var VideoPreview = function(
       // Mute player
       $scope.channel.bind('mute', function(message) {
         if(message.player_id == $scope.playerId && $scope.player) {
+          $scope.mute = true;
           $scope.player.mute();
         }
       });
@@ -185,7 +198,15 @@ var VideoPreview = function(
       // Unmute player
       $scope.channel.bind('unmute', function(message) {
         if(message.player_id == $scope.playerId && $scope.player) {
+          $scope.mute = false;
           $scope.player.unMute();
+        }
+      });
+
+      // Set the player to a specific time
+      $scope.channel.bind('set_time', function(message) {
+        if(message.player_id == $scope.playerId && $scope.player) {
+          $scope.player.seekTo(message.time, true);
         }
       });
     }
