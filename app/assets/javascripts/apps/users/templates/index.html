@@ -24,18 +24,19 @@
               <span
                 title="Authorize"
                 class="btn btn-success"
-                ng-if="currentUser.is_admin && user.requires_auth"
+                ng-if="!user.is_admin && user.requires_auth"
                 ng-click="authorize(user)"
               >Authorize</span>
               <span
                 title="De-Authorize"
                 class="btn btn-danger"
-                ng-if="currentUser.is_admin && !user.requires_auth"
+                ng-if="!user.is_admin && !user.requires_auth"
                 ng-click="deAuthorize(user)"
               >De-Authorize</span>
               <span
                 title="Edit"
                 class="btn btn-success"
+                ng-if="currentUser.is_admin"
                 ng-click="edit(user)"
               >Edit User</span>
             </span>
