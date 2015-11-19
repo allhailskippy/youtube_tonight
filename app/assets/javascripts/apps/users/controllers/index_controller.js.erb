@@ -1,0 +1,83 @@
+/**
+ * @ngdoc controller
+ * @name IndexCtrl
+ *
+ * @description Logic for index stuffs
+ */
+(function() {
+  "use strict";
+
+var IndexCtrl = function(
+  $scope, $location,
+  UserApp, User, Notice
+  ) {
+
+  /**
+   * Setup
+   */
+  $scope.retrieving = false;
+  $scope.users = [];
+  UserApp.currentUser = <%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>;
+  $scope.currentUser = UserApp.currentUser;
+
+  /**
+   * Watch variables
+   */
+
+  /**
+   * Scope methods
+   */
+  $scope.authorize = function(user) {
+    user.authorize().catch(Notice.handleErrors);
+  };
+
+  $scope.deAuthorize = function(user) {
+    if(confirm("Are you sure you want to de-authorize this user?\nThey will no longer be allowed to sign in.")){
+      user.deAuthorize().catch(Notice.handleErrors);
+    }
+  };
+
+  $scope.edit = function(user) {
+    $location.path('/' + user.id + '/edit');
+  };
+
+  // Get all users
+  $scope.fetchUsers = function() {
+    if(!$scope.retreiving) {
+      $scope.retrieving = true;
+      $scope.users = []; 
+      $scope.queryUsers();
+    }
+  };
+
+  // Looks up users 
+  $scope.queryUsers = function() {
+    // Skip if we're currently looking up users
+    if($scope.querying) { return true; }
+
+    $scope.querying = true;
+
+    var params = {};
+
+    // Lookup campaigns based on params
+    User.query(params).then(function(response) {
+      angular.forEach(response.data, function(user) {
+        $scope.users.push(User.build(user));
+      });
+      $scope.retrieving = false;
+      $scope.querying = false;
+    });
+  };
+
+  // Lookup initial list of users
+  $scope.fetchUsers();
+};
+
+IndexCtrl.$inject = [
+  '$scope', '$location',
+  'UserApp', 'User', 'Notice'
+];
+
+angular.module("UserApp")
+       .controller('IndexCtrl', IndexCtrl);
+}());

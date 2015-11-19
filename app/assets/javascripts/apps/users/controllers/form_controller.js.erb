@@ -1,0 +1,45 @@
+/**
+ * @ngdoc controller
+ * @name FormCtrl
+ *
+ * @description Logic for index stuffs
+ */
+(function() {
+  "use strict";
+
+var FormCtrl = function(
+  $scope, $routeParams, $location,
+  UserApp, User, Notice
+  ) {
+
+  /**
+   * Setup
+   */
+  User.find($routeParams.id).then(function(response) {
+    $scope.user = User.build(response.data);
+  });
+  UserApp.currentUser = <%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>;
+  $scope.currentUser = UserApp.currentUser;
+
+  /**
+   * Scope methods
+   */
+  $scope.cancel= function() {
+    $location.path('/index');
+  };
+
+  $scope.save = function() {
+    $scope.user.save().then(function() {
+      $location.path('/index');
+    });
+  };
+};
+
+FormCtrl.$inject = [
+  '$scope', '$routeParams', '$location',
+  'UserApp', 'User', 'Notice'
+];
+
+angular.module("UserApp")
+       .controller('FormCtrl', FormCtrl);
+}());

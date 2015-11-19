@@ -50,8 +50,7 @@ class VideosController < ApplicationController
         # Create
         @video = scoped.build(video_params)
 
-        # TODO: Permissions
-        # permitted_to!(:create, @video)
+        permitted_to!(:create, @video)
 
         # Save Video
         @video.save!

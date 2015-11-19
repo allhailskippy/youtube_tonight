@@ -14,9 +14,11 @@
     <%= stylesheet_link_tag "bootstrap-slider", :media => "all" %>
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/css/bootstrap-select.min.css" />
 
     <%= javascript_include_tag "application", "moment", "modernizr", "bootstrap-slider" %>
+    <%= javascript_include_tag "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/js/bootstrap-select.min.js" %>
 
     <%= csrf_meta_tags %>
   </head>
@@ -30,7 +32,12 @@
           <div id="navbar" class="navbar-collapse collapse">
             <% if permitted_to?(:index, :shows) %>
               <ul class="nav navbar-nav">
-                <li class="active"><a href="/shows#/index">Shows</a></li>
+                <li class="<%= "active" if params[:controller] == 'shows' %>"><a href="/shows#/index">Shows</a></li>
+              </ul>
+            <% end %>
+            <% if permitted_to?(:index, :users) %>
+              <ul class="nav navbar-nav">
+                <li class="<%= "active" if params[:controller] == 'users' %>"><a href="/users#/index">Users</a></li>
               </ul>
             <% end %>
             <ul class="nav navbar-nav">

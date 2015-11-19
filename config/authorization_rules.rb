@@ -8,25 +8,24 @@ authorization do
 
     # Devise requires update privs to users, users still need to be logged in to access
     # controller actions so this should be safe
-    has_permission_on :users, :to => :update
-    has_permission_on :users, :to => :requires_auth
+    has_permission_on :users, :to => [:update, :requires_auth]
     has_permission_on :devise_sessions, :to => :manage
+  end
+
+  role :host do
+    includes :guest
+
+    has_permission_on :users, :to => :manage
+    has_permission_on :videos, :to => :manage
+    has_permission_on :shows, :to => :manage
+    has_permission_on :youtube_parser, :to => :read
+    has_permission_on :broadcasts, :to => :read
   end
 
   # permissions on other roles, such as
   role :admin do
     includes :guest
-
-    # Devise requires update privs to users, users still need to be logged in to access
-    # controller actions so this should be safe
-    has_permission_on :users, :to => :update
-    has_permission_on :devise_sessions, :to => :manage
-
-    #includes :guest
-    has_permission_on :videos, :to => :manage
-    has_permission_on :shows, :to => :manage
-    has_permission_on :youtube_parser, :to => :read
-    has_permission_on :broadcasts, :to => :read
+    includes :host
   end
 end
 

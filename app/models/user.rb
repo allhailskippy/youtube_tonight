@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   model_stamper
 
-#  attr_accessible :auth_hash, :email, :expires_at, :facebook_id, :name, :profile_image, :provider
+  attr_accessor :role_titles
 
   ##
   # Authentication
@@ -13,7 +13,22 @@ class User < ActiveRecord::Base
   ##
   # Relationships
   #
-  has_many :roles
+  has_many :roles, :dependent => :destroy
+
+  ##
+  # Validation
+  #
+  validates :role_titles,
+    :presence => {
+      :message => "must be selected"
+    },
+    :on => :update,
+    :if => Proc.new{|r| !r.requires_auth }
+
+  ##
+  # Hooks
+  #
+  before_update :update_roles, :if => Proc.new {|r| r.requires_auth_changed? }
 
   ##
   # Methods
@@ -41,5 +56,37 @@ class User < ActiveRecord::Base
   # Used for finding out what roles a user has (declarative authorization)
   def role_symbols
     (roles || []).map {|r| r.title.to_sym}
+  end
+
+  # Here for consistency
+  def self.as_json_hash
+    {
+      :include => :roles,
+      :methods => [:role_titles, :is_admin]
+    }
+  end
+
+  # Deal with roles on update
+  def update_roles
+    # Wipe out any existing roles
+    roles.destroy_all
+    roles.reload
+
+    if !requires_auth
+      self.role_titles ||= []
+      self.role_titles.each do |title|
+        self.roles.build(:title => title)
+      end
+    end
+  end
+
+  def is_admin
+    roles.any?{|r| r.title == "admin"}
+  end
+
+  # Only the reader is the same
+  # as role_symbols
+  def role_titles
+    @role_titles || role_symbols
   end
 end
