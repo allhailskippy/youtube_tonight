@@ -17,8 +17,7 @@ var IndexCtrl = function(
    */
   $scope.retrieving = false;
   $scope.users = [];
-  UserApp.currentUser = <%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>;
-  $scope.currentUser = UserApp.currentUser;
+  $scope.currentUser = <%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>;
 
   /**
    * Watch variables

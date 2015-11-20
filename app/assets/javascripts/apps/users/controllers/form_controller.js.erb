@@ -18,8 +18,7 @@ var FormCtrl = function(
   User.find($routeParams.id).then(function(response) {
     $scope.user = User.build(response.data);
   });
-  UserApp.currentUser = <%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>;
-  $scope.currentUser = UserApp.currentUser;
+  $scope.currentUser = <%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>;
 
   /**
    * Scope methods
@@ -37,6 +36,10 @@ var FormCtrl = function(
   }
 
   $scope.save = function() {
+    // We update the roles from here, so
+    // let our model know to clear out
+    // existing ones
+    $scope.user.change_roles = true;
     $scope.user.save().then(function() {
       $location.path('/index');
     });

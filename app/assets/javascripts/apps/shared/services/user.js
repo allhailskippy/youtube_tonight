@@ -9,6 +9,7 @@ var User = function(
 
   self.attributes = [
     'id',
+    'change_roles',
     'name',
     'email',
     'requires_auth',

@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   def requires_auth
     @user = User.find(params[:id])
+    redirect_to root_path unless @user.requires_auth
   end
 
   # GET /users
@@ -9,7 +10,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        users = User.all
+        users = User.order('id desc').all
 
         render json: {
           data: users.as_json(User.as_json_hash)
@@ -107,6 +108,7 @@ private
       :name,
       :email,
       :requires_auth,
+      :change_roles,
       :role_titles => []
     )
   end
