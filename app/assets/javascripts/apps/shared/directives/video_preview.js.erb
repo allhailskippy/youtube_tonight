@@ -183,7 +183,7 @@ var VideoPreview = function(
           );
 
           // Add new div for player
-          $element.append(preview.get());
+          $element.append(preview);
 
           VideoPreviewService.waitForReady(function() {
             $scope.newPlayer(preview_id);
