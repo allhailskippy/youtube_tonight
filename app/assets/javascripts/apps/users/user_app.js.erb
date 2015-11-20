@@ -17,6 +17,7 @@ var routesConfig = function($locationProvider, $routeProvider) {
     templateUrl: '<%= asset_path("apps/users/templates/index.html") %>',
     resolve: {
       currentUser: function() {
+        console.log(<%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>);
         return <%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>;
       }
     }
@@ -26,6 +27,7 @@ var routesConfig = function($locationProvider, $routeProvider) {
     templateUrl: '<%= asset_path("apps/users/templates/form.html") %>',
     resolve: {
       currentUser: function() {
+        console.log(<%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>);
         return <%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>;
       }
     }
