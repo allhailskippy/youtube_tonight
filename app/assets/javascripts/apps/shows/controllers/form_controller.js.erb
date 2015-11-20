@@ -34,8 +34,7 @@ var FormCtrl = function(
   if($routeParams.show_id) {
     Show.find($routeParams.show_id).then(function(response) {
       var s = Show.setCurrentShow(Show.build(response.data));
-      //var hostArray = $.map(s.hosts.split(','), function(h) { return parseInt(h)});
-      var hostArray = s.hosts.split(',');
+      var hostArray = (s.hosts || '').split(',');
 
       // Get list of available hosts
       User.availableHosts().then(function(results) {
