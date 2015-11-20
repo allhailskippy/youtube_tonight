@@ -10,7 +10,13 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        users = User.order('id desc').all
+        params[:q] ||= {}
+        params[:q][:s] ||= 'id desc'
+        params[:per_page] ||= 100000
+        params[:page] ||= 1
+
+        search = User.search(params[:q])
+        users = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
 
         render json: {
           data: users.as_json(User.as_json_hash)

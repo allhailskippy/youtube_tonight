@@ -34,6 +34,25 @@
           datepicker
         />
       </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <label>Hosts</label>
+          <div ui-sortable="hostSortableOptions" class="showHosts" ng-model="showHosts">
+            <div ng-repeat="user in showHosts">
+              <user-panel user="user"></user-panel>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 form-group">
+          <label>Available Hosts</label>
+          <div ui-sortable="hostSortableOptions" class="showHosts" ng-model="availableHosts">
+            <div ng-repeat="user in availableHosts">
+              <user-panel user="user"></user-panel>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="pull-right">
         <button
           type="submit"
@@ -50,3 +69,15 @@
     </form>
   </div>
 </div>
+<style>
+  .showHosts {
+    border: 1px dotted #ccc;
+    margin: 10px 10px 0 0;
+    padding: 5px;
+    border-radius: 4px;
+  }
+
+  .showHosts .panel {
+    margin-bottom: 3px;
+  }
+</style>

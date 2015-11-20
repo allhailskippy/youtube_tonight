@@ -79,6 +79,12 @@ var User = function(
   self.query = function(params) {
     return UserApi.query(params).$promise;
   };
+
+  self.availableHosts = function(params) {
+    params = params || {}
+    params['q[requires_auth_eq]'] = false;
+    return self.query(params);
+  };
 };
 
 User.$inject = [

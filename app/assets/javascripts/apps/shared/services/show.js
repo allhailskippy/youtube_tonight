@@ -7,7 +7,8 @@ var Show = function(ShowApi) {
   self.attributes = [
     'air_date',
     'id',
-    'title'
+    'title',
+    'hosts'
   ];
 
   self.build = function(show) {

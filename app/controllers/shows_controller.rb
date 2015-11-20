@@ -135,6 +135,6 @@ private
   end
 
   def show_params
-    params.require(:show).permit(:title, :air_date)
+    params.require(:show).permit(:title, :air_date, :hosts)
   end
 end

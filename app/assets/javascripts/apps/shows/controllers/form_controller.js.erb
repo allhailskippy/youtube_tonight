@@ -9,7 +9,7 @@
 
 var FormCtrl = function(
   $scope, $routeParams, $location, $window,
-  ShowApp, Show, Notice
+  ShowApp, Show, User, Notice
   ) {
 
   /**
@@ -17,11 +17,37 @@ var FormCtrl = function(
    */
   // Set a blank show as current show by default
   $scope.currentShow = Show.setCurrentShow(Show.build({}));
+  $scope.hostSortableOptions = {
+    connectWith: '.showHosts',
+    stop: function() {
+      // Assign list of hosts
+      $scope.currentShow.hosts = $.map($scope.showHosts, function(user) {
+        return user.id;
+      }).join(',');
+    }
+  }
+  $scope.availableHosts = [];
+  $scope.showHosts = [];
+  $scope.currentShow.hosts;
 
   // Grab show from server
   if($routeParams.show_id) {
     Show.find($routeParams.show_id).then(function(response) {
-      Show.setCurrentShow(Show.build(response.data));
+      var s = Show.setCurrentShow(Show.build(response.data));
+      //var hostArray = $.map(s.hosts.split(','), function(h) { return parseInt(h)});
+      var hostArray = s.hosts.split(',');
+
+      // Get list of available hosts
+      User.availableHosts().then(function(results) {
+        angular.forEach(results.data, function(user) {
+          var u = User.build(user);
+          if(hostArray.indexOf(u.id.toString()) > -1) {
+            $scope.showHosts.push(u);
+          } else {
+            $scope.availableHosts.push(u);
+          }
+        });
+      });
     });
   }
 
@@ -95,7 +121,7 @@ var FormCtrl = function(
 
 FormCtrl.$inject = [
   '$scope', '$routeParams', '$location', '$window',
-  'ShowApp', 'Show', 'Notice'
+  'ShowApp', 'Show', 'User', 'Notice'
 ];
 
 angular.module("ShowApp")
