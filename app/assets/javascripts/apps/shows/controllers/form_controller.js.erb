@@ -48,6 +48,13 @@ var FormCtrl = function(
         });
       });
     });
+  } else {
+    // New show
+    User.availableHosts().then(function(results) {
+      angular.forEach(results.data, function(user) {
+        $scope.availableHosts.push(User.build(user));
+      });
+    });
   }
 
   /**
