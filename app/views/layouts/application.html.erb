@@ -47,12 +47,14 @@
                 <% end %>
               </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right nav-profile">
-              <li><a href='javascript:void(0)'>
-                Welcome <%= Authorization.current_user.name %>!
-                <img src="<%= Authorization.current_user.profile_image %>" />
-              </a></li>
-            </ul>
+            <% if user_signed_in? %>
+              <ul class="nav navbar-nav navbar-right nav-profile">
+                <li><a href='javascript:void(0)'>
+                  Welcome <%= current_user.name %>!
+                  <img src="<%= current_user.profile_image %>" />
+                </a></li>
+              </ul>
+            <% end %>
           </div>
         </div>
       </nav>
