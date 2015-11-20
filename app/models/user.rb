@@ -28,7 +28,8 @@ class User < ActiveRecord::Base
   ##
   # Hooks
   #
-  before_update :update_roles, :if => Proc.new {|r| r.change_roles }
+  before_update :update_roles, :if => Proc.new{|r| r.change_roles }
+  before_update :deliver_authorized_email, :if => Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
 
   ##
   # Methods
@@ -88,5 +89,9 @@ class User < ActiveRecord::Base
   # as role_symbols
   def role_titles
     @role_titles || role_symbols
+  end
+
+  def deliver_authorized_email
+    UserMailer.authorized_email(self).deliver!
   end
 end
