@@ -4,8 +4,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
 
     <title>Youtube Tonight</title>
     <%= stylesheet_link_tag "application", :media => "all" %>
@@ -24,20 +22,20 @@
   </head>
   <body>
     <% unless @hide_nav %>
-      <div class="container-fluid">
-        <nav class="navbar navbar-inverse navbar-fixed-top">
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
           <div class="navbar-header">
             <a class="navbar-brand" href="/shows#/index">YouTube Tonight</a>
           </div>
-          <div id="navbar" class="navbar-collapse collapse">
+          <div id="navbar" class="">
             <% if permitted_to?(:index, :shows) %>
               <ul class="nav navbar-nav">
                 <li class="<%= "active" if params[:controller] == 'shows' %>"><a href="/shows#/index">Shows</a></li>
               </ul>
             <% end %>
-            <% if permitted_to?(:index, :users) %>
+            <% if permitted_to?(:index, :manage_users) %>
               <ul class="nav navbar-nav">
-                <li class="<%= "active" if params[:controller] == 'users' %>"><a href="/users#/index">Users</a></li>
+                <li class="<%= "active" if params[:controller] == 'manage_users' %>"><a href="/manage_users#/index">Users</a></li>
               </ul>
             <% end %>
             <ul class="nav navbar-nav">
@@ -49,10 +47,19 @@
                 <% end %>
               </li>
             </ul>
+            <ul class="nav navbar-nav navbar-right nav-profile">
+              <li><a href='javascript:void(0)'>
+                Welcome <%= Authorization.current_user.name %>!
+                <img src="<%= Authorization.current_user.profile_image %>" />
+              </a></li>
+            </ul>
           </div>
-        </nav>
-      <% end %>
-      <%= yield %>
+        </div>
+      </nav>
+    <% end %>
+      <div class="container-fluid">
+        <%= yield %>
+      </div>
     </div>
   </body>
 </html>

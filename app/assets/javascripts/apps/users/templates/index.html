@@ -10,6 +10,7 @@
           <th>#</th>
           <th>Name</th>
           <th>Email</th>
+          <th>Roles</th>
           <th>&nbsp;</th>
         </tr>
       </thead>
@@ -19,6 +20,7 @@
           <td class="text-right">{{ user.id }}</td>
           <td>{{ user.name}}</td>
           <td>{{ user.email}}</td>
+          <td>{{ user.roleTitleStr()}}</td>
           <td class="text-right">
             <span ng-show="currentUser.id != user.id">
               <span

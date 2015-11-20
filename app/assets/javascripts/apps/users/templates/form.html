@@ -3,72 +3,89 @@
     <h1>Edit User</h1>
   </div>
   <div class="col-md-9 col-md-offset-3 main">
-    <div class="panel panel-success">
-      <div class="panel-heading">
-        <h3 class="panel-title">Edit User</h3>
+    <div class="row">
+      <div class="pull-right">
+        <span
+          class="btn btn-danger"
+          ng-click="destroy()"
+        >Delete User</span>
       </div>
-      <div class="panel-body">
-        <notices notices="notices"></notices>
-        <form role="form">
-          <div class="form-group">
-            <label for="search">Name:</label>
-            <input
-              type="text"
-              name="search"
-              class="form-control"
-              ng-model="user.name"
-            />
-          </div>
-          <div class="form-group">
-            <label for="search">Email:</label>
-            <input
-              type="text"
-              name="search"
-              class="form-control"
-              ng-model="user.email"
-            />
-          </div>
-          <div class="form-group">
+    </div>
+    <br />
+    <div class="row">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            Edit User
+          </h3>
+        </div>
+        <div class="panel-body">
+          <notices notices="notices"></notices>
+          <form role="form">
             <div class="form-group">
-              <label for="requires_auth">Requires Authorization?</label><br />
-              <div class="checkbox">
-                <label>
-                  <input
-                    name="requires_auth"
-                    type="checkbox"
-                    ng-model="user.requires_auth"
-                  />
-                  Checking this revokes this users access to the site
-                </label>
+              <label for="search">Name:</label>
+              <input
+                type="text"
+                name="search"
+                class="form-control"
+                ng-model="user.name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="search">Email:</label>
+              <input
+                type="text"
+                name="search"
+                class="form-control"
+                ng-model="user.email"
+              />
+            </div>
+            <div class="form-group">
+              <div class="form-group">
+                <label for="requires_auth">Requires Authorization?</label>
+                <br />
+                <div class="checkbox">
+                  <label>
+                    <input
+                      name="requires_auth"
+                      type="checkbox"
+                      ng-model="user.requires_auth"
+                    />
+                    Checking this revokes this users access to the site
+                  </label>
+                </div>
               </div>
             </div>
-          </div>
-          <div
-            class="form-group"
-            ng-if="!user.requires_auth"
-          >
-            <label for="role_titles">Role(s):</label><br />
-            <select
-              selectpicker="{ dropupAuto: true}"
-              ng-model="user.role_titles"
-              multiple
+            <div
+              class="form-group"
+              ng-if="!user.requires_auth"
             >
-              <option value="admin" ng-if="currentUser.is_admin">Admin</option>
-              <option value="host">Host</option>
-            </select>
-          </div>
-            <div class="pull-right">
-              <button
-                type="submit"
-                class="btn btn-danger"
-                ng-click="cancel()"
-              >Cancel</button>
-              <button
-                type="submit"
-                class="btn btn-success"
-                ng-click="save()"
-              >Update</button>
+              <label for="role_titles">Role(s):</label><br />
+              <select
+                selectpicker="{ dropupAuto: true}"
+                ng-model="user.role_titles"
+                multiple
+              >
+                <option
+                  value="admin"
+                  ng-if="currentUser.is_admin"
+                >Admin</option>
+                <option value="host">Host</option>
+              </select>
             </div>
+              <div class="pull-right">
+                <button
+                  type="submit"
+                  class="btn btn-danger"
+                  ng-click="cancel()"
+                >Cancel</button>
+                <button
+                  type="submit"
+                  class="btn btn-success"
+                  ng-click="save()"
+                >Update</button>
+              </div>
+          </div>
         </div>
       </div>
     </div>

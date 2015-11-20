@@ -9,6 +9,8 @@ var User = function(
 
   self.attributes = [
     'id',
+    'name',
+    'email',
     'requires_auth',
     'role_titles'
   ];
@@ -26,6 +28,19 @@ var User = function(
       user.requires_auth = true;
       return user.save();
     };
+
+    // Delete user
+    user.destroy = function() {
+      return UserApi.delete({id: user.id}).$promise;
+    };
+
+    user.roleTitleStr = function() {
+      var roleStr = [];
+      angular.forEach(user.role_titles, function(role) {
+        this.push(role.charAt(0).toUpperCase() + role.substr(1));
+      }, roleStr);
+      return roleStr.join(", ");
+    }
 
     // Save model to server side
     user.save = function() {

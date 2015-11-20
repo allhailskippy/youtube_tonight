@@ -79,3 +79,14 @@ glyphicon.disabled {
 .preview-slider .slider-track-high {
   background: #FFF !important;
 }
+
+/* Profile section of navbar */
+.nav-profile > li > a {
+  padding: 5px 15px !important;
+}
+
+.nav-profile img {
+  width: 40px;
+  height: 40px;
+  margin-left: 10px;
+}

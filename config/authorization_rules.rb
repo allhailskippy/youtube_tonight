@@ -26,6 +26,8 @@ authorization do
   role :admin do
     includes :guest
     includes :host
+
+    has_permission_on :manage_users, :to => :manage
   end
 end
 

@@ -28,7 +28,9 @@ class User < ActiveRecord::Base
   ##
   # Hooks
   #
-  before_update :update_roles, :if => Proc.new {|r| r.requires_auth_changed? }
+  before_update :update_roles, :if => Proc.new {|r|
+    r.role_titles != r.role_symbols.collect(&:to_s) || r.requires_auth_changed?
+  }
 
   ##
   # Methods

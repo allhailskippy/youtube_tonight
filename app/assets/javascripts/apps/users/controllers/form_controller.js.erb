@@ -28,6 +28,14 @@ var FormCtrl = function(
     $location.path('/index');
   };
 
+  $scope.destroy = function() {
+    if(confirm('This will remove the user from the system\nThis cannot be undone!')) {
+      $scope.user.destroy().then(function() {
+        $location.path('/index');
+      });
+    };
+  }
+
   $scope.save = function() {
     $scope.user.save().then(function() {
       $location.path('/index');
