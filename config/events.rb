@@ -7,16 +7,7 @@ WebsocketRails::EventMap.describe do
   #   subscribe :client_connected, :to => Controller, :with_method => :method_name
 
   namespace :video_player do 
-     events = [
-      :play, :playing,
-      :stop, :stopped,
-      :pause, :paused,
-      :mute, :muted,
-      :unmute, :unmuted,
-      :currently_playing,
-      :set_time
-    ]
-    events.each do |e|
+    PlayerEvents.events.each do |e|
       subscribe e, "video_player##{e}"
     end
   end
