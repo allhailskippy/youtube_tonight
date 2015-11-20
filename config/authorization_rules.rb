@@ -3,8 +3,8 @@ authorization do
     has_permission_on :authorization_rules, :to => :read
     has_permission_on :callbacks, :to => :facebook
     has_permission_on :callbacks, :to => :failure
-
     has_permission_on :home, :to => :read
+    has_permission_on :current_user, :to => :index
 
     # Devise requires update privs to users, users still need to be logged in to access
     # controller actions so this should be safe

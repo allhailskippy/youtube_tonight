@@ -9,8 +9,7 @@
 
 var IndexCtrl = function(
   $scope, $location,
-  UserApp, User, Notice,
-  currentUser //from resolve
+  UserApp, User, CurrentUser, Notice
   ) {
 
   /**
@@ -18,7 +17,9 @@ var IndexCtrl = function(
    */
   $scope.retrieving = false;
   $scope.users = [];
-  $scope.currentUser = currentUser;
+  CurrentUser.find().then(function(results) {
+    $scope.currentUser = CurrentUser.build(results.data);
+  });
 
   /**
    * Watch variables
@@ -75,8 +76,7 @@ var IndexCtrl = function(
 
 IndexCtrl.$inject = [
   '$scope', '$location',
-  'UserApp', 'User', 'Notice',
-  'currentUser'
+  'UserApp', 'User', 'CurrentUser', 'Notice'
 ];
 
 angular.module("UserApp")

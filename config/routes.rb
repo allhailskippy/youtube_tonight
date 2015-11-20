@@ -11,6 +11,7 @@ Youtubetonight::Application.routes.draw do
       get :requires_auth, :as => 'requires_auth'
     end
   end
+  get :current_user, :to => 'current_user#index', :as => :current_user
 
   get 'broadcasts' => 'broadcasts#index'
   get 'youtube_parser' => 'youtube_parser#index'
