@@ -163,18 +163,31 @@ var VideoPreview = function(
           var random_seed = 1 + Math.floor(Math.random() * 100000);
           var preview_id = $scope.video.id + '-' + random_seed;
           var preview = $(
-            '<div class="preview_container">' +
-            '<div class="preview_overlay"></div>' +
-            '<div id="' + preview_id + '"></div></div>'
+            '<div style="position:relative">' +
+            '  <div class="prev-overlay" style="' +
+            '    width: ' + $scope.width + 'px;' +
+            '    height: ' + $scope.height + 'px;' +
+            '  "></div>' +
+            '  <div id="' + preview_id + '">' +
+            '  </div>' +
+            '</div>' +
+            '<style>' +
+            '  .prev-overlay {' +
+            '    width: 100%;' +
+            '    height: 100%;' +
+            '    position: absolute;' +
+            '    z-index: 1000000;' +
+            '    background-color: transparent;' +
+            '  }' +
+            '</style>'
           );
-
           var player = $("#" + preview_id, preview);
 
           // Add new div for player
           $element.append(preview.get());
 
           VideoPreviewService.waitForReady(function() {
-            $scope.newPlayer(player.get(0));
+            $scope.newPlayer(preview_id);
           });
         };
       });
