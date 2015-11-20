@@ -14,11 +14,21 @@ var routesConfig = function($locationProvider, $routeProvider) {
   $routeProvider.
   when('/index', {
     controller: 'IndexCtrl',
-    templateUrl: '<%= asset_path("apps/users/templates/index.html") %>'
+    templateUrl: '<%= asset_path("apps/users/templates/index.html") %>',
+    resolve: {
+      currentUser: function() {
+        return <%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>;
+      }
+    }
   }).
   when('/:id/edit', {
     controller: 'FormCtrl',
-    templateUrl: '<%= asset_path("apps/users/templates/form.html") %>'
+    templateUrl: '<%= asset_path("apps/users/templates/form.html") %>',
+    resolve: {
+      currentUser: function() {
+        return <%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>;
+      }
+    }
   }).
   otherwise({
     redirectTo: '/index'

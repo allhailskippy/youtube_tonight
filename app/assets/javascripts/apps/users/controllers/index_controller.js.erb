@@ -9,7 +9,8 @@
 
 var IndexCtrl = function(
   $scope, $location,
-  UserApp, User, Notice
+  UserApp, User, Notice,
+  currentUser //from resolve
   ) {
 
   /**
@@ -17,7 +18,7 @@ var IndexCtrl = function(
    */
   $scope.retrieving = false;
   $scope.users = [];
-  $scope.currentUser = <%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>;
+  $scope.currentUser = currentUser;
 
   /**
    * Watch variables
@@ -74,7 +75,8 @@ var IndexCtrl = function(
 
 IndexCtrl.$inject = [
   '$scope', '$location',
-  'UserApp', 'User', 'Notice'
+  'UserApp', 'User', 'Notice',
+  'currentUser'
 ];
 
 angular.module("UserApp")

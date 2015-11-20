@@ -9,7 +9,8 @@
 
 var FormCtrl = function(
   $scope, $routeParams, $location,
-  UserApp, User, Notice
+  UserApp, User, Notice,
+  currentUser //from resolve
   ) {
 
   /**
@@ -18,7 +19,7 @@ var FormCtrl = function(
   User.find($routeParams.id).then(function(response) {
     $scope.user = User.build(response.data);
   });
-  $scope.currentUser = <%= Authorization.current_user.as_json(User.as_json_hash).to_json.html_safe %>;
+  $scope.currentUser = currentUser;
 
   /**
    * Scope methods
@@ -48,7 +49,8 @@ var FormCtrl = function(
 
 FormCtrl.$inject = [
   '$scope', '$routeParams', '$location',
-  'UserApp', 'User', 'Notice'
+  'UserApp', 'User', 'Notice',
+  'currentUser'
 ];
 
 angular.module("UserApp")
