@@ -1,6 +1,15 @@
 <div class="row">
-  <div class="col-md-3 sidebar">
-    <h3>{{ show.title }}</h3>
+  <div class="col-md-3 sidebar text-center">
+    <span
+      class="btn-lg btn-success"
+      ng-click="launchBroadcastPlayer()"
+    >START BROADCAST</span>
+    <hr />
+    <h3
+      class='show-title'
+      title='{{show.title}}'
+    >{{ show.title }}</h3>
+    <hr />
     <img
       data-src="holder.js/302x170?text=Preview&amp;bg=666&amp;fg=ccc"
       class="img-thumbnail"

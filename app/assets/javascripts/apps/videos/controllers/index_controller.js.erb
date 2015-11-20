@@ -8,7 +8,7 @@
   "use strict";
 
 var IndexCtrl = function(
-  $scope, $location, $routeParams,
+  $scope, $window, $routeParams,
   ConnectionHelper, Video, Show, Notice
   ) {
   /**
@@ -74,6 +74,10 @@ var IndexCtrl = function(
 
   $scope.isCurrentlyPlaying = function(video) {
     return $scope.currentlyPlaying && video.id == $scope.currentlyPlaying.id;
+  };
+
+  $scope.launchBroadcastPlayer = function() {
+    $window.open('/broadcasts#/shows/' + $scope.show.id);
   };
 
   // Look up list of videos
@@ -221,7 +225,7 @@ var IndexCtrl = function(
 };
 
 IndexCtrl.$inject = [
-  '$scope', '$location', '$routeParams',
+  '$scope', '$window', '$routeParams',
   'ConnectionHelper', 'Video', 'Show', 'Notice'
 ];
 

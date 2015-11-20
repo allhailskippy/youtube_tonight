@@ -90,3 +90,11 @@ glyphicon.disabled {
   height: 40px;
   margin-left: 10px;
 }
+
+/* Video index */
+.show-title {
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
