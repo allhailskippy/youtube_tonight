@@ -13,31 +13,22 @@
 'use strict';
 
 var controller = function(
-  $scope,
-  Video, VideoPreviewService, ApplicationConstants
+  $scope, $window,
+  ConnectionHelper
 ) {
   /**
    * Setup
    */
-  $scope.dispatcher = new WebSocketRails(ApplicationConstants.WEBSOCKET_URL);
+  $scope.dispatcher = ConnectionHelper.getDispatcher();
   $scope.channel = $scope.dispatcher.subscribe('video_player');
   $scope.senderId = null;
   $scope.video = null;
   $scope.currentlyPlayingInterval = null;
-
-  /**
-   * Event Handlers
-   */
-  $scope.channel.bind('set_volume', function(message) {
-    if(message.player_id == $scope.playerId) {
-      $scope.player.setVolume(message.volume);
-    }
-  });
 };
 
 controller.$inject = [
-  '$scope',
-  'Video', 'VideoPreviewService', 'ApplicationConstants'
+  '$scope', '$window',
+  'ConnectionHelper'
 ];
 
 var VideoPreview = function(
@@ -139,6 +130,26 @@ var VideoPreview = function(
       /**
        * Event Handlers
        */
+      // Restister/unregister this player
+      $scope.dispatcher.bind('client_connected', function(message) {
+        $scope.dispatcher.trigger('video_player.registered', {
+          player_id: $scope.playerId
+        });
+      });
+
+      $window.onunload = function() {
+        $scope.dispatcher.trigger('video_player.unregistered', {
+          player_id: $scope.playerId
+        });
+      };
+
+      $scope.channel.bind('registered_check', function(message) {
+        $scope.dispatcher.trigger('video_player.registered', {
+          player_id: $scope.playerId
+        });
+      });
+
+
       // Wait for notice to play video
       $scope.channel.bind('play', function(message) {
         if(message.player_id == $scope.playerId) {

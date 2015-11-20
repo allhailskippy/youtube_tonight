@@ -9,7 +9,7 @@
 
 var IndexCtrl = function(
   $scope, $location, $routeParams,
-  VideoApp, Video, Show, Notice
+  ConnectionHelper, Video, Show, Notice
   ) {
   /**
    * Setup
@@ -28,13 +28,17 @@ var IndexCtrl = function(
   $scope.videos = [];
   $scope.currentVideoOrder = [];
 
-  $scope.dispatcher = VideoApp.getDispatcher();
-  $scope.channel = VideoApp.getChannel('video_player');
-  $scope.playerId = VideoApp.getPlayerId('preview-' + $scope.showId);
+  $scope.dispatcher = ConnectionHelper.getDispatcher();
+  $scope.channel = ConnectionHelper.getChannel('video_player');
+  $scope.playerId = ConnectionHelper.getPlayerId('preview-' + $scope.showId);
   $scope.broadcastId = 'broadcast-' + $scope.showId;
   $scope.senderIds = {}
+  $scope.registeredPlayers = {};
 
   $scope.playing = false;
+
+  // See who's alive
+  $scope.dispatcher.trigger('video_player.registered_check', {});
 
   /**
    * Scope Methods
@@ -61,6 +65,11 @@ var IndexCtrl = function(
         $scope.queryVideos();
       }).catch();
     }
+  };
+
+  $scope.broadcastReady = function() {
+    var key = 'broadcast-' + $scope.show.id;
+    return $scope.registeredPlayers[key] > 0;
   };
 
   $scope.isCurrentlyPlaying = function(video) {
@@ -143,6 +152,21 @@ var IndexCtrl = function(
     });
   };
 
+  $scope.channel.bind('registered', function(message) {
+    var count = $scope.registeredPlayers[message.player_id]  || 0;
+    $scope.registeredPlayers[message.player_id] = count + 1;
+    $scope.$applyAsync()
+  });
+
+  $scope.channel.bind('unregistered', function(message) {
+    var count = $scope.registeredPlayers[message.player_id] || 0;
+    // Don't let count dip < 0
+    if(count > 0) {
+      $scope.registeredPlayers[message.player_id] = count - 1;
+    }
+    $scope.$applyAsync()
+  });
+
   $scope.channel.bind('playing', function(message) {
     if(message.player_id == $scope.broadcastId) {
       $scope.currentlyPlaying = message.video;
@@ -198,7 +222,7 @@ var IndexCtrl = function(
 
 IndexCtrl.$inject = [
   '$scope', '$location', '$routeParams',
-  'VideoApp', 'Video', 'Show', 'Notice'
+  'ConnectionHelper', 'Video', 'Show', 'Notice'
 ];
 
 angular.module("VideoApp")

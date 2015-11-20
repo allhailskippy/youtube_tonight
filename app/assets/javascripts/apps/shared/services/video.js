@@ -2,7 +2,7 @@
 'use strict';
 
 var Video = function(
-  VideoApp, VideoApi
+  ConnectionHelper, VideoApi
   ) {
   var self = this;
 
@@ -47,7 +47,7 @@ var Video = function(
      */
     // Delete video
     video.destroy = function() {
-      var dispatcher = VideoApp.getDispatcher();
+      var dispatcher = ConnectionHelper.getDispatcher();
       dispatcher.trigger('video_player.stop', {
         video: video,
         player_id: 'all'
@@ -129,7 +129,7 @@ var Video = function(
 };
 
 Video.$inject = [
-  'VideoApp', 'VideoApi'
+  'ConnectionHelper', 'VideoApi'
 ];
 
 angular.module('shared')

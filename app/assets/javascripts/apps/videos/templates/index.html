@@ -54,12 +54,14 @@
                   href="javascript:void(0)"
                   class="btn btn-success"
                   ng-click="playVideo(video)"
+                  ng-disabled="!broadcastReady()"
                   ng-show="!isCurrentlyPlaying(video)"
                 >BROADCAST</a>
                 <a
                   href="javascript:void(0)"
                   class="btn btn-danger"
                   ng-click="stopVideo(video)"
+                  ng-disabled="!broadcastReady()"
                   ng-show="isCurrentlyPlaying(video)"
                 >STOP BROADCAST</a>
                 <br />

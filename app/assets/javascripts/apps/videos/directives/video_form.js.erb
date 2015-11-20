@@ -14,14 +14,14 @@
 
 var controller = function(
   $scope, $routeParams, $timeout,
-  VideoApp, Video, Notice, YoutubeParser
+  ConnectionHelper, Video, Notice, YoutubeParser
 ) {
   /**
    * Setup
    */
   $scope.showId = $routeParams.show_id;
-  $scope.dispatcher = VideoApp.getDispatcher();
-  $scope.channel = VideoApp.getChannel('video_player');
+  $scope.dispatcher = ConnectionHelper.getDispatcher();
+  $scope.channel = ConnectionHelper.getChannel('video_player');
   $scope.currentVideo = $scope.currentVideo || Video.build({show_id: $scope.showId });
   $scope.searchResults = [];
   var searchTimeout;
@@ -101,7 +101,7 @@ var controller = function(
 
 controller.$inject = [
   '$scope', '$routeParams', '$timeout',
-  'VideoApp', 'Video', 'Notice', 'YoutubeParser'
+  'ConnectionHelper', 'Video', 'Notice', 'YoutubeParser'
 ];
 
 var VideoForm = function() {
