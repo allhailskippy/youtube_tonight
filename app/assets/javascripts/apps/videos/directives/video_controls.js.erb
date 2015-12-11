@@ -1,0 +1,234 @@
+/**
+ * @ngdoc directive
+ * @name VideoControls
+ * @module VideoApp
+ *
+ * @description
+ * This directive displays the video
+ *
+ * ### Usage
+ * <video-controls></video-controls>
+ */
+(function() {
+'use strict';
+
+var controller = function(
+  $scope, $interval,
+  ConnectionHelper, Video
+) {
+
+  /**
+   * Setup
+   */
+  $scope.dispatcher = ConnectionHelper.getDispatcher();
+  $scope.channel = ConnectionHelper.getChannel('video_player');
+
+  // Allow option to control many players.
+  // The first one will be reflected in the
+  // state of the controls
+  $scope.playerIds = $scope.playerId.split(',');
+
+  // Unique value for this control
+  $scope.senderId = $scope.playerIds[0] + '-' + Math.floor(Math.random() * 1000000);
+
+  // Track the state of the slider
+  $scope.sliding = false;
+
+  // Current state of the primary player
+  // Default values
+  $scope.state = {
+    playing: false,
+    duration: 0,
+    paused: false,
+    video: null,
+    mute: $scope.mute
+  }
+
+  /**
+   * Scope Methods
+   */
+  // Wrapper for controlling which buttons are enabled
+  $scope.enablePause = function() {
+    return $scope.state.playing &&
+      $scope.state.video &&
+      !$scope.state.paused;
+  };
+
+  $scope.enablePlay = function() {
+    return $scope.state.playing &&
+      $scope.state.paused &&
+      $scope.state.video != null;
+  };
+
+  $scope.enableStop = function() {
+    return $scope.state.playing &&
+      $scope.state.video;
+  };
+
+  $scope.enableSlider = function() {
+    return $scope.state.playing &&
+      $scope.state.video;
+  };
+
+  $scope.pause = function() {
+    if($scope.enablePause()) {
+      angular.forEach($scope.playerIds, function(playerId) {
+        $scope.dispatcher.trigger('video_player.pause', {
+          player_id: playerId
+        });
+      });
+    }
+  };
+
+  $scope.play = function() {
+    if($scope.state.video) {
+      angular.forEach($scope.playerIds, function(playerId) {
+        $scope.dispatcher.trigger('video_player.unpause', {
+          player_id: playerId
+        });
+      });
+    }
+  };
+
+  $scope.showPlay = function() {
+    return $scope.state.paused;
+  };
+
+  $scope.showPaused = function() {
+    return !$scope.state.paused;
+  };
+
+  $scope.stop = function() {
+    if($scope.enableStop()) {
+      angular.forEach($scope.playerIds, function(playerId) {
+        $scope.dispatcher.trigger('video_player.stop', {
+          player_id: playerId,
+        });
+      });
+    }
+  };
+
+  $scope.mute = function() {
+    $scope.toggleMute(true);
+  };
+
+  $scope.unMute = function() {
+    $scope.toggleMute(false);
+  };
+
+  $scope.toggleMute = function(mute) {
+    if($scope.state.playing) {
+      angular.forEach($scope.playerIds, function(playerId) {
+        var trigger = 'video_player.' + (mute ? 'mute' : 'unmute');
+        $scope.dispatcher.trigger(trigger, {
+          player_id: playerId
+        });
+      });
+      $scope.$applyAsync();
+    }
+  };
+
+  $scope.startSlide = function(t) {
+    $scope.sliding = true;
+  };
+
+  $scope.endSlide = function(t) {
+    $scope.sliding = false;
+    $scope.state.current_time = t;
+
+    angular.forEach($scope.playerIds, function(playerId) {
+      $scope.dispatcher.trigger('video_player.set_time', {
+        video: $scope.state.video,
+        player_id: playerId,
+        time: t
+      });
+    });
+  };
+
+  /**
+   * Event Handlers
+   */
+  $scope.channel.bind('playing', function(message) {
+    if(message.player_id == $scope.playerIds[0]) {
+      $scope.state.playing = true;
+      $scope.state.video = message.video;
+      $scope.$applyAsync();
+    }
+  });
+
+  $scope.channel.bind('paused', function(message) {
+    if(message.player_id == $scope.playerIds[0]) {
+      $scope.state.paused = true;
+      $scope.$applyAsync();
+    }
+  });
+
+  $scope.channel.bind('unpaused', function(message) {
+    if(message.player_id == $scope.playerIds[0]) {
+      $scope.state.paused = false;
+      $scope.$applyAsync();
+    }
+  });
+
+  $scope.channel.bind('stopped', function(message) {
+    if(message.player_id == $scope.playerIds[0]) {
+      // Reset controls state
+      $scope.state = {
+        playing: false,
+        paused: false,
+        video: null,
+        duration: 0,
+        current_time: 0,
+      }
+      $scope.$applyAsync();
+    }
+  });
+
+  // Look up state of the associated player
+  $scope.stateInterval = $interval(function() {
+    $scope.dispatcher.trigger('video_player.get_current_state', {
+      player_id: $scope.playerIds[0],
+      sender_id: $scope.senderId
+    });
+  }, 200);
+
+  // Handle response from requested state
+  $scope.channel.bind('current_state', function(message) {
+    if(message.player_id == $scope.playerIds[0] &&
+      message.sender_id == $scope.senderId) {
+
+      $scope.state.playing = message.playing;
+      $scope.state.paused = message.paused;
+      $scope.state.video = message.video;
+      $scope.state.mute = message.mute;
+
+      if(!$scope.sliding) {
+        $scope.state.duration = message.duration;
+        $scope.state.current_time = message.current_time;
+      }
+
+      $scope.$applyAsync();
+    }
+  });
+};
+
+controller.$inject = [
+  '$scope', '$interval',
+  'ConnectionHelper', 'Video'
+];
+
+var VideoControls = function() {
+  return {
+    restrict: 'E',
+    scope: {
+      playerId: '@'
+    },
+    controller: controller,
+    templateUrl: '<%= asset_path("apps/videos/templates/video_controls.html") %>'
+  };
+};
+
+angular.module('VideoApp')
+       .directive('videoControls', VideoControls);
+}());
+

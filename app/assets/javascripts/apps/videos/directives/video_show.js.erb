@@ -23,13 +23,9 @@ var controller = function(
   $scope.channel = ConnectionHelper.getChannel('video_player');
   $scope.playerId = ConnectionHelper.getPlayerId('preview-' + $scope.video.show_id);
   $scope.senderId = $scope.senderId || 'video-' + $scope.video.id + '-' + Math.floor(Math.random() * 1000000);
-  $scope.muted = true;
   $scope.playing = false;
   $scope.previewRequested = false;
   $scope.sliding = false;
-
-  $scope.currentTime = 0;
-  $scope.duration = 0;
 
   /**
    * Scope Methods
@@ -52,31 +48,10 @@ var controller = function(
     });
   };
 
-  $scope.mute = function() {
-    $scope.toggleMute(true);
-  };
-
-  $scope.unMute = function() {
-    $scope.toggleMute(false);
-  };
-
-  $scope.toggleMute = function(mute) {
-    if($scope.playing) {
-      var trigger = 'video_player.' + (mute ? "mute" : "unmute");
-      $scope.dispatcher.trigger(trigger, {
-        player_id: $scope.playerId,
-        sender_id: $scope.senderId
-      });
-
-      //Success
-      $scope.muted = mute;
-      $scope.$applyAsync();
-    }
-  };
-
   $scope.startSlide = function(t) {
     $scope.sliding = true;
   };
+
   $scope.endSlide = function(t) {
     $scope.dispatcher.trigger('video_player.set_time', {
       video: $scope.video,
@@ -106,26 +81,7 @@ var controller = function(
     if(message.sender_id == $scope.senderId) {
       $scope.previewRequested = false;
       $scope.playing = false;
-      $scope.muted = true;
       $scope.$applyAsync();
-    }
-  });
-
-  $scope.channel.bind('currently_playing', function(message) {
-    if(message.sender_id == $scope.senderId) {
-      $scope.previewRequested = false;
-      $scope.playing = true;
-      if(!$scope.sliding) {
-        $scope.currentTime = message.current_time;
-      }
-      $scope.duration = message.duration;
-      $scope.$applyAsync();
-    }
-  });
-
-  $scope.channel.bind('set_time', function(message) {
-    if(message.sender_id == $scope.senderId) {
-      $scope.sliding = false;
     }
   });
 };
@@ -150,4 +106,3 @@ var VideoShow = function() {
 angular.module('VideoApp')
        .directive('videoShow', VideoShow);
 }());
-

@@ -23,7 +23,7 @@ gem 'iso8601'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'faye-websocket', '0.7.5'
-gem 'websocket-rails'
+gem 'websocket-rails', :git => 'git://github.com/websocket-rails/websocket-rails.git', :branch => 'master'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-bootstrap'

@@ -6,10 +6,11 @@ class PlayerEvents
       :play, :playing,
       :stop, :stopped,
       :pause, :paused,
+      :unpause, :unpaused,
       :mute, :muted,
       :unmute, :unmuted,
-      :currently_playing,
-      :set_time
+      :set_time,
+      :get_current_state, :current_state
     ]
   end
 end

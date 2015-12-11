@@ -4,6 +4,21 @@ GIT
   specs:
     userstamp (2.0.2)
 
+GIT
+  remote: git://github.com/websocket-rails/websocket-rails.git
+  revision: 712fd4e35325887956724be388821121a866c7fc
+  branch: master
+  specs:
+    websocket-rails (0.7.0)
+      em-synchrony
+      faye-websocket
+      hiredis
+      rack
+      rails
+      redis
+      redis-objects
+      thin
+
 GEM
   remote: https://rubygems.org/
   remote: https://rails-assets.org/
@@ -217,15 +232,6 @@ GEM
     websocket-driver (0.6.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
-    websocket-rails (0.7.0)
-      em-synchrony
-      faye-websocket
-      hiredis
-      rack
-      rails
-      redis
-      redis-objects
-      thin
     will_paginate (3.0.7)
 
 PLATFORMS
@@ -260,7 +266,7 @@ DEPENDENCIES
   uglifier
   userstamp!
   validate_url
-  websocket-rails
+  websocket-rails!
   will_paginate
 
 BUNDLED WITH

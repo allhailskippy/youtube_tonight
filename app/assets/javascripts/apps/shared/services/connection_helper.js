@@ -21,16 +21,17 @@ var ConnectionHelper = function(ApplicationConstants) {
   self.channel = null;
   self.playerIds = {};
 
-  self.getDispatcher = function() {
-    self.dispatcher = self.dispatcher
-      || new WebSocketRails(ApplicationConstants.WEBSOCKET_URL);
-    return self.dispatcher;
+  self.getChannel = function(channel_name, dispatcher) {
+    dispatcher = dispatcher || self.getDispatcher();
+    self.channel = self.channel
+      || self.newChannel(channel_name, dispatcher);
+    return self.channel;
   };
 
-  self.getChannel = function(channel_name) {
-    self.channel = self.channel
-      || self.getDispatcher().subscribe(channel_name);
-    return self.channel;
+  self.getDispatcher = function() {
+    self.dispatcher = self.dispatcher
+      || self.newDispatcher();
+    return self.dispatcher;
   };
 
   // Can have many players, but only one per base, per page
@@ -39,6 +40,15 @@ var ConnectionHelper = function(ApplicationConstants) {
       base + '-' + Math.floor(Math.random() * 1000000);
     return self.playerIds[base];
   }
+
+  self.newChannel = function(channel_name, dispatcher) {
+    return dispatcher.subscribe(channel_name);
+  };
+
+  self.newDispatcher = function() {
+    var dispatcher = new WebSocketRails(ApplicationConstants.WEBSOCKET_URL);
+    return dispatcher;
+  };
 };
 
 ConnectionHelper.$inject = ['ApplicationConstants'];

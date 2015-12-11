@@ -20,34 +20,6 @@
       ng-show="playing"
       ng-disabled="previewRequested"
     >Stop Preview</a>
-    <a
-      class="btn glyphicon glyphicon-volume-up"
-      aria-hidden="true"
-      ng-class="{'btn-success': playing, 'btn-default': !playing}"
-      ng-show="muted"
-      ng-disabled="!playing || previewRequested"
-      ng-click="unMute()"
-    ></a>
-    <a
-      href="javascript:void(0)"
-      class="btn btn-danger glyphicon glyphicon-volume-off"
-      aria-hidden="true"
-      ng-show="!muted"
-      ng-disabled="!playing || previewRequested"
-      ng-click="mute()"
-    ></a>
-    <slider
-      class="preview-slider"
-      ng-model="currentTime"
-      min="0"
-      step="1"
-      max="duration"
-      handle="round"
-      tooltip="hide"
-      on-start-slide="startSlide(value)"
-      on-stop-slide="endSlide(value)"
-      ng-show="playing"
-    ></slider>
   </p>
   <p>
     <label>Title:</label> {{ video.title }}<br />

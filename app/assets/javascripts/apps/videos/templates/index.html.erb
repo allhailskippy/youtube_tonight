@@ -11,6 +11,26 @@
     >{{ show.title }}</h3>
     <hr />
     <img
+      src="<%= asset_path("logo_broadcast.png") %>"
+      alt="Broadcast"
+      class="img-thumbnail"
+      style="width: 302px; height: 170px;"
+      ng-show="!state.playing"
+    >
+    <video-preview
+      player-id="{{previewBroadcastId}}"
+      width="302"
+      height="170"
+      mute="state.mute"
+      ng-show="state.playing"
+      always-mute="true"
+    ></video-preview>
+    <video-controls
+      player-id="{{broadcastId}},{{previewBroadcastId}}"
+    ></video-controls>
+    <hr />
+
+    <img
       data-src="holder.js/302x170?text=Preview&amp;bg=666&amp;fg=ccc"
       class="img-thumbnail"
       alt="Preview [302x170]"
@@ -20,12 +40,17 @@
     >
     <div class="preview_container">
       <video-preview
-        player-id="{{playerId}}"
+        player-id="{{previewPlayerId}}"
+        mirror="{{broadcastId}}"
         width="302"
         height="170"
         mute="true"
         ng-show="showPreview"
+        show-controls="true"
       ></video-preview>
+      <video-controls
+        player-id="{{previewPlayerId}}"
+      ></video-controls>
     </div>
   </div>
   <div class="col-md-9 col-md-offset-3 main" ng-show="shouldShowForm()">
@@ -58,32 +83,32 @@
               ></video-show>
             </div>
             <div class="col-md-3 text-right">
-                <a
-                  title="Start Broadcast"
-                  href="javascript:void(0)"
-                  class="btn btn-success"
-                  ng-click="playVideo(video)"
-                  ng-disabled="!broadcastReady()"
-                  ng-show="!isCurrentlyPlaying(video)"
-                >BROADCAST</a>
-                <a
-                  href="javascript:void(0)"
-                  class="btn btn-danger"
-                  ng-click="stopVideo(video)"
-                  ng-disabled="!broadcastReady()"
-                  ng-show="isCurrentlyPlaying(video)"
-                >STOP BROADCAST</a>
-                <br />
-                <hr />
-                <a href="javascript:void(0)"
-                  class="btn btn-default glyphicon glyphicon-pencil"
-                  ng-click="editVideo(video)"
-                ></a>
-                <a
-                  class="btn btn-danger glyphicon glyphicon-trash"
-                  aria-hidden="true"
-                  ng-click="destroy(video)"
-                ></a>
+              <a
+                title="Start Broadcast"
+                href="javascript:void(0)"
+                class="btn btn-success"
+                ng-click="playVideo(video)"
+                ng-disabled="!broadcastReady()"
+                ng-show="!isCurrentlyPlaying(video)"
+              >BROADCAST</a>
+              <a
+                href="javascript:void(0)"
+                class="btn btn-danger"
+                ng-click="stopVideo(video)"
+                ng-disabled="!broadcastReady()"
+                ng-show="isCurrentlyPlaying(video)"
+              >STOP BROADCAST</a>
+              <br />
+              <hr />
+              <a href="javascript:void(0)"
+                class="btn btn-default glyphicon glyphicon-pencil"
+                ng-click="editVideo(video)"
+              ></a>
+              <a
+                class="btn btn-danger glyphicon glyphicon-trash"
+                aria-hidden="true"
+                ng-click="destroy(video)"
+              ></a>
             </div>
           </div>
         </div>

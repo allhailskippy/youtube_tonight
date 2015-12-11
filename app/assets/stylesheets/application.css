@@ -60,10 +60,6 @@ glyphicon.disabled {
 }
 
 /* Bootstrap slider style */
-.preview-slider .slider {
-  width: 200px !important;
-}
-
 .preview-slider .slider-selection {
   background: #d9534f !important;
 }
