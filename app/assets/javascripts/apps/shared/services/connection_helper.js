@@ -62,16 +62,13 @@ var ConnectionHelper = function(ApplicationConstants) {
     // See who's alive, this will get picked
     // up on the video-show directive
     dispatcher.trigger('video_player.registered_check', {});
-    console.log('video_player.registered_check called');
 
     channel.bind('registered', function(message) {
-      console.log('registered called');
       var count = self.registeredPlayers[message.player_id]  || 0;
       self.registeredPlayers[message.player_id] = count + 1;
     });
 
     channel.bind('unregistered', function(message) {
-      console.log('unregistered called');
       var count = self.registeredPlayers[message.player_id] || 0;
 
       // Don't let count dip < 0

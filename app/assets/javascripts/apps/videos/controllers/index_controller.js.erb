@@ -38,9 +38,11 @@ var IndexCtrl = function(
 
   $scope.broadcastId = 'broadcast-' + $scope.showId;
   $scope.previewBroadcastId = $scope.broadcastId + Math.floor(Math.random() * 1000000);
+  $scope.broadcastIds = [$scope.broadcastId, $scope.previewBroadcastId];
 
   $scope.senderIds = {}
   $scope.state = {};
+  $scope.broadcastState = {};
 
   // Initialize registered player check
   ConnectionHelper.registeredPlayerCheck($scope.dispatcher, $scope.channel);
@@ -171,7 +173,7 @@ var IndexCtrl = function(
   // Handle response from requested state
   $scope.previewChannel.bind('current_state', function(message) {
     if(message.player_id == $scope.broadcastId) {
-      $scope.state = message;
+      $scope.broadcastState = message;
 
       if(message.playing) {
         $scope.dispatcher.trigger('video_player.play', {
@@ -184,21 +186,47 @@ var IndexCtrl = function(
   });
 
   $scope.previewChannel.bind('playing', function(message) {
-    if($scope.state.paused) {
+    if($scope.broadcastState.paused) {
       $scope.dispatcher.trigger('video_player.pause', {
         player_id: $scope.previewBroadcastId
       });
     }
-    if($scope.state.current_time) {
+    if($scope.broadcastState.current_time) {
       $scope.dispatcher.trigger('video_player.set_time', {
         player_id: $scope.previewBroadcastId,
-        time: $scope.state.current_time
+        time: $scope.broadcastState.current_time
       });
     }
 
     // Don't need to listen to this anymore
     $scope.previewChannel.unbind('playing');
   });
+
+  // Broadcast events
+  $scope.playVideo = function(video) {
+    angular.forEach($scope.broadcastIds, function(broadcastId) {
+      $scope.dispatcher.trigger('video_player.play', {
+        video: video,
+        player_id: broadcastId,
+        sender_id: 'video-' + video.id
+      });
+    });
+  };
+
+  $scope.stopVideo = function(video) {
+    $scope.state = {
+      playing: false,
+      paused: false,
+      video: null
+    }
+    angular.forEach($scope.broadcastIds, function(broadcastId) {
+      $scope.dispatcher.trigger('video_player.stop', {
+        video: video,
+        player_id: broadcastId,
+        sender_id: 'video-' + video.id
+      });
+    });
+  };
 
   // Other Events
   // Video list changed, need to update
