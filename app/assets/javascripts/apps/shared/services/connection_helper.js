@@ -22,6 +22,10 @@ var ConnectionHelper = function(ApplicationConstants) {
   self.playerIds = {};
   self.registeredPlayers = {};
 
+  self.broadcastReady = function(broadcastId) {
+    return self.registeredPlayers[broadcastId] > 0;
+  };
+
   self.getChannel = function(channel_name, dispatcher) {
     dispatcher = dispatcher || self.getDispatcher();
     self.channel = self.channel

@@ -48,6 +48,27 @@ var IndexCtrl = function(
   ConnectionHelper.registeredPlayerCheck($scope.dispatcher, $scope.channel);
 
   /**
+   * Watched variables
+   */
+  // If the broadcast window is close, but we still have
+  // a preview playing, force stop the video
+  $scope.$watch('broadcastReady()', function(newVal, oldVal) {
+    if(newVal != oldVal && !newVal) {
+      if($scope.state.video) {
+        $scope.state = {
+          playing: false,
+          paused: false,
+          video: null
+        }
+        $scope.dispatcher.trigger('video_player.stop', {
+          video: $scope.state.video,
+          player_id: $scope.previewBroadcastId
+        });
+      }
+    }
+  });
+
+  /**
    * Scope Methods
    */
   $scope.addVideo = function() {
@@ -202,30 +223,38 @@ var IndexCtrl = function(
     $scope.previewChannel.unbind('playing');
   });
 
+  $scope.broadcastReady = function() {
+    return ConnectionHelper.broadcastReady($scope.broadcastId);
+  };
+
   // Broadcast events
   $scope.playVideo = function(video) {
-    angular.forEach($scope.broadcastIds, function(broadcastId) {
-      $scope.dispatcher.trigger('video_player.play', {
-        video: video,
-        player_id: broadcastId,
-        sender_id: 'video-' + video.id
+    if($scope.broadcastReady()) {
+      angular.forEach($scope.broadcastIds, function(broadcastId) {
+        $scope.dispatcher.trigger('video_player.play', {
+          video: video,
+          player_id: broadcastId,
+          sender_id: 'video-' + video.id
+        });
       });
-    });
+    }
   };
 
   $scope.stopVideo = function(video) {
-    $scope.state = {
-      playing: false,
-      paused: false,
-      video: null
-    }
-    angular.forEach($scope.broadcastIds, function(broadcastId) {
-      $scope.dispatcher.trigger('video_player.stop', {
-        video: video,
-        player_id: broadcastId,
-        sender_id: 'video-' + video.id
+    if($scope.broadcastReady()) {
+      $scope.state = {
+        playing: false,
+        paused: false,
+        video: null
+      }
+      angular.forEach($scope.broadcastIds, function(broadcastId) {
+        $scope.dispatcher.trigger('video_player.stop', {
+          video: video,
+          player_id: broadcastId,
+          sender_id: 'video-' + video.id
+        });
       });
-    });
+    }
   };
 
   // Other Events

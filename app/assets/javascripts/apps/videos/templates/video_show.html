@@ -15,14 +15,14 @@
       class="btn btn-success"
       ng-click="playVideo(video)"
       ng-disabled="!broadcastReady()"
-      ng-show="!isCurrentlyPlaying()"
+      ng-show="!isCurrentlyPlaying() || !broadcastReady()"
     >BROADCAST</a>
     <a
       href="javascript:void(0)"
       class="btn btn-danger"
       ng-click="stopVideo(video)"
       ng-disabled="!broadcastReady()"
-      ng-show="isCurrentlyPlaying()"
+      ng-show="isCurrentlyPlaying() && broadcastReady()"
     >STOP BROADCAST</a>
   </div>
 </div>

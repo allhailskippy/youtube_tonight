@@ -49,11 +49,7 @@ var controller = function(
    * Scope Methods
    */
   $scope.broadcastReady = function() {
-    if(ConnectionHelper.registeredPlayers) {
-      return ConnectionHelper.registeredPlayers[$scope.broadcastId] > 0;
-    } else {
-      return false;
-    }
+    return ConnectionHelper.broadcastReady($scope.broadcastId);
   };
 
   $scope.play = function() {
