@@ -1,10 +1,5 @@
 <div class="row">
   <div class="col-md-3 sidebar text-center">
-    <span
-      class="btn-lg btn-success"
-      ng-click="launchBroadcastPlayer()"
-    >START BROADCAST</span>
-    <hr />
     <h3
       class='show-title'
       title='{{show.title}}'
@@ -62,12 +57,18 @@
   </div>
   <div class="col-md-9 col-md-offset-3 main" ng-show="!shouldShowForm()">
     <div class="row">
+      <div class="pull-left">
+        <span
+          class="btn-lg btn-primary"
+          ng-click="launchBroadcastPlayer()"
+        >LAUNCH BROADCAST WINDOW</span>
+      </div>
       <div class="pull-right">
-        <a href="javascript:void(0)"
+        <span
           ng-click="addVideo()"
-          class="btn btn-success"
+          class="btn-lg btn-success"
           ng-disabled="shouldShowForm()"
-        >Add New Video</a>
+        >Add Video</span>
       </div>
     </div>
     <br />
