@@ -1,10 +1,30 @@
 <div class="col-md-3 text-center">
-  <img
-    holder="holder.js/120x90?text=Youtube Video Thumbnail"
-    alt="YouTube Video Thumbnail"
-    ng-src="{{video.api_thumbnail_default_url}}"
-    ng-show="video.api_thumbnail_default_url"
-  />
+  <div class="row">
+    <img
+      holder="holder.js/120x90?text=Youtube Video Thumbnail"
+      alt="YouTube Video Thumbnail"
+      ng-src="{{video.api_thumbnail_default_url}}"
+      ng-show="video.api_thumbnail_default_url"
+    />
+  </div>
+  <br />
+  <div class="row" ng-if="allowBroadcast">
+    <a
+      title="Start Broadcast"
+      href="javascript:void(0)"
+      class="btn btn-success"
+      ng-click="playVideo(video)"
+      ng-disabled="!broadcastReady()"
+      ng-show="!isCurrentlyPlaying()"
+    >BROADCAST</a>
+    <a
+      href="javascript:void(0)"
+      class="btn btn-danger"
+      ng-click="stopVideo(video)"
+      ng-disabled="!broadcastReady()"
+      ng-show="isCurrentlyPlaying()"
+    >STOP BROADCAST</a>
+  </div>
 </div>
 <div class="col-md-9">
   <p>

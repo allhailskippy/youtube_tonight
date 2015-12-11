@@ -38,15 +38,12 @@ var IndexCtrl = function(
 
   $scope.broadcastId = 'broadcast-' + $scope.showId;
   $scope.previewBroadcastId = $scope.broadcastId + Math.floor(Math.random() * 1000000);
-  $scope.broadcastIds = [$scope.broadcastId, $scope.previewBroadcastId];
 
   $scope.senderIds = {}
-  $scope.registeredPlayers = {};
-
   $scope.state = {};
 
-  // See who's alive
-  $scope.dispatcher.trigger('video_player.registered_check', {});
+  // Initialize registered player check
+  ConnectionHelper.registeredPlayerCheck($scope.dispatcher, $scope.channel);
 
   /**
    * Scope Methods
@@ -74,18 +71,6 @@ var IndexCtrl = function(
       }).catch();
     }
   };
-
-  $scope.broadcastReady = function() {
-    return $scope.registeredPlayers[$scope.broadcastId] > 0;
-  };
-
-  $scope.isCurrentlyPlaying = function(video) {
-    if($scope.state && $scope.state.video) {
-      return $scope.state.video.id == video.id;
-    } else {
-      return false;
-    }
-  }
 
   $scope.launchBroadcastPlayer = function() {
     $window.open('/broadcasts#/shows/' + $scope.show.id);
@@ -149,55 +134,6 @@ var IndexCtrl = function(
   /**
    * Event Handlers
    */
-
-  // Broadcast events
-  $scope.playVideo = function(video) {
-    angular.forEach($scope.broadcastIds, function(broadcastId) {
-      $scope.dispatcher.trigger('video_player.play', {
-        video: video,
-        player_id: broadcastId,
-        sender_id: 'video-' + video.id
-      });
-    });
-  };
-
-  $scope.stopVideo = function(video) {
-    $scope.state = {
-      playing: false,
-      paused: false,
-      video: null
-    }
-    angular.forEach($scope.broadcastIds, function(broadcastId) {
-      $scope.dispatcher.trigger('video_player.stop', {
-        video: video,
-        player_id: broadcastId,
-        sender_id: 'video-' + video.id
-      });
-    });
-  };
-
-  $scope.channel.bind('registered', function(message) {
-    var count = $scope.registeredPlayers[message.player_id]  || 0;
-    $scope.registeredPlayers[message.player_id] = count + 1;
-    $scope.$applyAsync()
-  });
-
-  $scope.channel.bind('unregistered', function(message) {
-    var count = $scope.registeredPlayers[message.player_id] || 0;
-    // Don't let count dip < 0
-    if(count > 0) {
-      $scope.registeredPlayers[message.player_id] = count - 1;
-    }
-
-    // Check to see if all our broadcasts have been killed
-    if(message.player_id == $scope.broadcastId) {
-      if($scope.registeredPlayers[$scope.broadcastId] == 0) {
-        $scope.currentlyPlaying = false;
-      }
-    }
-    $scope.$applyAsync()
-  });
-
   // Preview Events
   $scope.channel.bind('playing', function(message) {
     if(message.player_id == $scope.previewPlayerId) {

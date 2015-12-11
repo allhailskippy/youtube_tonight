@@ -20,6 +20,7 @@ var ConnectionHelper = function(ApplicationConstants) {
   self.dispatcher = null;
   self.channel = null;
   self.playerIds = {};
+  self.registeredPlayers = {};
 
   self.getChannel = function(channel_name, dispatcher) {
     dispatcher = dispatcher || self.getDispatcher();
@@ -31,6 +32,7 @@ var ConnectionHelper = function(ApplicationConstants) {
   self.getDispatcher = function() {
     self.dispatcher = self.dispatcher
       || self.newDispatcher();
+
     return self.dispatcher;
   };
 
@@ -49,6 +51,35 @@ var ConnectionHelper = function(ApplicationConstants) {
     var dispatcher = new WebSocketRails(ApplicationConstants.WEBSOCKET_URL);
     return dispatcher;
   };
+
+  self.registeredPlayerCheck = function(dispatcher, channel) {
+    // Reset players
+    self.registeredPlayers = {};
+
+    dispatcher = dispatcher || getDispatcher();
+    channel = channel || getChannel('video_player', dispatcher);
+
+    // See who's alive, this will get picked
+    // up on the video-show directive
+    dispatcher.trigger('video_player.registered_check', {});
+    console.log('video_player.registered_check called');
+
+    channel.bind('registered', function(message) {
+      console.log('registered called');
+      var count = self.registeredPlayers[message.player_id]  || 0;
+      self.registeredPlayers[message.player_id] = count + 1;
+    });
+
+    channel.bind('unregistered', function(message) {
+      console.log('unregistered called');
+      var count = self.registeredPlayers[message.player_id] || 0;
+
+      // Don't let count dip < 0
+      if(count > 0) {
+        self.registeredPlayers[message.player_id] = count - 1;
+      }
+    });
+  }
 };
 
 ConnectionHelper.$inject = ['ApplicationConstants'];

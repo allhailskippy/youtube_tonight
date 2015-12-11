@@ -76,30 +76,14 @@
         <div ng-repeat="video in videos" class="panel panel-primary">
           <div class="panel-body row">
             <div class="col-md-9">
-              <br />
               <video-show
                 video="video"
                 sender-id="senderIds[video.id]"
+                state="state"
+                allow-broadcast="true"
               ></video-show>
             </div>
             <div class="col-md-3 text-right">
-              <a
-                title="Start Broadcast"
-                href="javascript:void(0)"
-                class="btn btn-success"
-                ng-click="playVideo(video)"
-                ng-disabled="!broadcastReady()"
-                ng-show="!isCurrentlyPlaying(video)"
-              >BROADCAST</a>
-              <a
-                href="javascript:void(0)"
-                class="btn btn-danger"
-                ng-click="stopVideo(video)"
-                ng-disabled="!broadcastReady()"
-                ng-show="isCurrentlyPlaying(video)"
-              >STOP BROADCAST</a>
-              <br />
-              <hr />
               <a href="javascript:void(0)"
                 class="btn btn-default glyphicon glyphicon-pencil"
                 ng-click="editVideo(video)"

@@ -13,7 +13,7 @@
 'use strict';
 
 var controller = function(
-  $scope,
+  $scope, $routeParams,
   ConnectionHelper, Video
 ) {
   /**
@@ -27,9 +27,36 @@ var controller = function(
   $scope.previewRequested = false;
   $scope.sliding = false;
 
+  $scope.showId = $routeParams.show_id;
+  $scope.broadcastId = 'broadcast-' + $scope.showId;
+  $scope.broadcastIds = [$scope.broadcastId, $scope.previewBroadcastId];
+
+  /**
+   * Watched variables
+   */
+  // Watch for changes to the registered players
+  $scope.$watch(function() {
+    return ConnectionHelper.registeredPlayers
+  }, function(players) {
+    ConnectionHelper.registeredPlayers;
+
+    // Check to see if all our broadcasts have been killed
+    if(players[$scope.broadcastId] == 0) {
+      $scope.currentlyPlaying = false;
+    }
+  });
+
   /**
    * Scope Methods
    */
+  $scope.broadcastReady = function() {
+    if(ConnectionHelper.registeredPlayers) {
+      return ConnectionHelper.registeredPlayers[$scope.broadcastId] > 0;
+    } else {
+      return false;
+    }
+  };
+
   $scope.play = function() {
     if(!$scope.previewRequested) {
       $scope.previewRequested = true;
@@ -61,6 +88,40 @@ var controller = function(
     });
   };
 
+  $scope.isCurrentlyPlaying = function() {
+    if($scope.state && $scope.state.video) {
+      return $scope.state.video.id == $scope.video.id;
+    } else {
+      return false;
+    }
+  }
+
+  // Broadcast events
+  $scope.playVideo = function(video) {
+    angular.forEach($scope.broadcastIds, function(broadcastId) {
+      $scope.dispatcher.trigger('video_player.play', {
+        video: video,
+        player_id: broadcastId,
+        sender_id: 'video-' + video.id
+      });
+    });
+  };
+
+  $scope.stopVideo = function(video) {
+    $scope.state = {
+      playing: false,
+      paused: false,
+      video: null
+    }
+    angular.forEach($scope.broadcastIds, function(broadcastId) {
+      $scope.dispatcher.trigger('video_player.stop', {
+        video: video,
+        player_id: broadcastId,
+        sender_id: 'video-' + video.id
+      });
+    });
+  };
+
   /**
    * Event Handlers
    */
@@ -87,7 +148,7 @@ var controller = function(
 };
 
 controller.$inject = [
-  '$scope',
+  '$scope', '$routeParams',
   'ConnectionHelper', 'Video'
 ];
 
@@ -96,7 +157,9 @@ var VideoShow = function() {
     restrict: 'E',
     scope: {
       video: '=',
-      senderId: '='
+      senderId: '=',
+      state: '=',
+      allowBroadcast: '='
     },
     controller: controller,
     templateUrl: '<%= asset_path("apps/videos/templates/video_show.html") %>'
