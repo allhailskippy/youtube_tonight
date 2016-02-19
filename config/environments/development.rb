@@ -43,6 +43,9 @@ Youtubetonight::Application.configure do
 
   # YouTube
   YOUTUBE_API_KEY = credentials['youtube_api_key']
+ 
+  GOOGLE_CLIENT_ID = credentials['google_client_id']
+  GOOGLE_CLIENT_SECRET = credentials['google_client_secret']
 
   # Facebook
   FACEBOOK_KEY = credentials['facebook_key']

@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
   #
   # Include default devise modules. Others available are:
   devise :database_authenticatable, :trackable,
-    :omniauthable, :omniauth_providers => [:facebook]
+    :omniauthable, :omniauth_providers => [:google_oauth2]
 
   ##
   # Relationships
@@ -36,13 +36,12 @@ class User < ActiveRecord::Base
   #
   # Stores user info on successful sign in from facebook
   def self.from_omniauth(auth)
-    user = where(provider: auth.provider, uid: auth.uid).first_or_create do |u|
+    user = where(provider: auth.provider, email: auth.info.email).first_or_create do |u|
       u.provider = auth.provider
-      u.uid = auth.uid
+      u.email = auth.email
       u.requires_auth = true
     end
     user.expires_at = auth.credentials.expires_at
-    user.email = auth.info.email
     user.name = auth.info.name
     user.profile_image = auth.info.image
     user.save!

@@ -37,6 +37,7 @@ gem 'ng-rails-csrf'
 gem 'devise'
 gem 'declarative_authorization'
 gem 'omniauth-facebook'
+gem 'omniauth-google-oauth2'
 gem 'userstamp', :github => 'kimkong/userstamp'
 
 # APIs

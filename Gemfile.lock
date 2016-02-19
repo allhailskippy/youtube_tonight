@@ -142,6 +142,11 @@ GEM
       rack (~> 1.0)
     omniauth-facebook (3.0.0)
       omniauth-oauth2 (~> 1.2)
+    omniauth-google-oauth2 (0.3.1)
+      jwt (~> 1.0)
+      multi_json (~> 1.3)
+      omniauth (>= 1.1.1)
+      omniauth-oauth2 (>= 1.3.1)
     omniauth-oauth2 (1.4.0)
       oauth2 (~> 1.0)
       omniauth (~> 1.2)
@@ -251,6 +256,7 @@ DEPENDENCIES
   jquery-ui-rails
   ng-rails-csrf
   omniauth-facebook
+  omniauth-google-oauth2
   paranoia (~> 2.0)
   pg
   rails (~> 4.0.13)

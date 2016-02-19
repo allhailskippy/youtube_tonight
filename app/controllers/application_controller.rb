@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
 
   # If we want to skip devise authentication on current controller/actions specifically, set them up here
   SKIP_DEVISE_AUTHENTICATION = [
-    {:controller => :auth, :action => :facebook }
+    {:controller => :auth, :action => :google_oauth2 }
   ]
 
   # Declarative Authorization in Models
