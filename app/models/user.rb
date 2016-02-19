@@ -38,7 +38,7 @@ class User < ActiveRecord::Base
   def self.from_omniauth(auth)
     user = where(provider: auth.provider, email: auth.info.email).first_or_create do |u|
       u.provider = auth.provider
-      u.email = auth.email
+      u.email = auth.info.email
       u.requires_auth = true
     end
     user.expires_at = auth.credentials.expires_at
