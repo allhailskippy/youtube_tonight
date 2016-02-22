@@ -41,6 +41,7 @@ class User < ActiveRecord::Base
       u.email = auth.info.email
       u.requires_auth = true
     end
+    user.auth_hash = auth.credentials.token
     user.expires_at = auth.credentials.expires_at
     user.name = auth.info.name
     user.profile_image = auth.info.image
