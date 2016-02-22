@@ -11,10 +11,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151120193121) do
+ActiveRecord::Schema.define(version: 20160222204311) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "playlist_items", force: true do |t|
+    t.integer  "playlist_id"
+    t.string   "api_video_id"
+    t.string   "api_thumbnail_medium_url"
+    t.string   "api_thumbnail_default_url"
+    t.string   "api_thumbnail_high_url"
+    t.integer  "position"
+    t.integer  "creator_id"
+    t.integer  "updater_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "playlists", force: true do |t|
+    t.integer  "user_id"
+    t.string   "api_playlist_id"
+    t.string   "api_title"
+    t.integer  "creator_id"
+    t.integer  "updater_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "roles", force: true do |t|
     t.string   "title"

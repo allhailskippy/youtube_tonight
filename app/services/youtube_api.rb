@@ -30,24 +30,94 @@ class YoutubeApi
           }
       end
     end
-    search_results = self.video_lookup(search_results) if search_results.present?
+
+    if search_results.present?
+      self.get_duration(search_results.keys.join(",")).each do |video_id, duration|
+        search_results[video_id].merge!(duration)
+      end
+    end
 
     search_results.values
   end
 
-  def self.video_lookup(search_results)
+  def self.get_playlists
     client = get_service
 
-    lookup = client.list_videos('contentDetails', {id: search_results.keys.join(",") })
+    ret = {}
 
+    # Get list of playlists
+    search_response = client.list_channels('contentDetails', mine: true, max_results: 50)
+
+    # This ugly mess of code grab select items from the channels related playlist
+    # section, and associates it with the playlist id for use in video lookups
+    related_playlists = search_response.items.first.content_details.related_playlists
+    [:favorites, :likes, :watch_history, :watch_later].collect do |playlist|
+      [playlist, related_playlists.send(playlist)]
+    end.each do |playlist, playlist_id|
+
+      videos = {}
+      next_page_token = nil
+      results = []
+      loop do
+        # Lookup items from favourites list
+        search_response = client.list_playlist_items('snippet', {
+          playlist_id: playlist_id,
+          max_results: 50,
+          page_token: next_page_token
+        })
+
+        video_ids = []
+        search_response.items.each do |item|
+          # Get the video id
+          video_id = item.snippet.resource_id.video_id
+
+          # Build a list of video ids for bulk getting their duration
+          video_ids << video_id
+
+          # Thumbnails
+          thumbs = item.snippet.thumbnails
+
+          # Video object
+          videos[video_id] = {
+            api_video_id: video_id, 
+            api_thumbnail_medium_url: thumbs.try(:medium).try(:url),
+            api_thumbnail_default_url: thumbs.try(:default).try(:url),
+            api_thumbnail_high_url: thumbs.try(:high).try(:url)
+          }
+        end
+
+        self.get_duration(video_ids).each do |video_id, duration|
+          videos[video_id].merge!(duration)
+        end
+
+        next_page_token = search_response.next_page_token
+        break if next_page_token.blank?
+      end
+
+      ret[playlist] = {
+        :user_id => Authorization.current_user.id,
+        :playlist_id => playlist_id,
+        :title => playlist,
+        :videos => videos.values
+      }
+    end
+    ret
+  end
+
+  def self.get_duration(video_ids)
+    client = get_service
+
+    lookup = client.list_videos('contentDetails', {id: video_ids })
+
+    ret = {}
     lookup.items.each do |v|
       duration = v.content_details.duration
-      search_results[v.id].merge!({
+      ret[v.id] = {
         "duration" => duration,
         "duration_seconds" => ISO8601::Duration.new(duration).to_i
-      })
+      }
     end
-    search_results
+    ret
   end
 
   def self.get_service(user = nil)
