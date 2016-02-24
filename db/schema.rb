@@ -11,14 +11,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160222204311) do
+ActiveRecord::Schema.define(version: 20160223175833) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "delayed_jobs", force: true do |t|
+    t.integer  "priority",   default: 0, null: false
+    t.integer  "attempts",   default: 0, null: false
+    t.text     "handler",                null: false
+    t.text     "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string   "locked_by"
+    t.string   "queue"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+
   create_table "playlist_items", force: true do |t|
     t.integer  "playlist_id"
     t.string   "api_video_id"
+    t.string   "api_title"
     t.string   "api_thumbnail_medium_url"
     t.string   "api_thumbnail_default_url"
     t.string   "api_thumbnail_high_url"
@@ -100,20 +117,21 @@ ActiveRecord::Schema.define(version: 20160222204311) do
     t.string   "email"
     t.string   "profile_image"
     t.string   "auth_hash"
-    t.integer  "expires_at",         limit: 8
+    t.integer  "expires_at",          limit: 8
     t.integer  "creator_id"
     t.integer  "updater_id"
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
     t.datetime "deleted_at"
     t.integer  "version"
-    t.string   "encrypted_password",           default: "",   null: false
-    t.integer  "sign_in_count",                default: 0
+    t.string   "encrypted_password",            default: "",    null: false
+    t.integer  "sign_in_count",                 default: 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.boolean  "requires_auth",                default: true
+    t.boolean  "requires_auth",                 default: true
+    t.boolean  "importing_playlists",           default: false
   end
 
   create_table "video_versions", force: true do |t|

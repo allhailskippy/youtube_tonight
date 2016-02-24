@@ -51,6 +51,7 @@ class YoutubeApi
     # This ugly mess of code grab select items from the channels related playlist
     # section, and associates it with the playlist id for use in video lookups
     related_playlists = search_response.items.first.content_details.related_playlists
+
     [:favorites, :likes, :watch_history, :watch_later].collect do |playlist|
       [playlist, related_playlists.send(playlist)]
     end.each do |playlist, playlist_id|
@@ -68,21 +69,25 @@ class YoutubeApi
 
         video_ids = []
         search_response.items.each do |item|
+          video = item.snippet
+
           # Get the video id
-          video_id = item.snippet.resource_id.video_id
+          video_id = video.resource_id.video_id
 
           # Build a list of video ids for bulk getting their duration
           video_ids << video_id
 
           # Thumbnails
-          thumbs = item.snippet.thumbnails
+          thumbs = video.thumbnails
 
           # Video object
           videos[video_id] = {
-            api_video_id: video_id, 
-            api_thumbnail_medium_url: thumbs.try(:medium).try(:url),
-            api_thumbnail_default_url: thumbs.try(:default).try(:url),
-            api_thumbnail_high_url: thumbs.try(:high).try(:url)
+            video_id: video_id,
+            title: video.title,
+            thumbnail_medium_url: thumbs.try(:medium).try(:url),
+            thumbnail_default_url: thumbs.try(:default).try(:url),
+            thumbnail_high_url: thumbs.try(:high).try(:url),
+            position: video.position
           }
         end
 
@@ -120,7 +125,7 @@ class YoutubeApi
     ret
   end
 
-  def self.get_service(user = nil)
+  def self.get_service
     client = Google::Apis::YoutubeV3::YouTubeService.new
       client.authorization = Signet::OAuth2::Client.new(
         authorization_uri: 'https://accounts.google.com/o/oauth2/auth',

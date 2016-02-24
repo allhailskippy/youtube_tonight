@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col-md-3 sidebar">
+    <h1>Playlists</h1>
+    <hr />
+  </div>
+  <div class="col-md-9 col-md-offset-3 main">
+    <notices notices="notices"></notices>
+    <div class="form-group col-md-12">
+      <form class="form-search pull-right">
+        <input
+          type="text"
+          class="search-query" 
+          placeholder="Search..."
+          ng-model="filterBy.title"
+        />
+      </form>
+    </div>
+    <div
+      tasty-table
+      bind-resource-callback="getResource"
+      bind-theme="theme"
+      bind-init="init"
+      bind-filters="filterBy"
+    >
+      <table class="table table-striped table-condensed">
+        <thead>
+          <th>ID</th>
+          <th>Title</th>
+          <th>&nbsp;</th>
+        </thead>
+        <tbody>
+          <tr ng-repeat="row in rows">
+            <td>{{ row.id }}</td>
+            <td>{{ row.api_title }}</td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div tasty-pagination></div>
+    </div>
+  </div>
+</div>

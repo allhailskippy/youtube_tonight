@@ -11,6 +11,7 @@ class CreatePlaylists < ActiveRecord::Migration
     create_table :playlist_items do |t|
       t.integer :playlist_id
       t.string :api_video_id
+      t.string :api_title
       t.string :api_thumbnail_medium_url
       t.string :api_thumbnail_default_url
       t.string :api_thumbnail_high_url

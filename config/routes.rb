@@ -2,8 +2,10 @@ Youtubetonight::Application.routes.draw do
   devise_for :users, :controllers => { :omniauth_callbacks => "callbacks" }
 
   resources :home
+
   resources :shows
   resources :videos
+  resources :playlists
   resources :manage_users, :only => :index
 
   resources :users do

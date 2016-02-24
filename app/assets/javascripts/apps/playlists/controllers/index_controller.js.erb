@@ -1,0 +1,76 @@
+/**
+ * @ngdoc controller
+ * @name IndexCtrl
+ *
+ * @description Logic for index stuffs
+ */
+(function() {
+  "use strict";
+
+var IndexCtrl = function(
+  $scope, $location, $window, $http,
+  PlaylistApp, Playlist
+  ) {
+
+  /**
+   * Setup
+   */
+
+  /**
+   * Watch variables
+   */
+
+  /**
+   * Scope methods
+   */
+  // Redirect to the video list for this playlist
+  $scope.videos = function(playlist) {
+    $window.location.href = '/#/playlist_items/' + playlist.id;
+  };
+
+  $scope.init = {
+    'count': 10,
+    'page': 1,
+    'filterBase': 1
+  };
+
+  $scope.filterBy = {
+    'title': '',
+  }
+
+  $scope.theme = {
+    listItemsPerPage: [5, 10, 20, 50],
+    loadOnInit: true
+  };
+
+  $scope.getResource = function (params, paramsObj) {
+    params = {
+      per_page: paramsObj.count,
+      page: paramsObj.page,
+      'q[api_title_cont]': paramsObj.filters.title
+    };
+
+    var urlApi = 'playlists.json?' + $.param(params);
+    return $http.get(urlApi).then(function (response) {
+      return {
+        'rows': response.data.data,
+        'header': [],
+        'pagination': {
+          'count': response.data.per_page,
+          'page': response.data.page,
+          'pages': response.data.total_pages,
+          'size': response.data.total
+        },
+      }
+    });
+  }
+};
+
+IndexCtrl.$inject = [
+  '$scope', '$location', '$window', '$http', 
+  'PlaylistApp', 'Playlist'
+];
+
+angular.module("PlaylistApp")
+       .controller('IndexCtrl', IndexCtrl);
+}());

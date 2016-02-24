@@ -5,6 +5,7 @@ group :production do
   gem 'thin'
 end
 
+
 gem 'rails_12factor'
 gem 'rails', '~> 4.0.13'
 gem 'test-unit'
@@ -18,6 +19,7 @@ gem 'validate_url'
 gem 'acts_as_versioned'
 gem "paranoia", "~> 2.0"
 gem 'iso8601'
+gem 'delayed_job_active_record'
 
 # Javascript gems
 gem 'jquery-rails'

@@ -99,3 +99,30 @@ glyphicon.disabled {
   width: 120px;
   height: 120px;
 }
+
+
+input.search-query {
+  border-radius: 15px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border: 1px solid #ccc;
+  padding: 4px 6px 4px 26px;
+}
+
+.form-search {
+  position: relative;
+}
+
+.form-search:before {
+  content:'';
+  display: block;
+  width: 14px;
+  height: 14px;
+  background-image: url(http://getbootstrap.com/2.3.2/assets/img/glyphicons-halflings.png);
+  background-position: -48px 0;
+  position: absolute;
+  top:8px;
+  left:8px;
+  opacity: .5;
+  z-index: 1000;
+}

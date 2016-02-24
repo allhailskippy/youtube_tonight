@@ -14,6 +14,7 @@ class User < ActiveRecord::Base
   # Relationships
   #
   has_many :roles, :dependent => :destroy
+  has_many :playlists, :dependent => :destroy
 
   ##
   # Validation

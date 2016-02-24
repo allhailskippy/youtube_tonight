@@ -1,0 +1,28 @@
+//= require_self
+//= require_tree ./controllers
+//= require_tree ./services
+/**
+ * @ngdoc overview
+ * @name Playlist App
+ *
+ * @description The PlaylistApp is used for viewing playlists
+ * This file is where the routes are defined for this app
+ */
+(function(){
+'use strict';
+
+var routesConfig = function($locationProvider, $routeProvider) {
+  $routeProvider.
+  when('/index', {
+    controller: 'IndexCtrl',
+    templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>',
+  }).
+  otherwise({
+    redirectTo: '/index'
+  });
+};
+routesConfig.$inject = ['$locationProvider', '$routeProvider'];
+
+angular.module('PlaylistApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf', 'ngTasty', 'tableSort', 'ui.sortable'])
+       .config(routesConfig);
+})();

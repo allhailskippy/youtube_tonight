@@ -20,6 +20,14 @@ authorization do
     has_permission_on :shows, :to => :manage
     has_permission_on :youtube_parser, :to => :read
     has_permission_on :broadcasts, :to => :read
+    has_permission_on :playlists do
+      to :manage
+      if_attribute :user => is {user}
+    end
+    has_permission_on :playlist_items do
+      to :manage
+      if_attribute :playlist => { :user => is {user} }
+    end
   end
 
   # permissions on other roles, such as
@@ -28,6 +36,10 @@ authorization do
     includes :host
 
     has_permission_on :manage_users, :to => :manage
+
+#    # Admins can see all playlists
+#    has_permission_on :playlists, :to => :manage
+#    has_permission_on :playlist_items, :to => :manage
   end
 end
 
