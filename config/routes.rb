@@ -6,6 +6,7 @@ Youtubetonight::Application.routes.draw do
   resources :shows
   resources :videos
   resources :playlists
+  resources :playlist_items, :only => :index
   resources :manage_users, :only => :index
 
   resources :users do

@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-md-3 sidebar">
-    <h1>Playlists</h1>
+    <h1>Playlist Videos</h1>
     <hr />
   </div>
   <div class="col-md-9 col-md-offset-3 main">
@@ -22,6 +22,7 @@
       bind-init="init"
       bind-filters="filterBy"
     >
+      <div tasty-pagination></div>
       <table class="table table-striped table-condensed">
         <thead>
           <th>ID</th>
@@ -29,15 +30,10 @@
           <th>&nbsp;</th>
         </thead>
         <tbody>
-          <tr ng-repeat="playlist in rows">
-            <td>{{ playlist.id }}</td>
-            <td>{{ playlist.api_title }}</td>
+          <tr ng-repeat="video in rows">
+            <td><img ng-src="{{ video.api_thumbnail_default_url || 'https://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg'}}" /></td>
+            <td>{{ video.api_title }}</td>
             <td>
-              <button
-                type="button"
-                class="btn btn-success"
-                ng-click="goToPlaylistItems(playlist)"
-              >Videos</button>
             </td>
           </tr>
         </tbody>

@@ -9,8 +9,11 @@ var Playlist = function(PlaylistApi) {
     'title',
   ];
 
-  self.build = function(show) {
-    return show;
+  self.build = function(playlist) {
+    playlist.importPlaylists = function() {
+      return PlaylistApi.save().$promise;
+    }
+    return playlist;
   };
 
   /**

@@ -52,8 +52,8 @@ class PlaylistsController < ApplicationController
           }
         rescue Exception => e
           render json: {
-            errors: e.to_s
-          }
+            errors: e.to_s.titleize
+          }, status: 400
         end 
       end
     end

@@ -9,7 +9,7 @@
 
 var FormCtrl = function(
   $scope, $routeParams, $location,
-  UserApp, User, CurrentUser, Notice
+  UserApp, User, CurrentUser, Playlist, Notice
   ) {
 
   /**
@@ -38,6 +38,15 @@ var FormCtrl = function(
     };
   }
 
+  // Trigger the import request for users playlists
+  $scope.importPlaylists = function() {
+    var list = Playlist.build({})
+    list.importPlaylists().then(function(response) {
+      Notice.setSuccesses(['Import has been successfully started but may take some time to complete']);
+    }).catch(Notice.handleErrors);
+
+  };
+
   $scope.save = function() {
     // We update the roles from here, so
     // let our model know to clear out
@@ -51,7 +60,7 @@ var FormCtrl = function(
 
 FormCtrl.$inject = [
   '$scope', '$routeParams', '$location',
-  'UserApp', 'User', 'CurrentUser', 'Notice'
+  'UserApp', 'User', 'CurrentUser', 'Playlist', 'Notice'
 ];
 
 angular.module("UserApp")

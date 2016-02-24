@@ -5,4 +5,10 @@ class PlaylistItem < ActiveRecord::Base
   # Relationships
   #
   belongs_to :playlist
+
+  # Here for consistency
+  def self.as_json_hash
+    {
+    }
+  end
 end
