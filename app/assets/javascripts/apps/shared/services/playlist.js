@@ -11,7 +11,10 @@ var Playlist = function(PlaylistApi) {
 
   self.build = function(playlist) {
     playlist.importPlaylists = function() {
-      return PlaylistApi.save().$promise;
+      var params = {
+        user_id: playlist.user_id
+      };
+      return PlaylistApi.save(params).$promise;
     }
     return playlist;
   };

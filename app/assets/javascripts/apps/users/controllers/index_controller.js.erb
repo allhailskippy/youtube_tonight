@@ -9,7 +9,7 @@
 
 var IndexCtrl = function(
   $scope, $location,
-  UserApp, User, CurrentUser, Notice
+  UserApp, User, CurrentUser, Playlist, Notice
   ) {
 
   /**
@@ -51,6 +51,15 @@ var IndexCtrl = function(
     }
   };
 
+  // Trigger the import request for users playlists
+  $scope.importPlaylists = function(user) {
+    var list = Playlist.build({ user_id: user.id })
+    list.importPlaylists().then(function(response) {
+      Notice.setSuccesses(['Import has been successfully started but may take some time to complete']);
+    }).catch(Notice.handleErrors);
+
+  };
+
   // Looks up users 
   $scope.queryUsers = function() {
     // Skip if we're currently looking up users
@@ -76,7 +85,7 @@ var IndexCtrl = function(
 
 IndexCtrl.$inject = [
   '$scope', '$location',
-  'UserApp', 'User', 'CurrentUser', 'Notice'
+  'UserApp', 'User', 'CurrentUser', 'Playlist', 'Notice'
 ];
 
 angular.module("UserApp")

@@ -37,14 +37,16 @@ class PlaylistsController < ApplicationController
     respond_to do |format|
       format.json do
         begin
-          raise Exception.new("already_importing") if current_user.importing_playlists
+          user = params[:user_id].present? ? User.find(params[:user_id]) : current_user
+
+          raise Exception.new("already_importing") if user.importing_playlists
 
           # Set importing playlists so we don't double add delayed job
           current_user.update_attribute(:importing_playlists, true)
 
           # Start job
           Delayed::Job.enqueue(
-            ImportPlaylistsJob.new(Authorization.current_user)
+            ImportPlaylistsJob.new(user)
           )
 
           render json: {

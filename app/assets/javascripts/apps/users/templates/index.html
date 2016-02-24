@@ -11,16 +11,29 @@
           <th>Name</th>
           <th>Email</th>
           <th>Roles</th>
+          <th ng-if="currentUser.is_admin">Playlists</th>
           <th>&nbsp;</th>
         </tr>
       </thead>
       <tbody>
         <tr ng-repeat="user in users">
-          <td class="text-center"><img class="profile-image" ng-src="{{user.profile_image}}" /></td>
+          <td class="text-center"><img
+            class="profile-image"
+            ng-src="{{user.profile_image}}"
+          /></td>
           <td class="text-right">{{ user.id }}</td>
           <td>{{ user.name}}</td>
           <td>{{ user.email}}</td>
           <td>{{ user.roleTitleStr()}}</td>
+          <td
+            class="text-center"
+            ng-if="currentUser.is_admin"
+          >
+            <span
+              class="btn btn-success"
+              ng-click="importPlaylists(user)"
+            >Import</span>
+          </td>
           <td class="text-right">
             <span ng-show="currentUser.id != user.id">
               <span
