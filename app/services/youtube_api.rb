@@ -127,14 +127,13 @@ class YoutubeApi
 
   def self.get_service
     client = Google::Apis::YoutubeV3::YouTubeService.new
-      client.authorization = Signet::OAuth2::Client.new(
-        authorization_uri: 'https://accounts.google.com/o/oauth2/auth',
-        token_credential_uri: 'https://accounts.google.com/o/oauth2/token',
-        client_id: GOOGLE_CLIENT_ID,
-        client_secret: GOOGLE_CLIENT_SECRET
-      )
-      client.authorization.access_token = Authorization.current_user.auth_hash
-#      client.authorization.refresh_token = refresh_token if refresh_token
+    client.authorization = Signet::OAuth2::Client.new(
+      authorization_uri: 'https://accounts.google.com/o/oauth2/auth',
+      token_credential_uri: 'https://accounts.google.com/o/oauth2/token',
+      client_id: GOOGLE_CLIENT_ID,
+      client_secret: GOOGLE_CLIENT_SECRET
+    )
+    client.authorization.access_token = Authorization.current_user.get_token
     return client
   end
 end

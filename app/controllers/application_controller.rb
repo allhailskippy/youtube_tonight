@@ -38,6 +38,9 @@ protected
 
     # Skip authentication if controller/action is in the exclude list
     unless SKIP_DEVISE_AUTHENTICATION.include?({:controller => params[:controller].to_sym, :action => params[:action].to_sym})
+      # Ensure token is up to date
+      current_user.try(:get_token)
+
       # Check the expires_at token to see if we've still got a valid token
       if current_user.try(:token_expired?)
         sign_out(current_user)

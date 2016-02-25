@@ -103,6 +103,14 @@ class User < ActiveRecord::Base
     UserMailer.authorized_email(self).deliver!
   end
 
+  # Gets a current token for the user. Does a
+  # token refresh if necessary
+  def get_token
+    token = auth_hash
+    token = get_refresh_token if token_expired?
+    token
+  end
+
   def get_refresh_token
     # Refresh auth token from google_oauth2.
     options = {
@@ -123,5 +131,6 @@ class User < ActiveRecord::Base
       write_attribute(:expires_at, DateTime.now + refresh.parsed_response['expires_in'].seconds)
       save!
     end
+    read_attribute(:auth_hash)
   end
 end
