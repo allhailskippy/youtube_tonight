@@ -6,7 +6,8 @@ Devise.setup do |config|
   # config.omniauth :facebook, FACEBOOK_KEY, FACEBOOK_SECRET
   config.omniauth :google_oauth2, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, {
     scope: "email, profile, plus.me, youtube.readonly",
-    skip_jwt: true
+    skip_jwt: true,
+    access_type: "offline"
   }
 
   # ==> Mailer Configuration

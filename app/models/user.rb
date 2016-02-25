@@ -43,6 +43,7 @@ class User < ActiveRecord::Base
       u.requires_auth = true
     end
     user.auth_hash = auth.credentials.token
+    user.refresh_token = auth.credentials.refresh_token
     user.expires_at = auth.credentials.expires_at
     user.name = auth.info.name
     user.profile_image = auth.info.image
@@ -52,7 +53,13 @@ class User < ActiveRecord::Base
 
   # To determine if our token has expired
   def token_expired?(new_time = nil)
-    return Time.at(expires_at) < Time.now rescue true
+    expired = Time.at(expires_at) < Time.now rescue true
+    if expired
+      # Try to get a new token
+      get_refresh_token
+      expired = Time.at(read_attribute(:expires_at)) < Time.now rescue true
+    end
+    expired
   end
 
   # Used for finding out what roles a user has (declarative authorization)
@@ -94,5 +101,27 @@ class User < ActiveRecord::Base
 
   def deliver_authorized_email
     UserMailer.authorized_email(self).deliver!
+  end
+
+  def get_refresh_token
+    # Refresh auth token from google_oauth2.
+    options = {
+      body: {
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        refresh_token: "#{refresh_token}",
+        grant_type: 'refresh_token'
+      },
+      headers: {
+        'Content-Type' => 'application/x-www-form-urlencoded'
+      }
+    }
+    refresh = HTTParty.post('https://accounts.google.com/o/oauth2/token', options)
+
+    if refresh.code == 200
+      write_attribute(:auth_hash, refresh.parsed_response['access_token'])
+      write_attribute(:expires_at, DateTime.now + refresh.parsed_response['expires_in'].seconds)
+      save!
+    end
   end
 end

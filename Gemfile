@@ -11,6 +11,7 @@ gem 'rails', '~> 4.0.13'
 gem 'test-unit'
 gem 'bundler', '>= 1.8.4'
 
+gem 'httparty'
 gem 'pg'
 gem 'date_validator'
 gem 'ransack'
