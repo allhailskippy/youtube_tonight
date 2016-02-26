@@ -42,7 +42,7 @@ class PlaylistsController < ApplicationController
           raise Exception.new("already_importing") if user.importing_playlists
 
           # Set importing playlists so we don't double add delayed job
-          current_user.update_attribute(:importing_playlists, true)
+          user.update_attribute(:importing_playlists, true)
 
           # Start job
           Delayed::Job.enqueue(

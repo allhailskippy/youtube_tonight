@@ -59,52 +59,56 @@ class YoutubeApi
       videos = {}
       next_page_token = nil
       results = []
-      loop do
-        # Lookup items from favourites list
-        search_response = client.list_playlist_items('snippet', {
-          playlist_id: playlist_id,
-          max_results: 50,
-          page_token: next_page_token
-        })
+      begin
+        loop do
+          # Lookup items from favourites list
+          search_response = client.list_playlist_items('snippet', {
+            playlist_id: playlist_id,
+            max_results: 50,
+            page_token: next_page_token
+          })
 
-        video_ids = []
-        search_response.items.each do |item|
-          video = item.snippet
+          video_ids = []
+          search_response.items.each do |item|
+            video = item.snippet
 
-          # Get the video id
-          video_id = video.resource_id.video_id
+            # Get the video id
+            video_id = video.resource_id.video_id
 
-          # Build a list of video ids for bulk getting their duration
-          video_ids << video_id
+            # Build a list of video ids for bulk getting their duration
+            video_ids << video_id
 
-          # Thumbnails
-          thumbs = video.thumbnails
+            # Thumbnails
+            thumbs = video.thumbnails
 
-          # Video object
-          videos[video_id] = {
-            video_id: video_id,
-            title: video.title,
-            thumbnail_medium_url: thumbs.try(:medium).try(:url),
-            thumbnail_default_url: thumbs.try(:default).try(:url),
-            thumbnail_high_url: thumbs.try(:high).try(:url),
-            position: video.position
-          }
+            # Video object
+            videos[video_id] = {
+              video_id: video_id,
+              title: video.title,
+              thumbnail_medium_url: thumbs.try(:medium).try(:url),
+              thumbnail_default_url: thumbs.try(:default).try(:url),
+              thumbnail_high_url: thumbs.try(:high).try(:url),
+              position: video.position
+            }
+          end
+
+          self.get_duration(video_ids).each do |video_id, duration|
+            videos[video_id].merge!(duration)
+          end
+
+          next_page_token = search_response.next_page_token
+          break if next_page_token.blank?
         end
 
-        self.get_duration(video_ids).each do |video_id, duration|
-          videos[video_id].merge!(duration)
-        end
-
-        next_page_token = search_response.next_page_token
-        break if next_page_token.blank?
+        ret[playlist] = {
+          :user_id => Authorization.current_user.id,
+          :playlist_id => playlist_id,
+          :title => playlist,
+          :videos => videos.values
+        }
+      rescue
+        #TODO: Deal with this if necessary later
       end
-
-      ret[playlist] = {
-        :user_id => Authorization.current_user.id,
-        :playlist_id => playlist_id,
-        :title => playlist,
-        :videos => videos.values
-      }
     end
     ret
   end

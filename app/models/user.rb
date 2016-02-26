@@ -106,8 +106,7 @@ class User < ActiveRecord::Base
   # Gets a current token for the user. Does a
   # token refresh if necessary
   def get_token
-    token = auth_hash
-    token = get_refresh_token if token_expired?
+    token = token_expired? ? get_refresh_token : auth_hash
     token
   end
 
