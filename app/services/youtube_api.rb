@@ -52,10 +52,24 @@ class YoutubeApi
     # section, and associates it with the playlist id for use in video lookups
     related_playlists = search_response.items.first.content_details.related_playlists
 
-    [:favorites, :likes, :watch_history, :watch_later].collect do |playlist|
-      [playlist, related_playlists.send(playlist)]
-    end.each do |playlist, playlist_id|
+    # Start by collecting some of the hard coded playlists
+    playlists = [:favorites, :likes, :watch_history, :watch_later].inject({}) do |acc, playlist|
+      acc[related_playlists.send(playlist)] = playlist
+      acc
+    end
 
+    # Get full list of playlists
+    loop do
+      search_response = client.list_playlists('snippet', mine: true, max_results: 50)
+      search_response.items.each do |item|
+        playlists[item.id] = item.snippet.title
+      end
+
+      next_page_token = search_response.next_page_token
+      break if next_page_token.blank?
+    end
+
+    playlists.each do |playlist_id, playlist|
       videos = {}
       next_page_token = nil
       results = []
