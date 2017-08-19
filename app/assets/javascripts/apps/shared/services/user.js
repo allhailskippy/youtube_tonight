@@ -41,7 +41,7 @@ var User = function(
         this.push(role.charAt(0).toUpperCase() + role.substr(1));
       }, roleStr);
       return roleStr.join(", ");
-    }
+    };
 
     // Save model to server side
     user.save = function() {

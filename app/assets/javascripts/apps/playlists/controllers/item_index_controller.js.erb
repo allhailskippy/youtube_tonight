@@ -9,12 +9,13 @@
 
 var ItemIndexCtrl = function(
   $scope, $http, $routeParams,
-  PlaylistApp, Notice
+  PlaylistApp, Playlist, Notice
   ) {
 
   /**
    * Setup
    */
+  $scope.playlist_id = $routeParams.playlist_id;
 
   /**
    * Watch variables
@@ -50,6 +51,7 @@ var ItemIndexCtrl = function(
 
     var urlApi = 'playlist_items.json?' + $.param(params);
     return $http.get(urlApi).then(function (response) {
+      $scope.importing = false;
       return {
         'rows': response.data.data,
         'header': [],
@@ -60,13 +62,36 @@ var ItemIndexCtrl = function(
           'size': response.data.total
         },
       }
+    }).catch(function() {
+      Notice.handleErrors;
+      $scope.importing = false;
     });
-  }
+  };
+
+  $scope.reloadCallback = function() {};
+
+  $scope.reload = function() {
+    $scope.reloadCallback();
+  };
+
+  $scope.refreshVideos = function() {
+    if($scope.importing) {
+      return false;
+    }
+    var list = Playlist.build({ id: $scope.playlist_id })
+    $scope.importing = true;
+    list.importPlaylists().then(function(response) {
+      Notice.setSuccesses(['Successfully Refreshed Videos']);
+      $scope.reloadCallback();
+    }).catch(function() {
+      Notice.handleErrors;
+    });
+  };
 };
 
 ItemIndexCtrl.$inject = [
   '$scope', '$http', '$routeParams',
-  'PlaylistApp', 'Notice'
+  'PlaylistApp', 'Playlist', 'Notice'
 ];
 
 angular.module("PlaylistApp")

@@ -4,7 +4,7 @@ class PlaylistItem < ActiveRecord::Base
   ##
   # Relationships
   #
-  belongs_to :playlist
+  belongs_to :playlist, counter_cache: true
 
   # Here for consistency
   def self.as_json_hash

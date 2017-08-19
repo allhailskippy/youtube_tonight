@@ -32,6 +32,7 @@ class Playlist < ActiveRecord::Base
           api_playlist_id: details[:playlist_id],
         )
       playlist.api_title = list.to_s.titleize
+      playlist.api_item_count = details[:video_count].to_i
       playlist.creator_id = user.id
       playlist.updater_id = user.id
 

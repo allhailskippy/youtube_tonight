@@ -39,18 +39,23 @@
           <thead>
             <th>ID</th>
             <th>Title</th>
+            <th>Available Video Count</th>
+            <th>Imported Video Count</th>
             <th>&nbsp;</th>
           </thead>
           <tbody>
             <tr ng-repeat="playlist in rows">
               <td>{{ playlist.id }}</td>
               <td>{{ playlist.api_title }}</td>
+              <td>{{ playlist.api_item_count | number:0 }}</td>
+              <td>{{ playlist.playlist_items_count | number:0 }}</td>
               <td>
                 <button
+                  title="Videos"
                   type="button"
-                  class="btn btn-success"
+                  class="btn btn-success glyphicon glyphicon-film pull-right"
                   ng-click="goToPlaylistItems(playlist)"
-                >Videos</button>
+                ></button>
               </td>
             </tr>
           </tbody>

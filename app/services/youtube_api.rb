@@ -44,8 +44,6 @@ class YoutubeApi
     user ||= Authorization.current_user
     client = get_service(user)
 
-    ret = {}
-
     # Get list of playlists
     search_response = client.list_channels('contentDetails', mine: true, max_results: 50)
 
@@ -53,34 +51,49 @@ class YoutubeApi
     # section, and associates it with the playlist id for use in video lookups
     related_playlists = search_response.items.first.content_details.related_playlists
 
-    # Start by collecting some of the hard coded playlists
-    playlists = [:favorites, :likes, :watch_history, :watch_later].inject({}) do |acc, playlist|
-      acc[related_playlists.send(playlist)] = playlist
-      acc
+    # Start by collecting the ids of the hard coded playlists
+    hc_list = [:favorites, :likes, :watch_history, :watch_later]
+    ids = hc_list.collect{|p| related_playlists.send(p) }.join(',')
+
+    # Pull full details about the hard coded lists
+    search_response = client.list_playlists('contentDetails,snippet', id: ids)
+    playlists = {}
+    search_response.items.each do |item|
+      playlist = {
+        title: item.snippet.title,
+        video_count: item.content_details.item_count
+      }
+      playlists[item.id] = playlist
     end
 
     # Get full list of playlists
     loop do
-      search_response = client.list_playlists('snippet', mine: true, max_results: 50)
+      search_response = client.list_playlists('snippet,contentDetails', mine: true, max_results: 50)
       search_response.items.each do |item|
-        playlists[item.id] = item.snippet.title
+        playlist = {
+          title: item.snippet.title,
+          video_count: item.content_details.item_count
+        }
+        playlists[item.id] = playlist
       end
 
       next_page_token = search_response.next_page_token
       break if next_page_token.blank?
     end
 
+    ret = {}
+
     playlists.each do |playlist_id, playlist|
       next_page_token = nil
       results = []
-
-      ret[playlist] = {
+      title = playlist[:title]
+      ret[title] = {
         user_id: user.id,
         playlist_id: playlist_id,
-        title: playlist
+        title: title,
+        video_count: playlist[:video_count]
       }
     end
-
     ret
   end
 
