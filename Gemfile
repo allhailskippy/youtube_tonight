@@ -12,7 +12,7 @@ gem 'test-unit'
 gem 'bundler', '>= 1.8.4'
 
 gem 'httparty'
-gem 'pg'
+gem 'pg', '0.20.0'
 gem 'date_validator'
 gem 'ransack'
 gem 'will_paginate'
