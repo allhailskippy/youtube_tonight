@@ -16,6 +16,7 @@ var IndexCtrl = function(
    * Setup
    */
   $scope.user_id = $routeParams.user_id;
+  $scope.importingVideos = {};
 
   /**
    * Watch variables
@@ -90,6 +91,23 @@ var IndexCtrl = function(
 
   $scope.reload = function() {
     $scope.reloadCallback();
+  };
+
+  $scope.refreshVideos = function(playlist) {
+    if($scope.importingVideos[playlist.id]) {
+      return false;
+    }
+
+    var list = Playlist.build({ id: playlist.id })
+    $scope.importingVideos[playlist.id] = true;
+    list.importPlaylists().then(function(response) {
+      Notice.setSuccesses(['Successfully Refreshed Videos']);
+      $scope.importingVideos[playlist.id] = false;
+      $scope.reloadCallback();
+    }).catch(function() {
+      $scope.importingVideos[playlist.id] = false;
+      Notice.handleErrors;
+    });
   };
 };
 

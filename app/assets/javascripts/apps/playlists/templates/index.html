@@ -39,21 +39,28 @@
           <thead>
             <th>ID</th>
             <th>Title</th>
-            <th>Available Video Count</th>
-            <th>Imported Video Count</th>
+            <th class="text-center">Available Video Count</th>
+            <th class="text-center">Imported Video Count</th>
             <th>&nbsp;</th>
           </thead>
           <tbody>
             <tr ng-repeat="playlist in rows">
               <td>{{ playlist.id }}</td>
               <td>{{ playlist.api_title }}</td>
-              <td>{{ playlist.api_item_count | number:0 }}</td>
-              <td>{{ playlist.playlist_items_count | number:0 }}</td>
-              <td>
+              <td class="text-center">{{ playlist.api_item_count | number:0 }}</td>
+              <td class="text-center">{{ playlist.playlist_items_count | number:0 }}</td>
+              <td class="text-right">
+                <button
+                  title="Refresh Videos"
+                  type="button"
+                  class="btn btn-success glyphicon glyphicon-refresh"
+                  ng-class="{disabled: importingVideos[playlist.id]}"
+                  ng-click="refreshVideos(playlist)"
+                ></button>
                 <button
                   title="Videos"
                   type="button"
-                  class="btn btn-success glyphicon glyphicon-film pull-right"
+                  class="btn btn-default glyphicon glyphicon-film"
                   ng-click="goToPlaylistItems(playlist)"
                 ></button>
               </td>
