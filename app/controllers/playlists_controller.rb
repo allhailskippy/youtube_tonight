@@ -6,7 +6,7 @@ class PlaylistsController < ApplicationController
       format.html
       format.json do
         params[:q] ||= {}
-        params[:q][:user_id_eq] = current_user.id # Restrict to current user
+        params[:q][:user_id_eq] ||= current_user.id
         params[:q][:s] ||= 'id desc'
         params[:per_page] ||= 10
         params[:page] ||= 1
@@ -30,7 +30,6 @@ class PlaylistsController < ApplicationController
 
   ##
   # Creates a delayed job that will import all of the playlists
-  # for the currently logged in user
   #
   # PUT /playlists.json
   def create
@@ -38,25 +37,36 @@ class PlaylistsController < ApplicationController
       format.json do
         begin
           user = params[:user_id].present? ? User.find(params[:user_id]) : current_user
-
-          raise Exception.new("already_importing") if user.importing_playlists
-
-          # Set importing playlists so we don't double add delayed job
-          user.update_attribute(:importing_playlists, true)
-
-          # Start job
-          Delayed::Job.enqueue(
-            ImportPlaylistsJob.new(user)
-          )
-
+          playlists = Playlist.import_all(user)
           render json: {
-            data: 'queued'
+            data: playlists
           }
         rescue Exception => e
           render json: {
             errors: e.to_s.titleize
           }, status: 400
-        end 
+        end
+      end
+    end
+  end
+
+  def update
+    respond_to do |format|
+      format.json do
+        begin
+          user = params[:user_id].present? ? User.find(params[:user_id]) : current_user
+          playlist = Playlist.find(params[:id])
+          videos = playlist.import_videos
+
+          render json: {
+            data: videos
+          }
+
+        rescue Exception => e
+          render json: {
+            errors: e.to_s.titleize
+          }, status: 400
+        end
       end
     end
   end

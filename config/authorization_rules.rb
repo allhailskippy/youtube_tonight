@@ -37,9 +37,9 @@ authorization do
 
     has_permission_on :manage_users, :to => :manage
 
-#    # Admins can see all playlists
-#    has_permission_on :playlists, :to => :manage
-#    has_permission_on :playlist_items, :to => :manage
+    # Admins can see all playlists
+    has_permission_on :playlists, :to => :manage
+    has_permission_on :playlist_items, :to => :manage
   end
 end
 

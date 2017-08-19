@@ -8,13 +8,14 @@
   "use strict";
 
 var IndexCtrl = function(
-  $scope, $location, $http,
-  PlaylistApp, Notice
+  $scope, $location, $http, $routeParams,
+  PlaylistApp, Playlist, Notice
   ) {
 
   /**
    * Setup
    */
+  $scope.user_id = $routeParams.user_id;
 
   /**
    * Watch variables
@@ -48,11 +49,13 @@ var IndexCtrl = function(
     params = {
       per_page: paramsObj.count,
       page: paramsObj.page,
-      'q[api_title_cont]': paramsObj.filters.title
+      'q[api_title_cont]': paramsObj.filters.title,
+      'q[user_id_eq]': $scope.user_id
     };
 
     var urlApi = 'playlists.json?' + $.param(params);
     return $http.get(urlApi).then(function (response) {
+      $scope.importing = false;
       return {
         'rows': response.data.data,
         'header': [],
@@ -63,13 +66,36 @@ var IndexCtrl = function(
           'size': response.data.total
         },
       }
+    }).catch(function() {
+      Notice.handleErrors;
+      $scope.importing = false;
     });
-  }
+  };
+
+  $scope.refreshPlaylists = function() {
+    if($scope.importing) {
+      return false;
+    }
+    var list = Playlist.build({ user_id: $scope.user_id })
+    $scope.importing = true;
+    list.importPlaylists().then(function(response) {
+      Notice.setSuccesses(['Successfully Refreshed Playlists']);
+      $scope.reloadCallback();
+    }).catch(function() {
+      Notice.handleErrors;
+    });
+  };
+
+  $scope.reloadCallback = function() {};
+
+  $scope.reload = function() {
+    $scope.reloadCallback();
+  };
 };
 
 IndexCtrl.$inject = [
-  '$scope', '$location', '$http',
-  'PlaylistApp', 'Notice'
+  '$scope', '$location', '$http', '$routeParams',
+  'PlaylistApp', 'Playlist', 'Notice'
 ];
 
 angular.module("PlaylistApp")

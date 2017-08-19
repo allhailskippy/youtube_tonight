@@ -1,6 +1,6 @@
 class YoutubeApi
-  def self.get_video_info(video)
-    client = get_service
+  def self.get_video_info(video, user = nil)
+    client = get_service(user)
 
     # Call the search.list method to retrieve results matching the specified query term.
     search_response = client.list_searches('snippet', q: video, max_results: 10)
@@ -40,8 +40,9 @@ class YoutubeApi
     search_results.values
   end
 
-  def self.get_playlists
-    client = get_service
+  def self.get_playlists(user = nil)
+    user ||= Authorization.current_user
+    client = get_service(user)
 
     ret = {}
 
@@ -70,65 +71,77 @@ class YoutubeApi
     end
 
     playlists.each do |playlist_id, playlist|
-      videos = {}
       next_page_token = nil
       results = []
-      begin
-        loop do
-          # Lookup items from favourites list
-          search_response = client.list_playlist_items('snippet', {
-            playlist_id: playlist_id,
-            max_results: 50,
-            page_token: next_page_token
-          })
 
-          video_ids = []
-          search_response.items.each do |item|
-            video = item.snippet
-
-            # Get the video id
-            video_id = video.resource_id.video_id
-
-            # Build a list of video ids for bulk getting their duration
-            video_ids << video_id
-
-            # Thumbnails
-            thumbs = video.thumbnails
-
-            # Video object
-            videos[video_id] = {
-              video_id: video_id,
-              title: video.title,
-              thumbnail_medium_url: thumbs.try(:medium).try(:url),
-              thumbnail_default_url: thumbs.try(:default).try(:url),
-              thumbnail_high_url: thumbs.try(:high).try(:url),
-              position: video.position
-            }
-          end
-
-          self.get_duration(video_ids).each do |video_id, duration|
-            videos[video_id].merge!(duration)
-          end
-
-          next_page_token = search_response.next_page_token
-          break if next_page_token.blank?
-        end
-
-        ret[playlist] = {
-          :user_id => Authorization.current_user.id,
-          :playlist_id => playlist_id,
-          :title => playlist,
-          :videos => videos.values
-        }
-      rescue
-        #TODO: Deal with this if necessary later
-      end
+      ret[playlist] = {
+        user_id: user.id,
+        playlist_id: playlist_id,
+        title: playlist
+      }
     end
+
     ret
   end
 
-  def self.get_duration(video_ids)
-    client = get_service
+  def self.get_videos_for_playlist(playlist_id, user = nil)
+    client = get_service(user)
+    next_page_token= nil
+
+    videos = {}
+    begin
+      loop do
+        # Lookup items from favourites list
+        search_response = client.list_playlist_items('snippet', {
+          playlist_id: playlist_id,
+          max_results: 50,
+          page_token: next_page_token
+        })
+
+        video_ids = []
+        search_response.items.each do |item|
+          video = item.snippet
+
+          # Get the video id
+          video_id = video.resource_id.video_id
+
+          # Build a list of video ids for bulk getting their duration
+          video_ids << video_id
+
+          # Thumbnails
+          thumbs = video.thumbnails
+
+          # Video object
+          videos[video_id] = {
+            video_id: video_id,
+            title: video.title,
+            thumbnail_medium_url: thumbs.try(:medium).try(:url),
+            thumbnail_default_url: thumbs.try(:default).try(:url),
+            thumbnail_high_url: thumbs.try(:high).try(:url),
+            position: video.position
+          }
+        end
+
+#        self.get_duration(video_ids).each do |video_id, duration|
+#          videos[video_id].merge!(duration)
+#        end
+
+        next_page_token = search_response.next_page_token
+        break if next_page_token.blank?
+      end
+    rescue
+      #TODO: Deal with this if necessary later
+    end
+
+    # Return videos if there are any
+    videos.values
+  end
+
+  # Get the duration of a selected set of videos.
+  # Passes in a list of video_ids to reduce the number
+  # of API calls made
+  def self.get_duration(video_ids, user = nil)
+    client = get_service(user)
 
     lookup = client.list_videos('contentDetails', {id: video_ids })
 
@@ -143,7 +156,10 @@ class YoutubeApi
     ret
   end
 
-  def self.get_service
+  # Creates the client that facilitates communication between
+  # this app and the YouTube API
+  def self.get_service(user = nil)
+    user ||= Authorization.current_user
     client = Google::Apis::YoutubeV3::YouTubeService.new
     client.authorization = Signet::OAuth2::Client.new(
       authorization_uri: 'https://accounts.google.com/o/oauth2/auth',
@@ -151,7 +167,7 @@ class YoutubeApi
       client_id: GOOGLE_CLIENT_ID,
       client_secret: GOOGLE_CLIENT_SECRET
     )
-    client.authorization.access_token = Authorization.current_user.get_token
+    client.authorization.access_token = user.get_token
     return client
   end
 end

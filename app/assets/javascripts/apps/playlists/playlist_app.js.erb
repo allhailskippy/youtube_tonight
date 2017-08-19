@@ -13,7 +13,7 @@
 
 var routesConfig = function($locationProvider, $routeProvider) {
   $routeProvider.
-  when('/index', {
+  when('/:user_id/index', {
     controller: 'IndexCtrl',
     templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>',
   }).
