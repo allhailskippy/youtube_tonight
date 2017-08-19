@@ -168,6 +168,7 @@ class YoutubeApi
       client_secret: GOOGLE_CLIENT_SECRET
     )
     client.authorization.access_token = user.get_token
+    client.authorization.expires_in = (user.expires_at - Time.now.to_i)
     return client
   end
 end

@@ -21,6 +21,9 @@ var routesConfig = function($locationProvider, $routeProvider) {
   otherwise({
     redirectTo: '/index'
   });
+  $locationProvider
+    .html5Mode(false)
+    .hashPrefix('');
 };
 routesConfig.$inject = ['$locationProvider', '$routeProvider'];
 

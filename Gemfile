@@ -21,6 +21,7 @@ gem 'acts_as_versioned'
 gem "paranoia", "~> 2.0"
 gem 'iso8601'
 gem 'delayed_job_active_record'
+gem 'eventmachine', '1.0.9.1'
 
 # Javascript gems
 gem 'jquery-rails'
@@ -44,7 +45,7 @@ gem 'omniauth-google-oauth2'
 gem 'userstamp', :github => 'kimkong/userstamp'
 
 # APIs
-gem 'google-api-client'
+gem 'google-api-client', '0.11'
 
 gem 'sass-rails'
 gem 'coffee-rails'

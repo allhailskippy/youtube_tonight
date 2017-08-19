@@ -20,10 +20,10 @@ var routesConfig = function($locationProvider, $routeProvider) {
   when('/:playlist_id', {
     controller: 'ItemIndexCtrl',
     templateUrl: '<%= asset_path("apps/playlists/templates/item_index.html") %>'
-  }).
-  otherwise({
-    redirectTo: '/index'
   });
+  $locationProvider
+    .html5Mode(false)
+    .hashPrefix('');
 };
 routesConfig.$inject = ['$locationProvider', '$routeProvider'];
 
