@@ -54,3 +54,5 @@ Youtubetonight::Application.configure do
   # Websockets
   WEBSOCKET_URL = credentials['websocket_url']
 end
+
+require 'httplog'
