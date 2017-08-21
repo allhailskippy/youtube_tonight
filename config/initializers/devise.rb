@@ -7,7 +7,8 @@ Devise.setup do |config|
   config.omniauth :google_oauth2, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, {
     scope: "email, profile, plus.me, youtube.readonly",
     skip_jwt: true,
-    access_type: "offline"
+    access_type: "offline",
+    prompt: "consent"
   }
 
   # ==> Mailer Configuration
