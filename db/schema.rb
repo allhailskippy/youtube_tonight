@@ -177,6 +177,7 @@ ActiveRecord::Schema.define(version: 20170821190326) do
     t.datetime "deleted_at"
     t.integer  "version"
     t.string   "parent_type"
+    t.integer  "position"
   end
 
 end

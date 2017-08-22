@@ -131,7 +131,11 @@ class YoutubeApi
             thumbnail_medium_url: thumbs.try(:medium).try(:url),
             thumbnail_default_url: thumbs.try(:default).try(:url),
             thumbnail_high_url: thumbs.try(:high).try(:url),
-            position: video.position
+            position: video.position,
+            published_at: video.published_at,
+            channel_id: video.channel_id,
+            channel_title: video.channel_title,
+            description: video.description
           }
         end
 

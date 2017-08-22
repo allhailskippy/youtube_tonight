@@ -2,11 +2,13 @@ class MergePlaylistItemsAndVideos < ActiveRecord::Migration
   def up
     rename_column :videos, :show_id, :parent_id
     add_column :videos, :parent_type, :string
+    add_column :videos, :position, :integer, default: nil
 
     sql = "UPDATE videos SET parent_type='Show'"
     execute(sql)
 
     drop_table :playlist_items rescue nil
+
   end
 
   def down
@@ -25,6 +27,7 @@ class MergePlaylistItemsAndVideos < ActiveRecord::Migration
     sql = "DELETE from VIDEOS where parent_type = 'Playlist'"
     execute(sql)
 
+    remove_column :videos, :position
     remove_column :videos, :parent_type
     rename_column :videos, :parent_id, :show_id
   end

@@ -60,14 +60,22 @@
         <table class="table table-striped table-condensed">
           <thead>
             <th>ID</th>
-            <th>Title</th>
-            <th>&nbsp;</th>
           </thead>
           <tbody>
             <tr ng-repeat="video in rows">
-              <td><img ng-src="{{ video.api_thumbnail_default_url || 'https://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg'}}" /></td>
-              <td>{{ video.api_title }}</td>
               <td>
+                <div class="col-md-9">
+                  <video-show
+                    video="video"
+                    sender-id="senderIds[video.id]"
+                    state="state"
+                    allow-broadcast="false"
+                    stop-video="stopVideo(video)"
+                    play-video="playVideo(video)"
+                  ></video-show>
+                </div>
+                <div class="col-md-3 text-right">
+                </div>
               </td>
             </tr>
           </tbody>

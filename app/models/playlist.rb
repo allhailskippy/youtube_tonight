@@ -56,22 +56,25 @@ class Playlist < ActiveRecord::Base
     videos.where(api_video_id: (current_ids - new_ids)).destroy_all
 
     # Create/update existing videos
-    yt_videos.each do |video|
+    yt_videos.each do |v|
       video = Video
         .where(
           parent_id: id,
-          api_video_id: video[:video_id],
+          parent_type: 'Playlist',
+          api_video_id: v[:video_id]
         )
         .first_or_initialize
-      video.api_title = video[:title]
-      video.api_thumbnail_medium_url = video[:thumbnail_medium_url]
-      video.api_thumbnail_default_url = video[:thumbnail_default_url]
-      video.api_thumbnail_high_url = video[:thumbnail_high_url]
-      video.position = video[:position]
+      video.title = v[:title]
+      video.api_title = v[:title]
+      video.api_thumbnail_medium_url = v[:thumbnail_medium_url]
+      video.api_thumbnail_default_url = v[:thumbnail_default_url]
+      video.api_thumbnail_high_url = v[:thumbnail_high_url]
+      video.link = "https://www.youtube.com/v/#{v[:video_id]}"
+      video.position = v[:position]
       video.creator_id = user.id
       video.updater_id = user.id
 
-      video.save if video.changed?
+      video.save! if video.changed?
     end
 
     videos.reload
