@@ -21,7 +21,7 @@ var controller = function(
    */
   $scope.dispatcher = ConnectionHelper.getDispatcher();
   $scope.channel = ConnectionHelper.getChannel('video_player');
-  $scope.playerId = ConnectionHelper.getPlayerId('preview-' + $scope.video.show_id);
+  $scope.playerId = ConnectionHelper.getPlayerId('preview-' + $scope.video.parent_id);
   $scope.senderId = $scope.senderId || 'video-' + $scope.video.id + '-' + Math.floor(Math.random() * 1000000);
   $scope.playing = false;
   $scope.previewRequested = false;
@@ -125,8 +125,8 @@ var VideoShow = function() {
   return {
     restrict: 'E',
     scope: {
-      video: '=',
-      senderId: '=',
+      video: '=?',
+      senderId: '=?',
       state: '=',
       allowBroadcast: '=',
       playVideo: '&',

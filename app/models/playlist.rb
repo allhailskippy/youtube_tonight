@@ -5,8 +5,11 @@ class Playlist < ActiveRecord::Base
   # Relationships
   #
   belongs_to :user
-  has_many :playlist_items, :dependent => :destroy
+  has_many :videos, dependent: :destroy, as: :parent
 
+  ##
+  # Methods
+  #
   # Here for consistency
   def self.as_json_hash
     {}
@@ -45,33 +48,33 @@ class Playlist < ActiveRecord::Base
     user ||= Authorization.current_user
 
     # Get all videos for the current playlist from YouTube
-    videos = YoutubeApi.get_videos_for_playlist(api_playlist_id, user)
+    yt_videos = YoutubeApi.get_videos_for_playlist(api_playlist_id, user)
 
     # Clear out any videos that no longer exist
-    new_ids = videos.collect{|v| v[:video_id]}
-    current_ids = playlist_items.collect(&:api_video_id)
-    playlist_items.where(api_video_id: (current_ids - new_ids)).destroy_all
+    new_ids = yt_videos.collect{|v| v[:video_id]}
+    current_ids = videos.collect(&:api_video_id)
+    videos.where(api_video_id: (current_ids - new_ids)).destroy_all
 
     # Create/update existing videos
-    videos.each do |video|
-      item = PlaylistItem
+    yt_videos.each do |video|
+      video = Video
         .where(
-          playlist_id: id,
+          parent_id: id,
           api_video_id: video[:video_id],
         )
         .first_or_initialize
-      item.api_title = video[:title]
-      item.api_thumbnail_medium_url = video[:thumbnail_medium_url]
-      item.api_thumbnail_default_url = video[:thumbnail_default_url]
-      item.api_thumbnail_high_url = video[:thumbnail_high_url]
-      item.position = video[:position]
-      item.creator_id = user.id
-      item.updater_id = user.id
+      video.api_title = video[:title]
+      video.api_thumbnail_medium_url = video[:thumbnail_medium_url]
+      video.api_thumbnail_default_url = video[:thumbnail_default_url]
+      video.api_thumbnail_high_url = video[:thumbnail_high_url]
+      video.position = video[:position]
+      video.creator_id = user.id
+      video.updater_id = user.id
 
-      item.save if item.changed?
+      video.save if video.changed?
     end
 
-    playlist_items.reload
-    playlist_items
+    videos.reload
+    videos
   end
 end

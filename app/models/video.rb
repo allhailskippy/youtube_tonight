@@ -7,9 +7,9 @@ class Video < ActiveRecord::Base
   validate :validate_start_end_time
 
   ##
-  # Relastions
+  # Relationships
   #
-  belongs_to :show
+  belongs_to :parent, polymorphic: true
 
   ##
   # Hooks
@@ -21,6 +21,11 @@ class Video < ActiveRecord::Base
   ##
   # Methods
   #
+  # Here for consistency
+  def self.as_json_hash
+    {}
+  end
+
   def set_sort_order
     order = show.videos.maximum(:sort_order) + 1 rescue 0
     write_attribute(:sort_order, order)
@@ -37,6 +42,6 @@ class Video < ActiveRecord::Base
   end
 
   def send_video_update_request
-    WebsocketRails[:video_player].trigger(:update_video_list, {:show_id => show_id})
+    WebsocketRails[:video_player].trigger(:update_video_list, {:show_id => parent_id})
   end
 end
