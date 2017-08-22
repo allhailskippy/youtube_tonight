@@ -53,6 +53,7 @@ glyphicon.disabled {
 
 .panel {
   background-color: #f5f5f5 !important;
+  margin-bottom: 10px !important;
 }
 
 .panel-primary {
