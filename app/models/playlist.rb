@@ -80,7 +80,7 @@ class Playlist < ActiveRecord::Base
     end
 
     videos.reload
-    update_attribute(:playlist_items_count, videos.count)
+    update_attribute(:video_count, videos.count)
     videos
   end
 end
