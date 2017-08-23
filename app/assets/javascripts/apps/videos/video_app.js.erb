@@ -21,9 +21,6 @@ var routesConfig = function($locationProvider, $routeProvider) {
   when('/playlists/:playlist_id', {
     controller: 'PlaylistIndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/playlist_index.html") %>'
-  }).
-  otherwise({
-    redirectTo: '/index'
   });
   $locationProvider
     .html5Mode(false)
