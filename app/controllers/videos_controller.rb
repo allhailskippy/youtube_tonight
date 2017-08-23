@@ -47,6 +47,7 @@ class VideosController < ApplicationController
           status: :unprocessable_entity
         end
       rescue Exception => e
+        NewRelic::Agent.notice_error(e)
         format.json do
           render json: {
             errors: e.to_s
@@ -103,6 +104,7 @@ class VideosController < ApplicationController
           status: :unprocessable_entity
         end
       rescue Exception => e
+        NewRelic::Agent.notice_error(e)
         format.json do
           render json: {
             errors: e.to_s
@@ -125,6 +127,7 @@ class VideosController < ApplicationController
           }
         end
       rescue Exception => e
+        NewRelic::Agent.notice_error(e)
         format.json do
           render json: {
             :errors => [e.to_s]

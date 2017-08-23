@@ -9,6 +9,7 @@ class YoutubeParserController < ApplicationController
           }
         end
       rescue Exception => e
+        NewRelic::Agent.notice_error(e)
         format.json do
           render :json => {
             :error => e.to_s

@@ -42,6 +42,7 @@ class PlaylistsController < ApplicationController
             data: playlists
           }
         rescue Exception => e
+          NewRelic::Agent.notice_error(e)
           render json: {
             errors: e.to_s.titleize
           }, status: 400
@@ -63,6 +64,7 @@ class PlaylistsController < ApplicationController
           }
 
         rescue Exception => e
+          NewRelic::Agent.notice_error(e)
           render json: {
             errors: e.to_s.titleize
           }, status: 400
