@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170821190326) do
+ActiveRecord::Schema.define(version: 20170823180214) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,7 +41,7 @@ ActiveRecord::Schema.define(version: 20170821190326) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "api_item_count"
-    t.integer  "playlist_items_count", default: 0
+    t.integer  "video_count",     default: 0
   end
 
   create_table "roles", force: true do |t|
