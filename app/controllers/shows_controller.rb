@@ -7,7 +7,7 @@ class ShowsController < ApplicationController
       format.json do
         shows = Show.all
         shows_by_id = shows.inject({}){|acc, show| acc[show.id] = show; acc}
-        Video.where(show_id: shows_by_id.keys).group(:show_id).count.each do |show_id, count|
+        Video.where(parent_id: shows_by_id.keys, parent_type: 'Show').group(:parent_id).count.each do |show_id, count|
           shows_by_id[show_id].video_count = count
         end
 

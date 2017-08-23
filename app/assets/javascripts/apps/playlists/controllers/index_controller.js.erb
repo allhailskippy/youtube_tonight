@@ -8,7 +8,7 @@
   "use strict";
 
 var IndexCtrl = function(
-  $scope, $location, $http, $routeParams,
+  $scope, $window, $http, $routeParams,
   PlaylistApp, Playlist, Notice
   ) {
 
@@ -27,7 +27,7 @@ var IndexCtrl = function(
    */
   // Redirect to the video list for this playlist
   $scope.goToPlaylistItems = function(playlist) {
-    $location.path('/' + playlist.id)
+    $window.location.href = '/videos#/playlists/' + playlist.id;
   };
 
   // Table pagination setup
@@ -112,7 +112,7 @@ var IndexCtrl = function(
 };
 
 IndexCtrl.$inject = [
-  '$scope', '$location', '$http', '$routeParams',
+  '$scope', '$window', '$http', '$routeParams',
   'PlaylistApp', 'Playlist', 'Notice'
 ];
 

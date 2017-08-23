@@ -16,10 +16,6 @@ var routesConfig = function($locationProvider, $routeProvider) {
   when('/:user_id/index', {
     controller: 'IndexCtrl',
     templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>',
-  }).
-  when('/:playlist_id', {
-    controller: 'ItemIndexCtrl',
-    templateUrl: '<%= asset_path("apps/playlists/templates/item_index.html") %>'
   });
   $locationProvider
     .html5Mode(false)

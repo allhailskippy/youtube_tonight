@@ -1,21 +1,29 @@
 /**
  * @ngdoc controller
- * @name ItemIndexCtrl
+ * @name PlaylistIndexCtrl
  *
  * @description Logic for playlist item stuffs
  */
 (function() {
   "use strict";
 
-var ItemIndexCtrl = function(
+var PlaylistIndexCtrl = function(
   $scope, $http, $routeParams,
-  PlaylistApp, Playlist, Notice
+  ConnectionHelper, Playlist, Notice
   ) {
 
   /**
    * Setup
    */
+  $scope.dispatcher = ConnectionHelper.getDispatcher();
+  $scope.channel = ConnectionHelper.getChannel('video_player');
+
   $scope.playlist_id = $routeParams.playlist_id;
+  $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.playlist_id);
+
+  // Use new dispatcher because we're unbinding a method later
+  $scope.previewDispatch = ConnectionHelper.newDispatcher();
+  $scope.previewChannel = ConnectionHelper.newChannel('video_player', $scope.previewDispatch);
 
   /**
    * Watch variables
@@ -27,7 +35,7 @@ var ItemIndexCtrl = function(
 
   // Table pagination setup
   $scope.init = {
-    'count': 50,
+    'count': 10,
     'page': 1,
     'filterBase': 1
   };
@@ -45,11 +53,11 @@ var ItemIndexCtrl = function(
     params = {
       per_page: paramsObj.count,
       page: paramsObj.page,
-      'q[playlist_id_eq]': $routeParams.playlist_id,
+      playlist_id: $scope.playlist_id,
       'q[api_title_cont]': paramsObj.filters.title
     };
 
-    var urlApi = 'playlist_items.json?' + $.param(params);
+    var urlApi = 'videos.json?' + $.param(params);
     return $http.get(urlApi).then(function (response) {
       $scope.importing = false;
       return {
@@ -87,13 +95,38 @@ var ItemIndexCtrl = function(
       Notice.handleErrors;
     });
   };
+
+  /**
+   * Event Handlers
+   */
+  // Preview Events
+  $scope.channel.bind('playing', function(message) {
+    if(message.player_id == $scope.previewPlayerId) {
+      $scope.showPreview = true;
+      $scope.$applyAsync();
+    }
+  });
+
+  $scope.channel.bind('stop', function(message) {
+    if(message.player_id == $scope.previewPlayerId) {
+      $scope.showPreview = false;
+      $scope.$applyAsync();
+    };
+  });
+
+  $scope.channel.bind('stopped', function(message) {
+    if(message.player_id == $scope.previewPlayerId) {
+      $scope.showPreview = false;
+      $scope.$applyAsync();
+    };
+  });
 };
 
-ItemIndexCtrl.$inject = [
+PlaylistIndexCtrl.$inject = [
   '$scope', '$http', '$routeParams',
-  'PlaylistApp', 'Playlist', 'Notice'
+  'ConnectionHelper', 'Playlist', 'Notice'
 ];
 
-angular.module("PlaylistApp")
-       .controller('ItemIndexCtrl', ItemIndexCtrl);
+angular.module("VideoApp")
+       .controller('PlaylistIndexCtrl', PlaylistIndexCtrl);
 }());

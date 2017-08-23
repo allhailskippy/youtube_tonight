@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170819173414) do
+ActiveRecord::Schema.define(version: 20170821190326) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,20 +31,6 @@ ActiveRecord::Schema.define(version: 20170819173414) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
-
-  create_table "playlist_items", force: true do |t|
-    t.integer  "playlist_id"
-    t.string   "api_video_id"
-    t.string   "api_title"
-    t.string   "api_thumbnail_medium_url"
-    t.string   "api_thumbnail_default_url"
-    t.string   "api_thumbnail_high_url"
-    t.integer  "position"
-    t.integer  "creator_id"
-    t.integer  "updater_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "playlists", force: true do |t|
     t.integer  "user_id"
@@ -167,7 +153,7 @@ ActiveRecord::Schema.define(version: 20170819173414) do
   add_index "video_versions", ["video_id"], name: "index_video_versions_on_video_id", using: :btree
 
   create_table "videos", force: true do |t|
-    t.integer  "show_id"
+    t.integer  "parent_id"
     t.string   "title"
     t.text     "link"
     t.string   "start_time"
@@ -190,6 +176,8 @@ ActiveRecord::Schema.define(version: 20170819173414) do
     t.datetime "updated_at",                null: false
     t.datetime "deleted_at"
     t.integer  "version"
+    t.string   "parent_type"
+    t.integer  "position"
   end
 
 end

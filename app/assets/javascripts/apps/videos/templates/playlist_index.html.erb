@@ -1,31 +1,9 @@
 <div class="row">
   <div class="col-md-3 sidebar">
-    <h3
-      class='show-title'
-      title='{{show.title}}'
-    >{{ show.title }}</h3>
-    <hr />
-    <div class="text-center">
-      <img
-        src="<%= asset_path("logo_broadcast.png") %>"
-        alt="Broadcast"
-        class="img-thumbnail"
-        style="width: 302px; height: 170px;"
-        ng-show="!state.playing"
-      >
-      <video-preview
-        player-id="{{previewBroadcastId}}"
-        width="302"
-        height="170"
-        mute="state.mute"
-        ng-show="state.playing"
-        always-mute="true"
-      ></video-preview>
-      <video-controls
-        player-id="{{broadcastId}},{{previewBroadcastId}}"
-      ></video-controls>
+    <div class="row">
+      <h2>Playlist Videos</h2>
       <hr />
-
+      <div class="text-center">
       <img
         data-src="holder.js/302x170?text=Preview&amp;bg=666&amp;fg=ccc"
         class="img-thumbnail"
@@ -48,59 +26,59 @@
           player-id="{{previewPlayerId}}"
         ></video-controls>
       </div>
+        <hr />
+      </div>
     </div>
   </div>
-  <div class="col-md-9 col-md-offset-3 main" ng-show="shouldShowForm()">
-    <video-form
-      query-videos='queryVideos()'
-      current-video="currentVideo"
-      close-form="closeForm()"
-    ></video-form>
-  </div>
-  <div class="col-md-9 col-md-offset-3 main" ng-show="!shouldShowForm()">
+  <div class="col-md-9 col-md-offset-3 main">
+    <notices notices="notices"></notices>
     <div class="row">
       <div class="pull-left">
-        <span
-          class="btn btn-lg btn-primary"
-          ng-click="launchBroadcastPlayer()"
-        >LAUNCH BROADCAST WINDOW</span>
+        <form class="form-search">
+          <input
+            type="text"
+            class="search-query"
+            placeholder="Search..."
+            ng-model="filterBy.title"
+          />
+        </form>
       </div>
       <div class="pull-right">
-        <span
-          ng-click="addVideo()"
+        <button
           class="btn btn-lg btn-success"
-          ng-disabled="shouldShowForm()"
-        >Add Video</span>
+          ng-class="{disabled: importing}"
+          ng-click="refreshVideos()"
+        >Refresh Videos</button>
       </div>
     </div>
-    <br />
     <div class="row">
-      <div class="list-group" ui-sortable="sortableOptions" ng-model="videos">
-        <div ng-repeat="video in videos" class="panel panel-primary">
+      <div
+        tasty-table
+        bind-resource-callback="getResource"
+        bind-theme="theme"
+        bind-init="init"
+        bind-filters="filterBy"
+        bind-reload="reloadCallback"
+      >
+        <div tasty-pagination></div>
+        <div ng-repeat="video in rows" class="panel panel-primary">
           <div class="panel-body row">
             <div class="col-md-9">
               <video-show
                 video="video"
                 sender-id="senderIds[video.id]"
                 state="state"
-                allow-broadcast="true"
+                allow-broadcast="false"
                 stop-video="stopVideo(video)"
                 play-video="playVideo(video)"
               ></video-show>
             </div>
             <div class="col-md-3 text-right">
-              <a href="javascript:void(0)"
-                class="btn btn-default glyphicon glyphicon-pencil"
-                ng-click="editVideo(video)"
-              ></a>
-              <a
-                class="btn btn-danger glyphicon glyphicon-trash"
-                aria-hidden="true"
-                ng-click="destroy(video)"
-              ></a>
+              <!-- TODO: Actions go here -->
             </div>
           </div>
         </div>
+        <div tasty-pagination></div>
       </div>
     </div>
   </div>

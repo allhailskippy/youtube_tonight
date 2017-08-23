@@ -18,7 +18,7 @@ var Video = function(
     'end_time',
     'id',
     'link',
-    'show_id',
+    'parent_id',
     'sort_order',
     'start_time',
     'title',

@@ -18,8 +18,9 @@ var routesConfig = function($locationProvider, $routeProvider) {
     controller: 'IndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/index.html") %>'
   }).
-  otherwise({
-    redirectTo: '/index'
+  when('/playlists/:playlist_id', {
+    controller: 'PlaylistIndexCtrl',
+    templateUrl: '<%= asset_path("apps/videos/templates/playlist_index.html") %>'
   });
   $locationProvider
     .html5Mode(false)
@@ -27,6 +28,6 @@ var routesConfig = function($locationProvider, $routeProvider) {
 };
 routesConfig.$inject = ['$locationProvider', '$routeProvider'];
 
-angular.module('VideoApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf', 'ui.sortable', 'ui.bootstrap-slider'])
+angular.module('VideoApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf', 'ui.sortable', 'ui.bootstrap-slider', 'ngTasty'])
        .config(routesConfig);
 })();

@@ -9,9 +9,9 @@ class Show < ActiveRecord::Base
   validates :air_date, :date => true, :on => :update
 
   ##
-  # Relations
+  # Relationships
   #
-  has_many :videos, :dependent => :destroy
+  has_many :videos, dependent: :destroy, as: :parent
 
   ##
   # Methods

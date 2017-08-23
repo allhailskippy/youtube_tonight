@@ -6,10 +6,24 @@ class VideosController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        @search = @show.videos.search(params[:q])
-        @videos = @search.result.paginate(:page => params[:page], :per_page => params[:per_page])
+        params[:q] ||= {}
+        params[:q][:user_id_eq] ||= current_user.id
+        params[:q][:s] ||= 'id desc'
+        params[:per_page] ||= 10
+        params[:page] ||= 1
+        # Prevent page from being 0 or lower
+        params[:page] = params[:page].to_i < 1 ? 1 : params[:page]
+
+        search = @parent.videos.search(params[:q])
+        videos = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
+
         render json: {
-          data: @videos.as_json
+          page: params[:page],
+          per_page: params[:per_page],
+          total: videos.total_entries,
+          total_pages: videos.total_pages,
+          offset: videos.offset,
+          data: videos.as_json(Video.as_json_hash)
         }
       end
     end
@@ -123,8 +137,8 @@ class VideosController < ApplicationController
 
 private
   def scoped
-    if @show
-      @show.videos.where(nil)
+    if @parent
+      @parent.videos.where(nil)
     else
       Video.scoped
     end
@@ -134,12 +148,17 @@ private
   def set_class_variables
     params[:q] ||= {}
 
-    @show = Show.find(params[:show_id]) rescue nil
+    @parent = nil
+    if params[:show_id].present?
+      @parent = Show.find(params[:show_id])
+    elsif params[:playlist_id].present?
+      @parent = Playlist.find(params[:playlist_id])
+    end
   end
 
   def video_params
     params.require(:video).permit(
-      :title, :link, :show_id, :start_time, :end_time, :sort_order,
+      :title, :link, :show_id, :playlist_id, :start_time, :end_time, :sort_order,
       :api_video_id, :api_published_at, :api_channel_id, :api_channel_title,
       :api_description, :api_thumbnail_medium_url, :api_thumbnail_default_url,
       :api_thumbnail_high_url, :api_title, :api_duration, :api_duration_seconds
