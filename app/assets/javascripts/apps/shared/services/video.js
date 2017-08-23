@@ -18,7 +18,6 @@ var Video = function(
     'end_time',
     'id',
     'link',
-    'parent_id',
     'sort_order',
     'start_time',
     'title',
@@ -76,7 +75,9 @@ var Video = function(
       });
 
       var params = {
-        video: saveData
+        video: saveData,
+        show_id: video['show_id'],
+        playlist_id: video['playlist_id']
       };
 
       // Different calls for new vs existing
