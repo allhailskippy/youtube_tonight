@@ -9,7 +9,7 @@
 
 var PlaylistIndexCtrl = function(
   $scope, $http, $routeParams,
-  ConnectionHelper, Playlist, Notice
+  ConnectionHelper, Playlist, Video, Notice
   ) {
 
   /**
@@ -60,8 +60,12 @@ var PlaylistIndexCtrl = function(
     var urlApi = 'videos.json?' + $.param(params);
     return $http.get(urlApi).then(function (response) {
       $scope.importing = false;
+      var videos = jQuery.map(response.data.data, function(video) {
+        return Video.build(video);
+      });
+
       return {
-        'rows': response.data.data,
+        'rows': videos,
         'header': [],
         'pagination': {
           'count': response.data.per_page,
@@ -124,7 +128,7 @@ var PlaylistIndexCtrl = function(
 
 PlaylistIndexCtrl.$inject = [
   '$scope', '$http', '$routeParams',
-  'ConnectionHelper', 'Playlist', 'Notice'
+  'ConnectionHelper', 'Playlist', 'Video', 'Notice'
 ];
 
 angular.module("VideoApp")

@@ -237,6 +237,7 @@ var VideoPreview = function(
       // Notice to stop a video
       $scope.channel.bind('stop', function(message) {
         if((message.player_id == 'all'
+            && $scope.video
             && $scope.video.id == message.video.id)
           || message.player_id == $scope.playerId) {
 

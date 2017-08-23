@@ -139,9 +139,9 @@ class YoutubeApi
           }
         end
 
-#        self.get_duration(video_ids).each do |video_id, duration|
-#          videos[video_id].merge!(duration)
-#        end
+        self.get_duration(video_ids.join(',')).each do |video_id, duration|
+          videos[video_id].merge!(duration)
+        end
 
         next_page_token = search_response.next_page_token
         break if next_page_token.blank?
@@ -167,7 +167,7 @@ class YoutubeApi
       duration = v.content_details.duration
       ret[v.id] = {
         "duration" => duration,
-        "duration_seconds" => ISO8601::Duration.new(duration).to_i
+        "duration_seconds" => ISO8601::Duration.new(duration).to_seconds
       }
     end
     ret

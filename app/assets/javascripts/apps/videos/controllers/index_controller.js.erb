@@ -71,7 +71,7 @@ var IndexCtrl = function(
    * Scope Methods
    */
   $scope.addVideo = function() {
-    $scope.currentVideo = Video.build({show: $scope.showId });
+    $scope.currentVideo = Video.build({show_id: $scope.showId });
     $scope.showForm = true;
   };
 

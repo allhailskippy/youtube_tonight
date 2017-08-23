@@ -27,7 +27,7 @@ class Video < ActiveRecord::Base
   end
 
   def set_sort_order
-    order = show.videos.maximum(:sort_order) + 1 rescue 0
+    order = parent.videos.maximum(:sort_order) + 1 rescue 0
     write_attribute(:sort_order, order)
   end
 
