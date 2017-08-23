@@ -22,6 +22,7 @@ gem "paranoia", "~> 2.0"
 gem 'iso8601'
 gem 'delayed_job_active_record'
 gem 'eventmachine', '1.0.9.1'
+gem 'newrelic_rpm'
 
 # Javascript gems
 gem 'jquery-rails'
