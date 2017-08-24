@@ -15,13 +15,7 @@ var routesConfig = function($locationProvider, $routeProvider) {
   $routeProvider.
   when('/:user_id/index', {
     controller: 'IndexCtrl',
-    templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>',
-    resolve: {
-      user_data: function($route, User) {
-        var user_id = $route.current.params.user_id;
-        return User.find(user_id);
-      }
-    }
+    templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>'
   });
   $locationProvider
     .html5Mode(false)
