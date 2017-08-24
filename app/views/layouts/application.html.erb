@@ -41,7 +41,7 @@
             <% playlists = current_user.try(:playlists) %>
             <% if current_user.present? && permitted_to?(:index, playlists) %>
               <ul class="nav navbar-nav">
-                <li class="<%= "active" if params[:controller] == 'playlists' %>"><a href="/playlists#/<%= current_user.id %>/index">Playlists</a></li>
+                <li class="<%= "active" if params[:controller] == 'playlists' %>"><a href="/playlists#/index">Playlists</a></li>
               </ul>
             <% end %>
             <ul class="nav navbar-nav">

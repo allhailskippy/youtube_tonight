@@ -9,17 +9,27 @@
 
 var IndexCtrl = function(
   $scope, $window, $http, $routeParams,
-  PlaylistApp, Playlist, Notice, User
+  PlaylistApp, Playlist, Notice, User, CurrentUser
   ) {
 
   /**
    * Setup
    */
   $scope.user_id = $routeParams.user_id;
+
+  // User the current user if no user id is passed in
+  if($scope.user_id) {
+    User.find($scope.user_id).then(function(response) {
+      $scope.user = User.build(response.data);
+    });
+  } else {
+    CurrentUser.find().then(function(results) {
+      $scope.user = CurrentUser.build(results.data);
+      $scope.user_id = $scope.user.id;
+    });
+  }
+
   $scope.importingVideos = {};
-  User.find($routeParams.user_id).then(function(response) {
-    $scope.user = User.build(response.data);
-  });
   $scope.users_url = '/users#/index';
 
   /**
@@ -117,7 +127,7 @@ var IndexCtrl = function(
 
 IndexCtrl.$inject = [
   '$scope', '$window', '$http', '$routeParams',
-  'PlaylistApp', 'Playlist', 'Notice', 'User'
+  'PlaylistApp', 'Playlist', 'Notice', 'User', 'CurrentUser'
 ];
 
 angular.module("PlaylistApp")
