@@ -15,7 +15,7 @@ authorization do
   role :host do
     includes :guest
 
-    has_permission_on :users, :to => :manage
+    has_permission_on :users, :to => [:update, :requires_auth]
     has_permission_on :videos, :to => :manage
     has_permission_on :shows, :to => :manage
     has_permission_on :youtube_parser, :to => :read
@@ -35,7 +35,7 @@ authorization do
     includes :guest
     includes :host
 
-    has_permission_on :manage_users, :to => :manage
+    has_permission_on :users, :to => :manage
 
     # Admins can see all playlists
     has_permission_on :playlists, :to => :manage
