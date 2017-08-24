@@ -96,14 +96,14 @@ var PlaylistIndexCtrl = function(
     $scope.reloadCallback();
   };
 
-  $scope.refreshVideos = function() {
+  $scope.reimportVideos = function() {
     if($scope.importing) {
       return false;
     }
     var list = Playlist.build({ id: $scope.playlist_id })
     $scope.importing = true;
     list.importPlaylists().then(function(response) {
-      Notice.setSuccesses(['Successfully Refreshed Videos']);
+      Notice.setSuccesses(['Successfully Re-imported Videos']);
       $scope.reloadCallback();
     }).catch(function() {
       Notice.handleErrors;

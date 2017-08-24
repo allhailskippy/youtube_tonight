@@ -77,14 +77,14 @@ var IndexCtrl = function(
     });
   };
 
-  $scope.refreshPlaylists = function() {
+  $scope.reimport = function() {
     if($scope.importing) {
       return false;
     }
     var list = Playlist.build({ user_id: $scope.user_id })
     $scope.importing = true;
     list.importPlaylists().then(function(response) {
-      Notice.setSuccesses(['Successfully Refreshed Playlists']);
+      Notice.setSuccesses(['Successfully Re-imported Playlists']);
       $scope.reloadCallback();
     }).catch(function() {
       Notice.handleErrors;
@@ -97,7 +97,7 @@ var IndexCtrl = function(
     $scope.reloadCallback();
   };
 
-  $scope.refreshVideos = function(playlist) {
+  $scope.reimportVideos = function(playlist) {
     if($scope.importingVideos[playlist.id]) {
       return false;
     }
@@ -105,7 +105,7 @@ var IndexCtrl = function(
     var list = Playlist.build({ id: playlist.id })
     $scope.importingVideos[playlist.id] = true;
     list.importPlaylists().then(function(response) {
-      Notice.setSuccesses(['Successfully Refreshed Videos']);
+      Notice.setSuccesses(['Successfully Re-imported Videos']);
       $scope.importingVideos[playlist.id] = false;
       $scope.reloadCallback();
     }).catch(function() {
