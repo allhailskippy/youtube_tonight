@@ -18,3 +18,4 @@
 # config/database.yml
 config/database.production.yml
 config/environments/credentials.production.yml
+.env
