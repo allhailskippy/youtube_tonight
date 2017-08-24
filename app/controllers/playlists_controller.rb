@@ -1,4 +1,33 @@
 class PlaylistsController < ApplicationController
+  # GET /playlist/:id.json
+  def show
+    respond_to do |format|
+      begin
+        @playlist = Playlist.find(params[:id])
+        format.json do
+          render json: {
+            data: @playlist.as_json(Playlist.as_json_hash)
+          }
+        end
+      rescue ActiveRecord::RecordNotFound
+        format.json do
+          render json: {
+            errors: 'Not Found'
+          },
+          status: :unprocessable_entity
+        end
+      rescue Exception => e
+        NewRelic::Agent.notice_error(e)
+        format.json do
+          render json: {
+            errors: e.to_s
+          },
+          status: :unprocessable_entity
+        end
+      end
+    end
+  end
+
   # GET /playlists
   # GET /playlists.json
   def index
