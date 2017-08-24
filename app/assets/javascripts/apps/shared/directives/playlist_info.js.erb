@@ -1,0 +1,34 @@
+/**
+ * @ngdoc directive
+ * @name PlaylistInfo
+ * @module shared
+ *
+ * @description
+ * This directive displays information about a playlist
+ *
+ * ### Usage
+ * <playlist-info playlist="playlist"></playlist-info>
+ */
+(function() {
+'use strict';
+
+var controller = function($scope) {
+};
+
+controller.$inject = ['$scope'];
+
+var PlaylistInfo = function(Playlist) {
+  return {
+    restrict: 'E',
+    scope: {
+      playlist: '='
+    },
+    controller: controller,
+    templateUrl: '<%= asset_path("apps/shared/templates/playlist_info.html") %>',
+  };
+};
+PlaylistInfo.$inject = ['Playlist'];
+
+angular.module('shared')
+       .directive('playlistInfo', PlaylistInfo);
+}());
