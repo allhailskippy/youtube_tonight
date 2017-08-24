@@ -1,0 +1,34 @@
+/**
+ * @ngdoc directive
+ * @name UserInfo
+ * @module shared
+ *
+ * @description
+ * This directive displays information about a user
+ *
+ * ### Usage
+ * <user-info user="user"></user-info>
+ */
+(function() {
+'use strict';
+
+var controller = function($scope) {
+};
+
+controller.$inject = ['$scope'];
+
+var UserInfo = function(User) {
+  return {
+    restrict: 'E',
+    scope: {
+      user: '='
+    },
+    controller: controller,
+    templateUrl: '<%= asset_path("apps/shared/templates/user_info.html") %>',
+  };
+};
+UserInfo.$inject = ['User'];
+
+angular.module('shared')
+       .directive('userInfo', UserInfo);
+}());

@@ -101,6 +101,11 @@ glyphicon.disabled {
   height: 120px;
 }
 
+.profile-image-sml {
+  width: 60px;
+  height: 60px;
+}
+
 
 input.search-query {
   border-radius: 15px;
