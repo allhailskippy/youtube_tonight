@@ -33,8 +33,8 @@
         <button
           class="btn btn-lg btn-success"
           ng-class="{disabled: importing}"
-          ng-click="refreshPlaylists()"
-        >Refresh Playlists</button>
+          ng-click="reimportPlaylists()"
+        >Re-import Playlists</button>
       </div>
     </div>
     <div class="row">
@@ -62,11 +62,11 @@
               <td class="text-center">{{ playlist.video_count | number:0 }}</td>
               <td class="text-right">
                 <button
-                  title="Refresh Videos"
+                  title="Re-import Videos"
                   type="button"
                   class="btn btn-success glyphicon glyphicon-refresh"
                   ng-class="{disabled: importingVideos[playlist.id]}"
-                  ng-click="refreshVideos(playlist)"
+                  ng-click="reimportVideos(playlist)"
                 ></button>
                 <button
                   title="Videos"
