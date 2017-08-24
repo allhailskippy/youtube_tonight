@@ -9,7 +9,8 @@
 
 var IndexCtrl = function(
   $scope, $window, $http, $routeParams,
-  PlaylistApp, Playlist, Notice
+  PlaylistApp, Playlist, Notice, User,
+  user_data
   ) {
 
   /**
@@ -17,6 +18,7 @@ var IndexCtrl = function(
    */
   $scope.user_id = $routeParams.user_id;
   $scope.importingVideos = {};
+  $scope.user = User.build(user_data.data);
 
   /**
    * Watch variables
@@ -113,7 +115,8 @@ var IndexCtrl = function(
 
 IndexCtrl.$inject = [
   '$scope', '$window', '$http', '$routeParams',
-  'PlaylistApp', 'Playlist', 'Notice'
+  'PlaylistApp', 'Playlist', 'Notice', 'User',
+  'user_data'
 ];
 
 angular.module("PlaylistApp")
