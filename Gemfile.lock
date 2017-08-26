@@ -166,6 +166,8 @@ GEM
     power_assert (1.1.0)
     public_suffix (2.0.5)
     rack (1.5.5)
+    rack-protection (1.5.3)
+      rack
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.0.13)
@@ -212,6 +214,7 @@ GEM
     responders (1.1.2)
       railties (>= 3.2, < 4.2)
     retriable (3.1.1)
+    ruby_http_client (3.1.0)
     sass (3.5.1)
       sass-listen (~> 4.0.0)
     sass-listen (4.0.0)
@@ -223,11 +226,18 @@ GEM
       sprockets (>= 2.8, < 4.0)
       sprockets-rails (>= 2.0, < 4.0)
       tilt (>= 1.1, < 3)
+    sendgrid-ruby (5.0.0)
+      ruby_http_client (~> 3.0)
+      sinatra (>= 1.4.7, < 3)
     signet (0.7.3)
       addressable (~> 2.3)
       faraday (~> 0.9)
       jwt (~> 1.5)
       multi_json (~> 1.10)
+    sinatra (1.4.8)
+      rack (~> 1.5)
+      rack-protection (~> 1.4)
+      tilt (>= 1.3, < 3)
     sprockets (3.7.1)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -290,6 +300,7 @@ DEPENDENCIES
   rails_12factor
   ransack
   sass-rails
+  sendgrid-ruby
   test-unit
   thin
   uglifier

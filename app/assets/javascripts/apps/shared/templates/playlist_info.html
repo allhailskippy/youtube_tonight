@@ -1,0 +1,18 @@
+<div class="col-md-12 row">
+  <h3>Playlist</h3>
+  <div class="col-md-2 row">
+    <img class="playlist-image-sml" ng-src="{{ playlist.withDefault(playlist.api_thumbnail_default_url) }}" />
+  </div>
+
+  <div class="col-md-10 row">
+    <dl class="dl-horizontal">
+      <dt>ID:</dt>
+      <dd>{{playlist.id}}</dd>
+      <dt>Playlist Title</dt>
+      <dd>{{playlist.api_title}}</dd>
+      <dt>Video Count:</dt>
+      <dd>{{playlist.video_count}}</dd>
+    </dl>
+  </div>
+  <hr />
+</div>

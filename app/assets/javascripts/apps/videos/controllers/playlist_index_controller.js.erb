@@ -9,7 +9,7 @@
 
 var PlaylistIndexCtrl = function(
   $scope, $http, $routeParams,
-  ConnectionHelper, Playlist, Video, Notice
+  ConnectionHelper, Playlist, Video, Notice, User
   ) {
 
   /**
@@ -20,6 +20,16 @@ var PlaylistIndexCtrl = function(
 
   $scope.playlist_id = $routeParams.playlist_id;
   $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.playlist_id);
+
+  // Preload objects
+  Playlist.find($routeParams.playlist_id).then(function(playlist_response) {
+    $scope.playlist = Playlist.build(playlist_response.data);
+    $scope.playlist_url = '/playlists#/' + $scope.playlist.user_id + '/index';
+
+    User.find($scope.playlist.user_id).then(function(user_response) {
+      $scope.user = User.build(user_response.data);
+    });
+  });
 
   // Use new dispatcher because we're unbinding a method later
   $scope.previewDispatch = ConnectionHelper.newDispatcher();
@@ -86,14 +96,14 @@ var PlaylistIndexCtrl = function(
     $scope.reloadCallback();
   };
 
-  $scope.refreshVideos = function() {
+  $scope.reimportVideos = function() {
     if($scope.importing) {
       return false;
     }
     var list = Playlist.build({ id: $scope.playlist_id })
     $scope.importing = true;
     list.importPlaylists().then(function(response) {
-      Notice.setSuccesses(['Successfully Refreshed Videos']);
+      Notice.setSuccesses(['Successfully Re-imported Videos']);
       $scope.reloadCallback();
     }).catch(function() {
       Notice.handleErrors;
@@ -128,7 +138,7 @@ var PlaylistIndexCtrl = function(
 
 PlaylistIndexCtrl.$inject = [
   '$scope', '$http', '$routeParams',
-  'ConnectionHelper', 'Playlist', 'Video', 'Notice'
+  'ConnectionHelper', 'Playlist', 'Video', 'Notice', 'User'
 ];
 
 angular.module("VideoApp")

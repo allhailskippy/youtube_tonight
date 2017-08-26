@@ -6,8 +6,6 @@ Youtubetonight::Application.routes.draw do
   resources :shows
   resources :videos
   resources :playlists
-  resources :manage_users, :only => :index
-
   resources :users do
     member do
       get :requires_auth, :as => 'requires_auth'

@@ -1,9 +1,20 @@
 <div class="row">
   <div class="col-md-3 sidebar">
-    <div class="row">
-      <h2>Playlist Videos</h2>
-      <hr />
-      <div class="text-center">
+    <div>
+      <h2>
+        Playlist Videos
+        <span class="pull-right">
+          <a ng-href="{{playlist_url}}"
+            ><button
+              class="btn btn-primary glyphicon glyphicon-arrow-left"
+              title="Back"
+            ></button></a>
+        </span>
+      </h2>
+    </div>
+    <user-info user="user"></user-info>
+    <playlist-info playlist="playlist"></playlist-info>
+    <div class="text-center">
       <img
         data-src="holder.js/302x170?text=Preview&amp;bg=666&amp;fg=ccc"
         class="img-thumbnail"
@@ -26,8 +37,6 @@
           player-id="{{previewPlayerId}}"
         ></video-controls>
       </div>
-        <hr />
-      </div>
     </div>
   </div>
   <div class="col-md-9 col-md-offset-3 main">
@@ -47,8 +56,8 @@
         <button
           class="btn btn-lg btn-success"
           ng-class="{disabled: importing}"
-          ng-click="refreshVideos()"
-        >Refresh Videos</button>
+          ng-click="reimportVideos()"
+        >Re-Import Videos</button>
       </div>
     </div>
     <div class="row">

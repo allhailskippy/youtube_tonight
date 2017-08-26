@@ -28,14 +28,20 @@
             <a class="navbar-brand" href="/shows#/index">YouTube Tonight</a>
           </div>
           <div id="navbar" class="">
+            <% if permitted_to?(:index, :users) %>
+              <ul class="nav navbar-nav">
+                <li class="<%= "active" if params[:controller] == 'users' %>"><a href="/users#/index">Users</a></li>
+              </ul>
+            <% end %>
             <% if permitted_to?(:index, :shows) %>
               <ul class="nav navbar-nav">
                 <li class="<%= "active" if params[:controller] == 'shows' %>"><a href="/shows#/index">Shows</a></li>
               </ul>
             <% end %>
-            <% if permitted_to?(:index, :manage_users) %>
+            <% playlists = current_user.try(:playlists) %>
+            <% if current_user.present? && permitted_to?(:index, playlists) %>
               <ul class="nav navbar-nav">
-                <li class="<%= "active" if params[:controller] == 'manage_users' %>"><a href="/manage_users#/index">Users</a></li>
+                <li class="<%= "active" if params[:controller] == 'playlists' %>"><a href="/playlists#/index">Playlists</a></li>
               </ul>
             <% end %>
             <ul class="nav navbar-nav">
