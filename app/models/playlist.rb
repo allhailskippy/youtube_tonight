@@ -36,6 +36,12 @@ class Playlist < ActiveRecord::Base
         )
       playlist.api_title = list.to_s.titleize
       playlist.api_item_count = details[:video_count].to_i
+      playlist.api_description = details[:description]
+      %w(default medium high standard maxres).each do |size|
+        %w(url width height).each do |type|
+          playlist.send("api_thumbnail_#{size}_#{type}=", details[:thumbnails].try(size.to_sym).try(type.to_sym))
+        end
+      end
       playlist.creator_id = user.id
       playlist.updater_id = user.id
 

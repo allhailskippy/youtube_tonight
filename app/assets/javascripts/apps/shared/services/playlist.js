@@ -9,7 +9,27 @@ var Playlist = function(PlaylistApi) {
 
   self.attributes = [
     'id',
-    'user_id'
+    'user_id',
+    'api_playlist_id',
+    'api_title',
+    'api_item_count',
+    'video_count',
+    'api_description',
+    'api_thumbnail_default_url',
+    'api_thumbnail_default_width',
+    'api_thumbnail_default_height',
+    'api_thumbnail_medium_url',
+    'api_thumbnail_medium_width',
+    'api_thumbnail_medium_height',
+    'api_thumbnail_high_url',
+    'api_thumbnail_high_width',
+    'api_thumbnail_high_height',
+    'api_thumbnail_standard_url',
+    'api_thumbnail_standard_width',
+    'api_thumbnail_standard_height',
+    'api_thumbnail_maxres_url',
+    'api_thumbnail_maxres_width',
+    'api_thumbnail_maxres_height'
   ];
 
   /**
@@ -46,6 +66,10 @@ var Playlist = function(PlaylistApi) {
       };
       return playlist.save(params);
     };
+
+    playlist.withDefault = function(img) {
+      return(!img || 0 === img.length) ? 'https://i.ytimg.com/vi/0/default.jpg' : img;
+    }
 
     return playlist;
   };

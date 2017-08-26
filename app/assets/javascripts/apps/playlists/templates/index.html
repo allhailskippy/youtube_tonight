@@ -48,19 +48,21 @@
       >
         <table class="table table-striped table-condensed">
           <thead>
-            <th>ID</th>
+            <th></th>
             <th>Title</th>
+            <th>Description</th>
             <th class="text-center">Available Video Count</th>
             <th class="text-center">Imported Video Count</th>
             <th>&nbsp;</th>
           </thead>
           <tbody>
             <tr ng-repeat="playlist in rows">
-              <td>{{ playlist.id }}</td>
-              <td>{{ playlist.api_title }}</td>
+              <td><img class="playlist-image" ng-src="{{ playlist.withDefault(playlist.api_thumbnail_default_url) }}" /></td>
+              <td class="text-nowrap">{{ playlist.api_title }}</td>
+              <td>{{ playlist.api_description }}</td>
               <td class="text-center">{{ playlist.api_item_count | number:0 }}</td>
               <td class="text-center">{{ playlist.video_count | number:0 }}</td>
-              <td class="text-right">
+              <td class="text-right text-nowrap">
                 <button
                   title="Re-import Videos"
                   type="button"
