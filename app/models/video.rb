@@ -14,7 +14,7 @@ class Video < ActiveRecord::Base
   ##
   # Hooks
   #
-  before_create :set_sort_order
+  before_create :set_position, if: Proc.new{|r| r.position.blank? }
   after_save :send_video_update_request
   after_destroy :send_video_update_request
 
@@ -26,9 +26,9 @@ class Video < ActiveRecord::Base
     {}
   end
 
-  def set_sort_order
-    order = parent.videos.maximum(:sort_order) + 1 rescue 0
-    write_attribute(:sort_order, order)
+  def set_position
+    p = parent.videos.maximum(:position) + 1 rescue 0
+    write_attribute(:position, p)
   end
 
   def validate_start_end_time

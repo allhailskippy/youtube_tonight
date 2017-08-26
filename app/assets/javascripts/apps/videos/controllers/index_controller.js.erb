@@ -107,7 +107,7 @@ var IndexCtrl = function(
           page: $scope.page,
           per_page: $scope.per_page,
           show_id: $scope.showId,
-          'q[s]': 'sort_order ASC'
+          'q[s]': 'position ASC'
         };
 
         Video.query(params).then(function(response) {
@@ -146,7 +146,7 @@ var IndexCtrl = function(
 
       if(newVideoOrder.join() != $scope.currentVideoOrder.join()) {
         $scope.videos.map(function(o, i) {
-          o.sort_order = i;
+          o.position = i;
           o.save();
         });
       }
