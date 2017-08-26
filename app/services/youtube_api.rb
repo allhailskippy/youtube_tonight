@@ -61,7 +61,9 @@ class YoutubeApi
     search_response.items.each do |item|
       playlist = {
         title: item.snippet.title,
-        video_count: item.content_details.item_count
+        video_count: item.content_details.item_count,
+        description: item.snippet.description,
+        thumbnails: item.snippet.thumbnails
       }
       playlists[item.id] = playlist
     end
@@ -72,7 +74,9 @@ class YoutubeApi
       search_response.items.each do |item|
         playlist = {
           title: item.snippet.title,
-          video_count: item.content_details.item_count
+          video_count: item.content_details.item_count,
+          description: item.snippet.description,
+          thumbnails: item.snippet.thumbnails
         }
         playlists[item.id] = playlist
       end
@@ -91,7 +95,9 @@ class YoutubeApi
         user_id: user.id,
         playlist_id: playlist_id,
         title: title,
-        video_count: playlist[:video_count]
+        video_count: playlist[:video_count],
+        description: playlist[:description],
+        thumbnails: playlist[:thumbnails]
       }
     end
     ret

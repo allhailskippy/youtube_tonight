@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170823180214) do
+ActiveRecord::Schema.define(version: 20170826140835) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,7 +41,23 @@ ActiveRecord::Schema.define(version: 20170823180214) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "api_item_count"
-    t.integer  "video_count",     default: 0
+    t.integer  "video_count",                   default: 0
+    t.text     "api_description"
+    t.string   "api_thumbnail_default_url"
+    t.integer  "api_thumbnail_default_width"
+    t.integer  "api_thumbnail_default_height"
+    t.string   "api_thumbnail_medium_url"
+    t.integer  "api_thumbnail_medium_width"
+    t.integer  "api_thumbnail_medium_height"
+    t.string   "api_thumbnail_high_url"
+    t.integer  "api_thumbnail_high_width"
+    t.integer  "api_thumbnail_high_height"
+    t.string   "api_thumbnail_standard_url"
+    t.integer  "api_thumbnail_standard_width"
+    t.integer  "api_thumbnail_standard_height"
+    t.string   "api_thumbnail_maxres_url"
+    t.integer  "api_thumbnail_maxres_width"
+    t.integer  "api_thumbnail_maxres_height"
   end
 
   create_table "roles", force: true do |t|
