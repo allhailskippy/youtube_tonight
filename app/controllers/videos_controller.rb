@@ -161,7 +161,7 @@ private
 
   def video_params
     params.require(:video).permit(
-      :title, :link, :show_id, :playlist_id, :start_time, :end_time, :sort_order,
+      :title, :link, :show_id, :playlist_id, :start_time, :end_time, :position,
       :api_video_id, :api_published_at, :api_channel_id, :api_channel_title,
       :api_description, :api_thumbnail_medium_url, :api_thumbnail_default_url,
       :api_thumbnail_high_url, :api_title, :api_duration, :api_duration_seconds

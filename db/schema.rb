@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170826140835) do
+ActiveRecord::Schema.define(version: 20170826154334) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -174,7 +174,6 @@ ActiveRecord::Schema.define(version: 20170826140835) do
     t.text     "link"
     t.string   "start_time"
     t.string   "end_time"
-    t.integer  "sort_order"
     t.string   "api_video_id"
     t.string   "api_published_at"
     t.string   "api_channel_id"
