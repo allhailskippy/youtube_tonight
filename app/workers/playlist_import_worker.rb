@@ -4,7 +4,7 @@ class PlaylistImportWorker
 
   def perform(user_id)
     begin
-      Authorization.current_user = User.find(3)
+      Authorization.current_user = User.find(SYSTEM_ADMIN_ID)
       user = User.find(user_id)
       playlists = Playlist.import_all(user)
       user.playlists.reload.each do |playlist|
