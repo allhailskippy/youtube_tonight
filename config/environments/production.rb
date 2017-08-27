@@ -1,7 +1,3 @@
-yml_section = Rails.env.to_s
-yml_file = YAML.load(File.open(File.join(Rails.root.to_s, 'config', 'environments', 'credentials.yml')))
-credentials = yml_file[yml_section]
-
 Youtubetonight::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -73,14 +69,17 @@ Youtubetonight::Application.configure do
   config.log_formatter = ::Logger::Formatter.new
 
   # YouTube
-  YOUTUBE_API_KEY = credentials['youtube_api_key']
-  GOOGLE_CLIENT_ID = credentials['google_client_id']
-  GOOGLE_CLIENT_SECRET = credentials['google_client_secret']
+  YOUTUBE_API_KEY = ENV['YOUTUBE_API_KEY']
+
+  GOOGLE_CLIENT_ID = ENV['GOOGLE_CLIENT_ID']
+  GOOGLE_CLIENT_SECRET = ENV['GOOGLE_CLIENT_SECRET']
 
   # Facebook
-  FACEBOOK_KEY = credentials['facebook_key']
-  FACEBOOK_SECRET = credentials['facebook_secret']
+  FACEBOOK_KEY = ENV['FACEBOOK_KEY']
+  FACEBOOK_SECRET = ENV['FACEBOOK_SECRET']
 
   # Websockets
-  WEBSOCKET_URL = credentials['websocket_url']
+  WEBSOCKET_URL = ENV['WEBSOCKET_URL']
+
+  SYSTEM_ADMIN_ID = ENV['SYSTEM_ADMIN_ID']
 end
