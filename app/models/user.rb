@@ -34,6 +34,11 @@ class User < ActiveRecord::Base
   after_update :import_playlists, if: Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
 
   ##
+  # Scopes
+  #
+  scope :without_system_admin, -> { where("id != ?", SYSTEM_ADMIN_ID) }
+
+  ##
   # Methods
   #
   # Stores user info on successful sign in from facebook
