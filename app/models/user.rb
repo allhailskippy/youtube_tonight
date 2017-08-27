@@ -125,7 +125,7 @@ class User < ActiveRecord::Base
         grant_type: 'refresh_token'
       },
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type' => 'application/x-www-form-urlencoded'
       }
     }
     refresh = HTTParty.post('https://accounts.google.com/o/oauth2/token', options)
