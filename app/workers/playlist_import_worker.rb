@@ -8,7 +8,7 @@ class PlaylistImportWorker
       user = User.find(user_id)
       playlists = Playlist.import_all(user)
       user.playlists.reload.each do |playlist|
-        playlist.import_videos
+        playlist.import_videos(user)
       end
     rescue Exception => e
       NewRelic::Agent.notice_error(e)

@@ -29,9 +29,9 @@ class User < ActiveRecord::Base
   ##
   # Hooks
   #
+  after_create :import_playlists
   before_update :update_roles, if: Proc.new{|r| r.change_roles }
   before_update :deliver_authorized_email, if: Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
-  after_update :import_playlists, if: Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
 
   ##
   # Scopes
@@ -43,7 +43,7 @@ class User < ActiveRecord::Base
   #
   # Stores user info on successful sign in from facebook
   def self.from_omniauth(auth)
-    user = where(provider: auth.provider, email: auth.info.email).first_or_create do |u|
+    user = where(provider: auth.provider, email: auth.info.email).first_or_initialize do |u|
       u.provider = auth.provider
       u.email = auth.info.email
       u.requires_auth = true

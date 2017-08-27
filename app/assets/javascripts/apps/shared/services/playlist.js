@@ -12,7 +12,6 @@ var Playlist = function(PlaylistApi) {
     'user_id',
     'api_playlist_id',
     'api_title',
-    'api_item_count',
     'video_count',
     'api_description',
     'api_thumbnail_default_url',

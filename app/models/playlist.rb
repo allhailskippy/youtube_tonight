@@ -35,7 +35,6 @@ class Playlist < ActiveRecord::Base
           api_playlist_id: details[:playlist_id],
         )
       playlist.api_title = list.to_s.titleize
-      playlist.api_item_count = details[:video_count].to_i
       playlist.api_description = details[:description]
       %w(default medium high standard maxres).each do |size|
         %w(url width height).each do |type|
@@ -50,7 +49,7 @@ class Playlist < ActiveRecord::Base
     playlists
   end
 
-  def import_videos
+  def import_videos(user)
     user ||= Authorization.current_user
 
     # Get all videos for the current playlist from YouTube
