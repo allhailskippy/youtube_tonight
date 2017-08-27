@@ -49,7 +49,7 @@ class Playlist < ActiveRecord::Base
     playlists
   end
 
-  def import_videos(user)
+  def import_videos(user = nil)
     user ||= Authorization.current_user
 
     # Get all videos for the current playlist from YouTube
