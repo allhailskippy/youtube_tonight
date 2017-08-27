@@ -53,4 +53,6 @@ Youtubetonight::Application.configure do
 
   # Websockets
   WEBSOCKET_URL = credentials['websocket_url']
+
+  SYSTEM_ADMIN_ID = ENV['SYSTEM_ADMIN_ID']
 end
