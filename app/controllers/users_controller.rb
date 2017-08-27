@@ -15,7 +15,7 @@ class UsersController < ApplicationController
         params[:per_page] ||= 100000
         params[:page] ||= 1
 
-        search = User.search(params[:q])
+        search = User.without_system_admin.search(params[:q])
         users = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
 
         render json: {

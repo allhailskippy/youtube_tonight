@@ -8,36 +8,42 @@ class User < ActiveRecord::Base
   #
   # Include default devise modules. Others available are:
   devise :database_authenticatable, :trackable,
-    :omniauthable, :omniauth_providers => [:google_oauth2]
+    :omniauthable, { omniauth_providers: [:google_oauth2] }
 
   ##
   # Relationships
   #
-  has_many :roles, :dependent => :destroy
-  has_many :playlists, :dependent => :destroy
+  has_many :roles, dependent: :destroy
+  has_many :playlists, dependent: :destroy
 
   ##
   # Validation
   #
   validates :role_titles,
-    :presence => {
-      :message => "must be selected"
+    presence: {
+      message: "must be selected"
     },
-    :on => :update,
-    :if => Proc.new{|r| !r.requires_auth }
+    on: :update,
+    if: Proc.new{|r| !r.requires_auth }
 
   ##
   # Hooks
   #
-  before_update :update_roles, :if => Proc.new{|r| r.change_roles }
-  before_update :deliver_authorized_email, :if => Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
+  after_create :import_playlists
+  before_update :update_roles, if: Proc.new{|r| r.change_roles }
+  before_update :deliver_authorized_email, if: Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
+
+  ##
+  # Scopes
+  #
+  scope :without_system_admin, -> { where("id != ?", SYSTEM_ADMIN_ID) }
 
   ##
   # Methods
   #
   # Stores user info on successful sign in from facebook
   def self.from_omniauth(auth)
-    user = where(provider: auth.provider, email: auth.info.email).first_or_create do |u|
+    user = where(provider: auth.provider, email: auth.info.email).first_or_initialize do |u|
       u.provider = auth.provider
       u.email = auth.info.email
       u.requires_auth = true
@@ -70,8 +76,8 @@ class User < ActiveRecord::Base
   # Here for consistency
   def self.as_json_hash
     {
-      :include => :roles,
-      :methods => [:role_titles, :is_admin]
+      include: :roles,
+      methods: [:role_titles, :is_admin]
     }
   end
 
@@ -84,7 +90,7 @@ class User < ActiveRecord::Base
     if !requires_auth
       self.role_titles ||= []
       self.role_titles.each do |title|
-        self.roles.build(:title => title)
+        self.roles.build(title: title)
       end
     end
   end
@@ -101,6 +107,10 @@ class User < ActiveRecord::Base
 
   def deliver_authorized_email
     UserMailer.authorized_email(self).deliver!
+  end
+
+  def import_playlists
+    PlaylistImportWorker.perform_async(id)
   end
 
   # Gets a current token for the user. Does a
