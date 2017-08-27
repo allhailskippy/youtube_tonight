@@ -51,8 +51,7 @@
             <th></th>
             <th>Title</th>
             <th>Description</th>
-            <th class="text-center">Available Video Count</th>
-            <th class="text-center">Imported Video Count</th>
+            <th class="text-center">Videos</th>
             <th>&nbsp;</th>
           </thead>
           <tbody>
@@ -60,7 +59,6 @@
               <td><img class="playlist-image" ng-src="{{ playlist.withDefault(playlist.api_thumbnail_default_url) }}" /></td>
               <td class="text-nowrap">{{ playlist.api_title }}</td>
               <td>{{ playlist.api_description }}</td>
-              <td class="text-center">{{ playlist.api_item_count | number:0 }}</td>
               <td class="text-center">{{ playlist.video_count | number:0 }}</td>
               <td class="text-right text-nowrap">
                 <button
