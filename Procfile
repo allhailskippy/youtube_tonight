@@ -1,2 +1,2 @@
 web: bundle exec thin start -p $PORT
-worker: rake jobs:work
+worker: bundle exec sidekiq -C config/sidekiq.yml

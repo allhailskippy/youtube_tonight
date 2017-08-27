@@ -5,7 +5,6 @@ group :production do
   gem 'thin'
 end
 
-
 gem 'rails_12factor'
 gem 'rails', '~> 4.0.13'
 gem 'test-unit'
@@ -24,6 +23,8 @@ gem 'delayed_job_active_record'
 gem 'eventmachine', '1.0.9.1'
 gem 'newrelic_rpm'
 gem 'sendgrid-ruby'
+gem 'sidekiq'
+gem 'ruby_parser'
 
 # Javascript gems
 gem 'jquery-rails'

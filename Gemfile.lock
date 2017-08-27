@@ -63,6 +63,7 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     concurrent-ruby (1.0.5)
+    connection_pool (2.2.1)
     daemons (1.2.4)
     date_validator (0.9.0)
       activemodel
@@ -215,6 +216,8 @@ GEM
       railties (>= 3.2, < 4.2)
     retriable (3.1.1)
     ruby_http_client (3.1.0)
+    ruby_parser (3.10.1)
+      sexp_processor (~> 4.9)
     sass (3.5.1)
       sass-listen (~> 4.0.0)
     sass-listen (4.0.0)
@@ -229,6 +232,12 @@ GEM
     sendgrid-ruby (5.0.0)
       ruby_http_client (~> 3.0)
       sinatra (>= 1.4.7, < 3)
+    sexp_processor (4.10.0)
+    sidekiq (5.0.4)
+      concurrent-ruby (~> 1.0)
+      connection_pool (~> 2.2, >= 2.2.0)
+      rack-protection (>= 1.5.0)
+      redis (~> 3.3, >= 3.3.3)
     signet (0.7.3)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -299,8 +308,10 @@ DEPENDENCIES
   rails-assets-leaflet!
   rails_12factor
   ransack
+  ruby_parser
   sass-rails
   sendgrid-ruby
+  sidekiq
   test-unit
   thin
   uglifier
