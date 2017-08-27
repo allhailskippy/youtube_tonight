@@ -24,6 +24,7 @@ gem 'eventmachine', '1.0.9.1'
 gem 'newrelic_rpm'
 gem 'sendgrid-ruby'
 gem 'sidekiq'
+gem 'sidekiq-failures'
 gem 'ruby_parser'
 
 # Javascript gems
