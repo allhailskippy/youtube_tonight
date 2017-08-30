@@ -35,7 +35,7 @@ class PlaylistsController < ApplicationController
       format.html
       format.json do
         params[:q] ||= {}
-        params[:q][:user_id_eq] ||= current_user.id
+        params[:q][:user_id_eq] = current_user.id if params[:q][:user_id_eq].blank?
         params[:q][:s] ||= 'id desc'
         params[:per_page] ||= 10
         params[:page] ||= 1
