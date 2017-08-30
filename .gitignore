@@ -11,7 +11,7 @@
 # Ignore all logfiles and tempfiles.
 /log/*.log
 /tmp
-
+dump.rdb
 .DS_Store
 /bower_components
 
