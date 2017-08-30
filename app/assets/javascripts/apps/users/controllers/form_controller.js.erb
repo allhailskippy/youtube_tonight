@@ -9,7 +9,8 @@
 
 var FormCtrl = function(
   $scope, $routeParams, $location,
-  UserApp, User, CurrentUser
+  UserApp, User, CurrentUser, Notice,
+  current_user_data
   ) {
 
   /**
@@ -19,9 +20,12 @@ var FormCtrl = function(
     $scope.user = User.build(response.data);
   });
 
-  CurrentUser.find().then(function(results) {
-    $scope.currentUser = CurrentUser.build(results.data);
-  });
+  $scope.currentUser = CurrentUser.build(current_user_data.data);
+
+  // Handle error response from server side
+  var handleErrors = function(response) {
+    Notice.handleErrors(response);
+  };
 
   /**
    * Scope methods
@@ -45,13 +49,14 @@ var FormCtrl = function(
     $scope.user.change_roles = true;
     $scope.user.save().then(function() {
       $location.path('/index');
-    });
+    }).catch(handleErrors);
   };
 };
 
 FormCtrl.$inject = [
   '$scope', '$routeParams', '$location',
-  'UserApp', 'User', 'CurrentUser'
+  'UserApp', 'User', 'CurrentUser', 'Notice',
+  'current_user_data'
 ];
 
 angular.module("UserApp")
