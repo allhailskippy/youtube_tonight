@@ -20,9 +20,9 @@ var routesConfig = function($locationProvider, $routeProvider) {
     controller: 'FormCtrl',
     templateUrl: '<%= asset_path("apps/users/templates/form.html") %>',
     resolve: {
-      current_user_data: function(CurrentUser) {
-        return CurrentUser.find();
-      }
+      current_user_data: ['CurrentUserApi', function(CurrentUserApi) {
+        return CurrentUserApi.query().$promise;
+      }]
     }
   }).
   otherwise({
