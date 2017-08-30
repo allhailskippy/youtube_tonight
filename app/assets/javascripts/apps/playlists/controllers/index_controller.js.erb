@@ -63,35 +63,33 @@ var IndexCtrl = function(
   };
 
   $scope.getResource = function (params, paramsObj) {
-    if($scope.user_id) {
-      params = {
-        per_page: paramsObj.count,
-        page: paramsObj.page,
-        'q[api_title_cont]': paramsObj.filters.title,
-        'q[user_id_eq]': $scope.user_id
-      };
+    params = {
+      per_page: paramsObj.count,
+      page: paramsObj.page,
+      'q[api_title_cont]': paramsObj.filters.title,
+      'q[user_id_eq]': $scope.user_id
+    };
 
-      var urlApi = 'playlists.json?' + $.param(params);
-      return $http.get(urlApi).then(function (response) {
-        $scope.importing = false;
-        var playlists = jQuery.map(response.data.data, function(playlist) {
-          return Playlist.build(playlist);
-        });
-        return {
-          'rows': playlists,
-          'header': [],
-          'pagination': {
-            'count': response.data.per_page,
-            'page': response.data.page,
-            'pages': response.data.total_pages,
-            'size': response.data.total
-          },
-        }
-      }).catch(function() {
-        Notice.handleErrors;
-        $scope.importing = false;
+    var urlApi = 'playlists.json?' + $.param(params);
+    return $http.get(urlApi).then(function (response) {
+      $scope.importing = false;
+      var playlists = jQuery.map(response.data.data, function(playlist) {
+        return Playlist.build(playlist);
       });
-    }
+      return {
+        'rows': playlists,
+        'header': [],
+        'pagination': {
+          'count': response.data.per_page,
+          'page': response.data.page,
+          'pages': response.data.total_pages,
+          'size': response.data.total
+        },
+      }
+    }).catch(function() {
+      Notice.handleErrors;
+      $scope.importing = false;
+    });
   };
 
   $scope.reimportPlaylists = function() {
