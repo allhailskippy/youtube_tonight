@@ -90,6 +90,7 @@ class User < ActiveRecord::Base
     if !requires_auth
       self.role_titles ||= []
       self.role_titles.each do |title|
+        next if !Authorization.current_user.is_admin && title == 'admin'
         self.roles.build(title: title)
       end
     end

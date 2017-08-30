@@ -18,7 +18,12 @@ var routesConfig = function($locationProvider, $routeProvider) {
   }).
   when('/:id/edit', {
     controller: 'FormCtrl',
-    templateUrl: '<%= asset_path("apps/users/templates/form.html") %>'
+    templateUrl: '<%= asset_path("apps/users/templates/form.html") %>',
+    resolve: {
+      current_user_data: function(CurrentUser) {
+        return CurrentUser.find();
+      }
+    }
   }).
   otherwise({
     redirectTo: '/index'
@@ -27,6 +32,7 @@ var routesConfig = function($locationProvider, $routeProvider) {
     .html5Mode(false)
     .hashPrefix('');
 };
+
 routesConfig.$inject = ['$locationProvider', '$routeProvider'];
 
 angular.module('UserApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf', 'ui.bootstrap-select'])
