@@ -2,28 +2,28 @@
   <div ng-show="notices.alerts">
     <h4>
       <span ng-repeat="alert in notices.alerts">
-        <span class="label label-info" >{{ alert }}</span>
+        <div class="alert alert-info" >{{ alert }}</div>
       </span>
     </h4>
   </div>
   <div ng-show="notices.errors">
     <h4>
       <span ng-repeat="error in notices.errors">
-        <span class="label label-danger" >{{ error }}</span>
+        <div class="alert alert-danger" >{{ error }}</div>
       </span>
     </h4>
   </div>
   <div ng-show="notices.successes">
     <h4>
       <span ng-repeat="success in notices.successes">
-        <span class="label label-success" >{{ success }}</span>
+        <div class="alert alert-success" >{{ success }}</div>
       </span>
     </h4>
   </div>
   <div ng-show="notices.warnings">
     <h4>
       <span ng-repeat="warning in notices.warnings">
-        <span class="label label-warning" >{{ warning }}</span>
+        <div class="alert alert-warning" >{{ warning }}</div>
       </span>
     </h4>
   </div>
