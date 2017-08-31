@@ -94,7 +94,7 @@ class UsersController < ApplicationController
 
 private
   def scoped
-    User.with_permission_to(:read).all
+    User.with_permissions_to(:read).all
   end
 
   def user_params
