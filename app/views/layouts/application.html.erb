@@ -24,27 +24,27 @@
     <% unless @hide_nav %>
       <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
-          <div class="navbar-header">
+          <div class="navbar-header" id="home_nav">
             <a class="navbar-brand" href="/shows#/index">YouTube Tonight</a>
           </div>
           <div id="navbar" class="">
             <% if permitted_to?(:index, :users) %>
-              <ul class="nav navbar-nav">
+              <ul class="nav navbar-nav" id="users_nav">
                 <li class="<%= "active" if params[:controller] == 'users' %>"><a href="/users#/index">Users</a></li>
               </ul>
             <% end %>
             <% if permitted_to?(:index, :shows) %>
-              <ul class="nav navbar-nav">
+              <ul class="nav navbar-nav" id="shows_nav">
                 <li class="<%= "active" if params[:controller] == 'shows' %>"><a href="/shows#/index">Shows</a></li>
               </ul>
             <% end %>
             <% playlists = current_user.try(:playlists) %>
             <% if current_user.present? && permitted_to?(:index, playlists) %>
-              <ul class="nav navbar-nav">
+              <ul class="nav navbar-nav" id="playlists_nav">
                 <li class="<%= "active" if params[:controller] == 'playlists' %>"><a href="/playlists#/index">Playlists</a></li>
               </ul>
             <% end %>
-            <ul class="nav navbar-nav">
+            <ul class="nav navbar-nav" id="login_nav">
               <li>
                 <% if user_signed_in? %>
                   <%= link_to('Logout', destroy_user_session_path, :method => :delete) %>
