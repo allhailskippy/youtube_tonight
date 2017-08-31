@@ -68,7 +68,18 @@
         </div>
         <div class="col-md-8">&nbsp;</div>
       </div>
-      <div class="col-md-12">
+    </form>
+    <div>
+      <div class="col-md-1 text-center">
+        <br />
+        <button
+          type="submit"
+          class="btn btn-primary"
+          ng-click="selectResult()"
+          ng-show="hasVideo()"
+        >Clear</button>
+      </div>
+      <div class="col-md-11">
         <video-show
           video="currentVideo"
           ng-show="hasVideo()"
@@ -95,12 +106,12 @@
           >Update</button>
         </div>
       </div>
-    </form>
+    </div>
   </div>
 </div>
-
-  <div ng-repeat="video in searchResults track by $index" class="panel panel-primary">
-    <div class="row">
+<div ng-repeat="video in searchResults track by $index" class="panel panel-primary">
+  <div class="panel">
+    <div class="panel-body">
       <div class="col-md-1 text-center">
         <br />
         <button
@@ -110,12 +121,12 @@
           ng-disabled="video.api_video_id == currentVideo.api_video_id"
         >Select</button>
       </div>
-      <div class="col-md-8">
+      <div class="col-md-11">
         <br />
         <video-show
           video="video"
         ></video-show>
       </div>
-      <div class="col-md-3">&nbsp;</div>
     </div>
   </div>
+</div>
