@@ -14,6 +14,9 @@ var IndexCtrl = function(
   /**
    * Setup
    */
+  // Ensures the shows menu item is highlighted
+  angular.element(document.querySelector('#shows_nav li')).addClass('active');
+
   $scope.currentVideo = null;
 
   $scope.page = 1;
