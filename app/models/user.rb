@@ -107,7 +107,7 @@ class User < ActiveRecord::Base
   end
 
   def deliver_authorized_email
-    UserMailer.authorized_email(self).deliver!
+    UserMailer.authorized_email(self).deliver_now!
   end
 
   def import_playlists
