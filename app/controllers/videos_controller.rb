@@ -143,7 +143,7 @@ private
     if @parent
       @parent.videos.where(nil)
     else
-      Video.scoped
+      Video.where(nil)
     end
   end
 
