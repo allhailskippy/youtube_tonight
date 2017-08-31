@@ -16,30 +16,29 @@ authorization do
     includes :guest
 
     has_permission_on :users, :to => [:update, :requires_auth]
-    has_permission_on :videos, :to => :manage
-    has_permission_on :shows, :to => :manage
+    has_permission_on :shows, :to => :read
     has_permission_on :youtube_parser, :to => :read
     has_permission_on :broadcasts, :to => :read
     has_permission_on :playlists do
       to :manage
       if_attribute :user => is {user}
     end
-    has_permission_on :playlist_items do
+    has_permission_on :videos do
       to :manage
-      if_attribute :playlist => { :user => is {user} }
+      if_attribute :parent => { :user => is {user} }
     end
   end
 
   # permissions on other roles, such as
   role :admin do
     includes :guest
-    includes :host
 
-    has_permission_on :users, :to => :manage
+    has_permission_on :youtube_parser, :to => :read
+    has_permission_on :broadcasts, :to => :read
 
-    # Admins can see all playlists
-    has_permission_on :playlists, :to => :manage
-    has_permission_on :playlist_items, :to => :manage
+    %w(users shows playlists videos).each do |controller|
+      has_permission_on controller.to_sym, to: :manage
+    end
   end
 end
 
