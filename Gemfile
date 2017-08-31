@@ -31,7 +31,7 @@ gem 'ruby_parser'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'faye-websocket', '0.7.5'
-gem 'websocket-rails', :git => 'git://github.com/websocket-rails/websocket-rails.git', :branch => 'master'
+gem 'websocket-rails', :github => 'websocket-rails/websocket-rails', :branch => 'master'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-bootstrap'
@@ -43,7 +43,7 @@ gem 'ng-rails-csrf'
 
 # Permission Gems
 gem 'devise'
-gem 'declarative_authorization', :git => 'git@github.com:stffn/declarative_authorization.git'
+gem 'declarative_authorization', :github => 'stffn/declarative_authorization'
 gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'
 gem 'userstamp', :github => 'kimkong/userstamp'
