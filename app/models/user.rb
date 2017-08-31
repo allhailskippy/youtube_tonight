@@ -41,7 +41,7 @@ class User < ActiveRecord::Base
   ##
   # Methods
   #
-  # Stores user info on successful sign in from facebook
+  # Stores user info on successful sign in from google
   def self.from_omniauth(auth)
     user = where(provider: auth.provider, email: auth.info.email).first_or_initialize do |u|
       u.provider = auth.provider
