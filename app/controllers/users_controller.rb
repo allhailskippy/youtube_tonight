@@ -15,12 +15,10 @@ class UsersController < ApplicationController
         params[:per_page] ||= 100000
         params[:page] ||= 1
 
-        search = User.without_system_admin.search(params[:q])
+        search = User.without_system_admin.with_permissions_to(:read).search(params[:q])
         users = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
 
-        render json: {
-          data: users.as_json(User.as_json_hash)
-        }
+        render json: { data: users.as_json(User.as_json_hash) }
       end
     end
   end
@@ -29,26 +27,20 @@ class UsersController < ApplicationController
   def show
     respond_to do |format|
       begin
-        @user = User.find(params[:id])
+        user = User.with_permissions_to(:read).find(params[:id])
         format.json do
-          render json: {
-            data: @user.as_json(User.as_json_hash)
-          }
+          render json: { data: user.as_json(User.as_json_hash) }
         end
       rescue ActiveRecord::RecordNotFound
         format.json do
-          render json: {
-            errors: 'Not Found'
-          },
-          status: :unprocessable_entity
+          render json: { errors: 'Not Found' },
+                 status: :unprocessable_entity
         end
       rescue Exception => e
         NewRelic::Agent.notice_error(e)
         format.json do
-          render json: {
-            errors: e.to_s
-          },
-          status: :unprocessable_entity
+          render json: { errors: e.to_s },
+                 status: :unprocessable_entity
         end
       end
     end
@@ -56,28 +48,24 @@ class UsersController < ApplicationController
 
   # PUT /users/:id.json
   def update
-    @user = scoped.find(params[:id])
+    user = scoped.find(params[:id])
     respond_to do |format|
       begin
-        @user.update_attributes!(user_params)
+        permitted_to!(:update, user)
+        user.update_attributes!(user_params)
         format.json do
-          render json: @user.as_json
+          render json: user.as_json
         end
       rescue ActiveRecord::RecordInvalid
         format.json do
-          render json: {
-            errors: @user.errors,
-            full_errors: @user.errors.full_messages
-          },
-          status: :unprocessable_entity
+          render json: { errors: user.errors, full_errors: user.errors.full_messages },
+                 status: :unprocessable_entity
         end
       rescue Exception => e
         NewRelic::Agent.notice_error(e)
         format.json do
-          render json: {
-            errors: e.to_s
-          },
-          status: :unprocessable_entity
+          render json: { errors: e.to_s },
+                 status: :unprocessable_entity
         end
       end
     end
@@ -87,20 +75,18 @@ class UsersController < ApplicationController
   def destroy
     respond_to do |format|
       begin
-        @user = scoped.find(params[:id])
-        @user.destroy
+        user = scoped.find(params[:id])
+        permitted_to!(:delete, user)
+        user.destroy
+
         format.json do
-          render json: {
-            :status => :ok
-          }
+          render json: { :status => :ok }
         end
       rescue Exception => e
         NewRelic::Agent.notice_error(e)
         format.json do
-          render json: {
-            :errors => [e.to_s]
-          },
-          status: :unprocessable_entity
+          render json: { :errors => [e.to_s] },
+                 status: :unprocessable_entity
         end
       end
     end
@@ -108,7 +94,7 @@ class UsersController < ApplicationController
 
 private
   def scoped
-    User.where(nil)
+    User.with_permission_to(:read).all
   end
 
   def user_params

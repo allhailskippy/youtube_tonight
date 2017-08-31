@@ -3,26 +3,20 @@ class PlaylistsController < ApplicationController
   def show
     respond_to do |format|
       begin
-        @playlist = Playlist.find(params[:id])
+        @playlist = Playlist.with_permissions_to(:read).find(params[:id])
         format.json do
-          render json: {
-            data: @playlist.as_json(Playlist.as_json_hash)
-          }
+          render json: { data: @playlist.as_json(Playlist.as_json_hash) }
         end
       rescue ActiveRecord::RecordNotFound
         format.json do
-          render json: {
-            errors: 'Not Found'
-          },
-          status: :unprocessable_entity
+          render json: { errors: 'Not Found' },
+                 status: :unprocessable_entity
         end
       rescue Exception => e
         NewRelic::Agent.notice_error(e)
         format.json do
-          render json: {
-            errors: e.to_s
-          },
-          status: :unprocessable_entity
+          render json: { errors: e.to_s },
+                 status: :unprocessable_entity
         end
       end
     end
@@ -42,7 +36,7 @@ class PlaylistsController < ApplicationController
         # Prevent page from being 0 or lower
         params[:page] = params[:page].to_i < 1 ? 1 : params[:page]
 
-        search = Playlist.search(params[:q])
+        search = Playlist.with_permissions_to(:read).search(params[:q])
         playlists = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
 
         render json: {
@@ -57,46 +51,40 @@ class PlaylistsController < ApplicationController
     end
   end
 
-  ##
-  # Creates a delayed job that will import all of the playlists
-  #
-  # PUT /playlists.json
+  # POST /playlists.json
   def create
     respond_to do |format|
       format.json do
         begin
           user = params[:user_id].present? ? User.find(params[:user_id]) : current_user
+
+          # Permission check
+          permitted_to!(:manage, user)
+
           playlists = Playlist.import_all(user)
-          render json: {
-            data: playlists
-          }
+          render json: { data: playlists }
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
-          render json: {
-            errors: e.to_s.titleize
-          }, status: 400
+          render json: { errors: e.to_s.titleize },
+                 status: :unprocessable_entity
         end
       end
     end
   end
 
+  # PUT /playlists/:id.json
   def update
     respond_to do |format|
       format.json do
         begin
-          user = params[:user_id].present? ? User.find(params[:user_id]) : current_user
-          playlist = Playlist.find(params[:id])
+          playlist = Playlist.with_permissions_to(:manage).find(params[:id])
           videos = playlist.import_videos
 
-          render json: {
-            data: videos
-          }
-
+          render json: { data: videos }
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
-          render json: {
-            errors: e.to_s.titleize
-          }, status: 400
+          render json: { errors: e.to_s.titleize },
+                 status: :unprocessable_entity
         end
       end
     end

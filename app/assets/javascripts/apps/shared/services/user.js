@@ -21,6 +21,7 @@ var User = function(
     user.authorize = function() {
       user.requires_auth = false;
       user.role_titles = ['host']; // Default role
+      user.change_roles = true;
       return user.save();
     };
 
