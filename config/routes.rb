@@ -2,9 +2,6 @@ require 'sidekiq/web'
 
 Youtubetonight::Application.routes.draw do
   devise_for :users, :controllers => { :omniauth_callbacks => "callbacks" }
-
-  resources :home
-
   resources :shows
   resources :videos
   resources :playlists
