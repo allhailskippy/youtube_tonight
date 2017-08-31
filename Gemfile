@@ -44,7 +44,6 @@ gem 'ng-rails-csrf'
 # Permission Gems
 gem 'devise'
 gem 'declarative_authorization', :git => 'https://github.com/stffn/declarative_authorization.git'
-gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'
 gem 'userstamp', :git => 'https://github.com/kimkong/userstamp.git'
 
