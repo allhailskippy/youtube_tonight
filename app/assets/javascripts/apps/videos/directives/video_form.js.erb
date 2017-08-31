@@ -99,7 +99,11 @@ var controller = function(
   };
 
   $scope.hasVideo = function() {
-    return !!$scope.currentVideo.api_video_id;
+    return $scope.currentVideo && $scope.currentVideo.api_video_id;
+  };
+
+  $scope.canCancel = function() {
+    return $scope.videos && $scope.videos.length > 0;
   };
 };
 
@@ -113,6 +117,7 @@ var VideoForm = function() {
     restrict: 'E',
     scope: {
       currentVideo: '=',
+      videos: '=?',
       queryVideos: '&',
       closeForm: '&'
     },
