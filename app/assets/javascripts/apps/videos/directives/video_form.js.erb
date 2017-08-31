@@ -76,6 +76,14 @@ var controller = function(
   };
 
   $scope.selectResult = function(video) {
+    // If we're clearing, build a new video object
+    if(!video) {
+      video = Video.build({ show_id: $scope.showId });
+    }
+    // Keep current search value
+    if($scope.currentVideo) {
+      video.search = $scope.currentVideo.search;
+    }
     $scope.currentVideo = video;
   };
 
