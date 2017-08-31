@@ -33,6 +33,7 @@ var controller = function(
     if(newVal == '') {
       // Clear current video if we clear the search
       $scope.currentVideo = Video.build({show_id: $scope.showId });
+      $scope.searchResults = [];
     }
 
     if(newVal && newVal != oldVal) {
@@ -44,6 +45,10 @@ var controller = function(
         // Lookup youtube video
         YoutubeParser.query(newVal).then(function(response) {
           $scope.searchResults = [];
+          $scope.currentVideo = Video.build({
+            show_id: $scope.showId,
+            search: $scope.currentVideo.search
+          });
           angular.forEach(response.data, function(result) {
             var yt = YoutubeParser.build(result)
             var video = Video.setFromYoutubeParser(yt, { show_id: $scope.showId });
@@ -71,6 +76,14 @@ var controller = function(
   };
 
   $scope.selectResult = function(video) {
+    // If we're clearing, build a new video object
+    if(!video) {
+      video = Video.build({ show_id: $scope.showId });
+    }
+    // Keep current search value
+    if($scope.currentVideo) {
+      video.search = $scope.currentVideo.search;
+    }
     $scope.currentVideo = video;
   };
 
@@ -93,7 +106,9 @@ var controller = function(
       force: true
     });
     Notice.reset();
-    $scope.closeForm();
+    if($scope.hasVideos()) {
+      $scope.closeForm();
+    }
     $scope.searchResults = [];
     $scope.currentVideo = Video.build({ show_id: $scope.showId });
   };
@@ -102,8 +117,12 @@ var controller = function(
     return $scope.currentVideo && $scope.currentVideo.api_video_id;
   };
 
-  $scope.canCancel = function() {
+  $scope.hasVideos = function() {
     return $scope.videos && $scope.videos.length > 0;
+  };
+
+  $scope.canCancel = function() {
+    return  $scope.hasVideos() || $scope.hasVideo();
   };
 };
 
