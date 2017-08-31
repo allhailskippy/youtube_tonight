@@ -1,17 +1,17 @@
 GIT
-  remote: git://github.com/kimkong/userstamp.git
+  remote: https://github.com/kimkong/userstamp.git
   revision: fd117e34c1a9988d348b3792bc0eccc266b73753
   specs:
     userstamp (2.0.2)
 
 GIT
-  remote: git://github.com/stffn/declarative_authorization.git
+  remote: https://github.com/stffn/declarative_authorization.git
   revision: 45e91af20eba71b2828c5c84066bcce3ef032e8a
   specs:
     declarative_authorization (1.0.0.pre)
 
 GIT
-  remote: git://github.com/websocket-rails/websocket-rails.git
+  remote: https://github.com/websocket-rails/websocket-rails.git
   revision: 0ee9e97b19e1f8250c18ded08c71647a51669122
   branch: master
   specs:
