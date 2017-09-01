@@ -14,7 +14,8 @@ Youtubetonight::Application.routes.draw do
 
   get 'broadcasts' => 'broadcasts#index'
   get 'youtube_parser' => 'youtube_parser#index'
-  root :to => 'shows#index'
+  get 'app' => 'app#index'
+  root :to => 'app#index'
 
   authenticate :user, lambda { |u| u.is_admin } do
     mount Sidekiq::Web => '/sidekiq'

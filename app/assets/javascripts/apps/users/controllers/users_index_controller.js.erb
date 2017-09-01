@@ -1,15 +1,16 @@
 /**
  * @ngdoc controller
- * @name IndexCtrl
+ * @name UsersIndexCtrl
  *
  * @description Logic for index stuffs
  */
 (function() {
   "use strict";
 
-var IndexCtrl = function(
-  $scope, $location, $window,
-  UserApp, User, CurrentUser, Playlist, Notice
+var UsersIndexCtrl = function(
+  $scope, $location,
+  User, CurrentUser, Playlist, Notice,
+  current_user_data
   ) {
 
   /**
@@ -17,13 +18,7 @@ var IndexCtrl = function(
    */
   $scope.retrieving = false;
   $scope.users = [];
-  CurrentUser.find().then(function(results) {
-    $scope.currentUser = CurrentUser.build(results.data);
-  });
-
-  /**
-   * Watch variables
-   */
+  $scope.currentUser = CurrentUser.build(current_user_data.data);
 
   /**
    * Scope methods
@@ -39,11 +34,11 @@ var IndexCtrl = function(
   };
 
   $scope.edit = function(user) {
-    $location.path('/' + user.id + '/edit');
+    $location.path('/users/' + user.id + '/edit');
   };
 
-  $scope.playlists = function(user) {
-    $window.location.href = '/playlists#' + user.id + '/index';
+  $scope.playlistsUrl = function(user) {
+    return '/app#/playlists/' + user.id + '/index';
   };
 
   $scope.canReadPlaylists = function(user) {
@@ -82,11 +77,12 @@ var IndexCtrl = function(
   $scope.fetchUsers();
 };
 
-IndexCtrl.$inject = [
-  '$scope', '$location', '$window',
-  'UserApp', 'User', 'CurrentUser', 'Playlist', 'Notice'
+UsersIndexCtrl.$inject = [
+  '$scope', '$location',
+  'User', 'CurrentUser', 'Playlist', 'Notice',
+  'current_user_data'
 ];
 
-angular.module("UserApp")
-       .controller('IndexCtrl', IndexCtrl);
+angular.module("YTBroadcastApp")
+       .controller('UsersIndexCtrl', UsersIndexCtrl);
 }());

@@ -1,39 +1,32 @@
 //= require_self
 //= require_tree ./controllers
-//= require_tree ./services
 /**
  * @ngdoc overview
  * @name Show App
  *
- * @description The ShowApp is used for viewing shows.
+ * @description Used for viewing shows.
  * This file is where the routes are defined for this app
  */
 (function(){
 'use strict';
 
-var routesConfig = function($locationProvider, $routeProvider) {
+var routesConfig = function($routeProvider) {
   $routeProvider.
-  when('/index', {
-    controller: 'IndexCtrl',
+  when('/shows/index', {
+    controller: 'ShowsIndexCtrl',
     templateUrl: '<%= asset_path("apps/shows/templates/index.html") %>',
   }).
-  when('/new', {
-    controller: 'FormCtrl',
+  when('/shows/new', {
+    controller: 'ShowsFormCtrl',
     templateUrl: '<%= asset_path("apps/shows/templates/form.html") %>',
   }).
-  when('/:show_id/edit', {
-    controller: 'FormCtrl',
+  when('/shows/:show_id/edit', {
+    controller: 'ShowsFormCtrl',
     templateUrl: '<%= asset_path("apps/shows/templates/form.html") %>',
-  }).
-  otherwise({
-    redirectTo: '/index'
   });
-  $locationProvider
-    .html5Mode(false)
-    .hashPrefix('');
 };
-routesConfig.$inject = ['$locationProvider', '$routeProvider'];
+routesConfig.$inject = ['$routeProvider'];
 
-angular.module('ShowApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf', 'tableSort', 'ui.sortable'])
+angular.module('YTBroadcastApp')
        .config(routesConfig);
 })();

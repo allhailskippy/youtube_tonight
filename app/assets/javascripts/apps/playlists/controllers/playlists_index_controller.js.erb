@@ -1,48 +1,32 @@
 /**
  * @ngdoc controller
- * @name IndexCtrl
+ * @name PlaylistsIndexCtrl
  *
  * @description Logic for index stuffs
  */
 (function() {
   "use strict";
 
-var IndexCtrl = function(
-  $scope, $window, $http, $routeParams,
-  PlaylistApp, Playlist, Notice, User, CurrentUser
+var PlaylistsIndexCtrl = function(
+  Auth, $scope, $http, $routeParams,
+  Playlist, Notice, User, CurrentUser,
+  current_user_data
   ) {
 
   /**
    * Setup
    */
-  $scope.user_id = $routeParams.user_id;
-
-  // User the current user if no user id is passed in
-  if($scope.user_id) {
-    User.find($scope.user_id).then(function(response) {
-      $scope.user = User.build(response.data);
-      $scope.reloadCallback();
-    });
-  } else {
-    CurrentUser.find().then(function(results) {
-      $scope.user = CurrentUser.build(results.data);
-      $scope.user_id = $scope.user.id;
-      $scope.reloadCallback();
-    });
-  }
+  $scope.user = User.build(current_user_data.data);
+  $scope.user_id = $scope.user.id;
 
   $scope.importingVideos = {};
-
-  /**
-   * Watch variables
-   */
 
   /**
    * Scope methods
    */
   // Redirect to the video list for this playlist
-  $scope.goToPlaylistItems = function(playlist) {
-    $window.location.href = '/videos#/playlists/' + playlist.id;
+  $scope.videosUrl = function(playlist) {
+    return '/app/#videos/playlists/' + playlist.id;
   };
 
   // Table pagination setup
@@ -129,11 +113,12 @@ var IndexCtrl = function(
   };
 };
 
-IndexCtrl.$inject = [
-  '$scope', '$window', '$http', '$routeParams',
-  'PlaylistApp', 'Playlist', 'Notice', 'User', 'CurrentUser'
+PlaylistsIndexCtrl.$inject = [
+  'Auth', '$scope', '$http', '$routeParams',
+  'Playlist', 'Notice', 'User', 'CurrentUser',
+  'current_user_data'
 ];
 
-angular.module("PlaylistApp")
-       .controller('IndexCtrl', IndexCtrl);
+angular.module("YTBroadcastApp")
+       .controller('PlaylistsIndexCtrl', PlaylistsIndexCtrl);
 }());

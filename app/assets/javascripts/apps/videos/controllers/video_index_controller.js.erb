@@ -1,13 +1,13 @@
 /**
  * @ngdoc controller
- * @name IndexCtrl
+ * @name VideosIndexCtrl
  *
  * @description Controller for the index page of the videos app
  */
 (function() {
   "use strict";
 
-var IndexCtrl = function(
+var VideosIndexCtrl = function(
   $scope, $window, $routeParams,
   ConnectionHelper, Video, Show, Notice
   ) {
@@ -268,11 +268,11 @@ var IndexCtrl = function(
   });
 };
 
-IndexCtrl.$inject = [
+VideosIndexCtrl.$inject = [
   '$scope', '$window', '$routeParams',
   'ConnectionHelper', 'Video', 'Show', 'Notice'
 ];
 
-angular.module("VideoApp")
-       .controller('IndexCtrl', IndexCtrl);
+angular.module("YTBroadcastApp")
+       .controller('VideosIndexCtrl', VideosIndexCtrl);
 }());

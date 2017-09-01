@@ -1,40 +1,41 @@
 //= require_self
 //= require_tree ./controllers
-//= require_tree ./services
 /**
  * @ngdoc overview
  * @name User App
  *
- * @description The UserApp is used for viewing users.
+ * @description Used for viewing users.
  * This file is where the routes are defined for this app
  */
 (function(){
 'use strict';
-var routesConfig = function($locationProvider, $routeProvider) {
+var routesConfig = function($routeProvider) {
   $routeProvider.
-  when('/index', {
-    controller: 'IndexCtrl',
-    templateUrl: '<%= asset_path("apps/users/templates/index.html") %>'
-  }).
-  when('/:id/edit', {
-    controller: 'FormCtrl',
-    templateUrl: '<%= asset_path("apps/users/templates/form.html") %>',
+  when('/users/index', {
+    controller: 'UsersIndexCtrl',
+    templateUrl: '<%= asset_path("apps/users/templates/index.html") %>',
     resolve: {
       current_user_data: ['CurrentUser', function(CurrentUser) {
         return CurrentUser.find();
       }]
     }
   }).
-  otherwise({
-    redirectTo: '/index'
+  when('/users/:id/edit', {
+    controller: 'UsersFormCtrl',
+    templateUrl: '<%= asset_path("apps/users/templates/form.html") %>',
+    resolve: {
+      current_user_data: ['CurrentUser', function(CurrentUser) {
+        return CurrentUser.find();
+      }],
+      user_data: ['$route', 'User', function($route, User) {
+        return User.find($route.current.params.id);
+      }]
+    }
   });
-  $locationProvider
-    .html5Mode(false)
-    .hashPrefix('');
 };
 
-routesConfig.$inject = ['$locationProvider', '$routeProvider'];
+routesConfig.$inject = ['$routeProvider'];
 
-angular.module('UserApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf', 'ui.bootstrap-select'])
+angular.module('YTBroadcastApp')
        .config(routesConfig);
 })();

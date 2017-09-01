@@ -45,12 +45,11 @@
                 ng-click="edit(user)"
               ></span>
             </span>
-            <span
+            <a ng-href="{{playlistsUrl}}"><button
               title="Playlists"
               class="btn btn-default glyphicon glyphicon-th-list"
               ng-if="canReadPlaylists"
-              ng-click="playlists(user)"
-            ></span>
+            ></button></a>
           </td>
         </tr>
       </tbody>
