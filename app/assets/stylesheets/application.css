@@ -53,11 +53,12 @@ glyphicon.disabled {
 
 .panel {
   background-color: #f5f5f5 !important;
-  margin-bottom: 10px !important;
+  margin-bottom: 0px !important;
 }
 
 .panel-primary {
   border-color: #ccc !important;
+  margin-top: 5px;
 }
 
 /* Bootstrap slider style */
