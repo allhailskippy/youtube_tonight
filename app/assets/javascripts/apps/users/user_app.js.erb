@@ -13,11 +13,13 @@ var routesConfig = function($routeProvider) {
   $routeProvider.
   when('/users/index', {
     controller: 'UsersIndexCtrl',
-    templateUrl: '<%= asset_path("apps/users/templates/index.html") %>'
+    templateUrl: '<%= asset_path("apps/users/templates/index.html") %>',
+    permission: 'users.index'
   }).
   when('/users/:id/edit', {
     controller: 'UsersFormCtrl',
     templateUrl: '<%= asset_path("apps/users/templates/form.html") %>',
+    permission: 'users.update',
     resolve: {
       user_data: ['$route', 'User', function($route, User) {
         return User.find($route.current.params.id);

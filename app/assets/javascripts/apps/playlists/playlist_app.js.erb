@@ -14,6 +14,7 @@ var routesConfig = function($routeProvider) {
   when('/playlists/:user_id/index', {
     controller: 'PlaylistsIndexCtrl',
     templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>',
+    permission: 'playlists.index',
     resolve: {
       current_user_data: ['User', '$route', function(User, $route) {
         return User.find($route.current.params.user_id);
@@ -23,6 +24,7 @@ var routesConfig = function($routeProvider) {
   when('/playlists/index', {
     controller: 'PlaylistsIndexCtrl',
     templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>',
+    permission: 'playlists.index',
     resolve: {
       current_user_data: ['CurrentUser', function(CurrentUser) {
         return CurrentUser.find();

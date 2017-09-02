@@ -13,7 +13,7 @@
    *   - `currentUser`
    *   - `auth`
    */
-  var runFunc = function($rootScope, $http, $routeParams, $location, CurrentUser, UserInfo, Auth, User) {
+  var runFunc = function($rootScope, $http, $routeParams, $location, $window, CurrentUser, UserInfo, Auth, User) {
     $rootScope.$location = $location;
     $rootScope.$routeParams = $routeParams;
 
@@ -27,7 +27,15 @@
       $http.defaults.headers.common['X-CSRF-TOKEN'] = response.data.xCSRFToken;
       $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     });
+
+    // Add front side authorization
+    $rootScope.$on('$routeChangeStart', function(scope, next, current) {
+      var permission = (next.$$route && next.$$route.permission) || undefined;
+      if(angular.isString(permission) && !$rootScope.auth(permission)) {
+        $window.location.href = '/unauthorized';
+      }
+    });
   };
-  runFunc.$inject = ['$rootScope', '$http', '$routeParams', '$location', 'CurrentUser', 'UserInfo', 'Auth', 'User'];
+  runFunc.$inject = ['$rootScope', '$http', '$routeParams', '$location', '$window', 'CurrentUser', 'UserInfo', 'Auth', 'User'];
   angular.module('YTBroadcastApp').run(runFunc);
 })();

@@ -15,11 +15,13 @@ var routesConfig = function($routeProvider) {
   $routeProvider.
   when('/videos/shows/:show_id', {
     controller: 'VideosIndexCtrl',
-    templateUrl: '<%= asset_path("apps/videos/templates/index.html") %>'
+    templateUrl: '<%= asset_path("apps/videos/templates/index.html") %>',
+    permission: 'videos.index',
   }).
   when('/videos/playlists/:playlist_id', {
     controller: 'VideosPlaylistIndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/playlist_index.html") %>',
+    permission: 'videos.index',
     resolve: {
       playlist_data: ['$route', 'Playlist', function($route, Playlist) {
         return Playlist.find($route.current.params.playlist_id);
