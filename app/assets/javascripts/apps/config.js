@@ -18,7 +18,7 @@
     $rootScope.$routeParams = $routeParams;
 
     // Setup current user
-    CurrentUser.find().then(function(response) {
+    UserInfo.get().then(function(response) {
       var user = User.build(response.data);
       user.hasAnyRole = UserInfo.hasAnyRole;
       !Auth.currentUser && Auth.setCurrentUser(user);

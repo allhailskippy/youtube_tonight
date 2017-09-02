@@ -9,8 +9,7 @@
 
 var UsersIndexCtrl = function(
   $scope, $location,
-  User, CurrentUser, Playlist, Notice,
-  current_user_data
+  User, Playlist, Notice
   ) {
 
   /**
@@ -18,7 +17,6 @@ var UsersIndexCtrl = function(
    */
   $scope.retrieving = false;
   $scope.users = [];
-  $scope.currentUser = CurrentUser.build(current_user_data.data);
 
   /**
    * Scope methods
@@ -42,7 +40,7 @@ var UsersIndexCtrl = function(
   };
 
   $scope.canReadPlaylists = function(user) {
-    return $scope.currentUser.id == user.id || $scope.currentUser.is_admin;
+    return $scope.$root.currentUser.id == user.id || $scope.$root.currentUser.is_admin;
   };
 
   // Get all users
@@ -79,8 +77,7 @@ var UsersIndexCtrl = function(
 
 UsersIndexCtrl.$inject = [
   '$scope', '$location',
-  'User', 'CurrentUser', 'Playlist', 'Notice',
-  'current_user_data'
+  'User', 'Playlist', 'Notice'
 ];
 
 angular.module("YTBroadcastApp")

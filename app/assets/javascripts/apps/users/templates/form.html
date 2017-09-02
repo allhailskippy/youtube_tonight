@@ -68,23 +68,23 @@
               >
                 <option
                   value="admin"
-                  ng-if="currentUser.is_admin"
+                  ng-if="$root.currentUser.is_admin"
                 >Admin</option>
                 <option value="host">Host</option>
               </select>
             </div>
-              <div class="pull-right">
-                <button
-                  type="submit"
-                  class="btn btn-danger"
-                  ng-click="cancel()"
-                >Cancel</button>
-                <button
-                  type="submit"
-                  class="btn btn-success"
-                  ng-click="save()"
-                >Update</button>
-              </div>
+            <div class="pull-right">
+              <button
+                type="submit"
+                class="btn btn-danger"
+                ng-click="cancel()"
+              >Cancel</button>
+              <button
+                type="submit"
+                class="btn btn-success"
+                ng-click="save()"
+              >Update</button>
+            </div>
           </div>
         </div>
       </div>

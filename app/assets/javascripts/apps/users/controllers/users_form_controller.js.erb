@@ -9,15 +9,14 @@
 
 var UsersFormCtrl = function(
   $scope, $routeParams, $location,
-  User, CurrentUser, Notice,
-  current_user_data, user_data
+  User, Notice,
+  user_data
   ) {
 
   /**
    * Setup
    */
   $scope.user = User.build(user_data.data);
-  $scope.currentUser = CurrentUser.build(current_user_data.data);
 
   // Handle error response from server side
   var handleErrors = function(response) {
@@ -52,8 +51,8 @@ var UsersFormCtrl = function(
 
 UsersFormCtrl.$inject = [
   '$scope', '$routeParams', '$location',
-  'User', 'CurrentUser', 'Notice',
-  'current_user_data', 'user_data'
+  'User', 'Notice',
+  'user_data'
 ];
 
 angular.module("YTBroadcastApp")

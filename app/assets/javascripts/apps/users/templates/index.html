@@ -25,7 +25,7 @@
           <td>{{ user.email}}</td>
           <td>{{ user.roleTitleStr()}}</td>
           <td class="text-right">
-            <span ng-show="currentUser.id != user.id">
+            <span ng-show="$root.currentUser.id != user.id">
               <span
                 title="Authorize"
                 class="btn btn-success"
@@ -41,7 +41,7 @@
               <span
                 title="Edit User"
                 class="btn btn-default glyphicon glyphicon-edit"
-                ng-if="currentUser.is_admin"
+                ng-if="$root.currentUser.is_admin"
                 ng-click="edit(user)"
               ></span>
             </span>

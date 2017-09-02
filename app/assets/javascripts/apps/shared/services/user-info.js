@@ -13,11 +13,11 @@
     var get = function() {
       var deferred = $q.defer();
       if (decodedUserInfo) {
-        console.log('Reading user info. from decodedUserInfo', decodedUserInfo);
+        //console.log('Reading user info. from decodedUserInfo', decodedUserInfo);
         deferred.resolve(decodedUserInfo);
       } else if ($window.sessionStorage.getItem('userInfo')) {
         decodedUserInfo = JSON.parse(atob($window.sessionStorage.getItem('userInfo')));
-        console.log('Reading user info. from sessionStorage', decodedUserInfo);
+        //console.log('Reading user info. from sessionStorage', decodedUserInfo);
         deferred.resolve(decodedUserInfo);
       }
       return deferred.promise;
