@@ -26,7 +26,8 @@ authorization do
     end
     has_permission_on :videos do
       to :manage
-      if_attribute :parent => { :user => is {user} }
+#      if_attribute :parent_type => 'Show'
+#      if_attribute :parent => { :user => is {user} }
     end
   end
 
