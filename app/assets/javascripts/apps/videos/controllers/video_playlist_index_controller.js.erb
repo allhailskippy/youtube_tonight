@@ -1,15 +1,16 @@
 /**
  * @ngdoc controller
- * @name PlaylistIndexCtrl
+ * @name VideosPlaylistIndexCtrl
  *
  * @description Logic for playlist item stuffs
  */
 (function() {
   "use strict";
 
-var PlaylistIndexCtrl = function(
+var VideosPlaylistIndexCtrl = function(
   $scope, $http, $routeParams,
-  ConnectionHelper, Playlist, Video, Notice, User
+  ConnectionHelper, Playlist, Video, Notice, User,
+  playlist_data
   ) {
 
   /**
@@ -24,14 +25,13 @@ var PlaylistIndexCtrl = function(
   $scope.playlist_id = $routeParams.playlist_id;
   $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.playlist_id);
 
-  // Preload objects
-  Playlist.find($routeParams.playlist_id).then(function(playlist_response) {
-    $scope.playlist = Playlist.build(playlist_response.data);
-    $scope.playlist_url = '/playlists#/' + $scope.playlist.user_id + '/index';
+  $scope.playlist = Playlist.build(playlist_data.data);
+  $scope.playlist_url = '/app#/playlists/' + $scope.playlist.user_id + '/index';
 
-    User.find($scope.playlist.user_id).then(function(user_response) {
-      $scope.user = User.build(user_response.data);
-    });
+  $scope.user = User.build({})
+  User.find($scope.playlist.user_id).then(function(response) {
+    $scope.user = User.build(response.data);
+    $scope.$applyAsync();
   });
 
   // Use new dispatcher because we're unbinding a method later
@@ -39,13 +39,8 @@ var PlaylistIndexCtrl = function(
   $scope.previewChannel = ConnectionHelper.newChannel('video_player', $scope.previewDispatch);
 
   /**
-   * Watch variables
-   */
-
-  /**
    * Scope methods
    */
-
   // Table pagination setup
   $scope.init = {
     'count': 10,
@@ -70,7 +65,7 @@ var PlaylistIndexCtrl = function(
       'q[api_title_cont]': paramsObj.filters.title
     };
 
-    var urlApi = 'videos.json?' + $.param(params);
+    var urlApi = '/videos.json?' + $.param(params);
     return $http.get(urlApi).then(function (response) {
       $scope.importing = false;
       var videos = jQuery.map(response.data.data, function(video) {
@@ -139,11 +134,12 @@ var PlaylistIndexCtrl = function(
   });
 };
 
-PlaylistIndexCtrl.$inject = [
+VideosPlaylistIndexCtrl.$inject = [
   '$scope', '$http', '$routeParams',
-  'ConnectionHelper', 'Playlist', 'Video', 'Notice', 'User'
+  'ConnectionHelper', 'Playlist', 'Video', 'Notice', 'User',
+  'playlist_data'
 ];
 
-angular.module("VideoApp")
-       .controller('PlaylistIndexCtrl', PlaylistIndexCtrl);
+angular.module("YTBroadcastApp")
+       .controller('VideosPlaylistIndexCtrl', VideosPlaylistIndexCtrl);
 }());

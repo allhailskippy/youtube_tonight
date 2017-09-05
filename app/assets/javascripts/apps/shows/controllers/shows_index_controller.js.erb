@@ -1,15 +1,15 @@
 /**
  * @ngdoc controller
- * @name IndexCtrl
+ * @name ShowsIndexCtrl
  *
  * @description Logic for index stuffs
  */
 (function() {
   "use strict";
 
-var IndexCtrl = function(
-  $scope, $location, $window,
-  ShowApp, Show, Notice
+var ShowsIndexCtrl = function(
+  $scope, $location,
+  Show, Notice
   ) {
 
   /**
@@ -17,10 +17,6 @@ var IndexCtrl = function(
    */
   $scope.retrieving = false;
   $scope.shows = [];
-
-  /**
-   * Watch variables
-   */
 
   /**
    * Scope methods
@@ -33,7 +29,7 @@ var IndexCtrl = function(
     Show.resetCurrentShow();
 
     // Show 'new' form
-    $location.path('/new');
+    $location.path('/shows/new');
   };
 
   // Edit a show
@@ -44,7 +40,7 @@ var IndexCtrl = function(
     Show.setCurrentShow(show);
 
     // Show the 'edit' form
-    $location.path('/' + show.id + '/edit');
+    $location.path('/shows/' + show.id + '/edit');
   };
 
   // Get all shows
@@ -78,17 +74,16 @@ var IndexCtrl = function(
   // Lookup initial list of shows
   $scope.fetchShows();
 
-  // Redirect to the video list for this show
-  $scope.videos = function(show) {
-    $window.location.href = '/videos#shows/' + show.id;
+  $scope.videoUrl = function(show) {
+    return '/app#/videos/shows/' + show.id
   };
 };
 
-IndexCtrl.$inject = [
-  '$scope', '$location', '$window',
-  'ShowApp', 'Show', 'Notice'
+ShowsIndexCtrl.$inject = [
+  '$scope', '$location',
+  'Show', 'Notice'
 ];
 
-angular.module("ShowApp")
-       .controller('IndexCtrl', IndexCtrl);
+angular.module("YTBroadcastApp")
+       .controller('ShowsIndexCtrl', ShowsIndexCtrl);
 }());

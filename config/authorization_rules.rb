@@ -9,6 +9,8 @@ authorization do
     # controller actions so this should be safe
     has_permission_on :users, :to => [:update, :requires_auth]
     has_permission_on :devise_sessions, :to => :manage
+
+    has_permission_on :app, to: :index
   end
 
   role :host do
@@ -24,7 +26,8 @@ authorization do
     end
     has_permission_on :videos do
       to :manage
-      if_attribute :parent => { :user => is {user} }
+#      if_attribute :parent_type => 'Show'
+#      if_attribute :parent => { :user => is {user} }
     end
   end
 

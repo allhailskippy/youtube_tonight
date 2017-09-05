@@ -1,15 +1,15 @@
 /**
  * @ngdoc controller
- * @name FormCtrl
+ * @name ShowsFormCtrl
  *
  * @description Logic for adding/editing shows
  */
 (function() {
   "use strict";
 
-var FormCtrl = function(
+var ShowsFormCtrl = function(
   $scope, $routeParams, $location, $window,
-  ShowApp, Show, User, Notice
+  Show, User, Notice
   ) {
 
   /**
@@ -85,7 +85,7 @@ var FormCtrl = function(
     Notice.reset();
 
     // Send to index
-    $location.path('/index');
+    $location.path('/shows/index');
   };
 
   // Deletes a show
@@ -94,7 +94,7 @@ var FormCtrl = function(
       $scope.currentShow.destroy().then(function() {
         Notice.setSuccesses('Successfully Deleted Show');
         Show.clearCurrentShow();
-        $location.path('/index');
+        $location.path('/shows/index');
       }).catch(handleErrors);
     }
   };
@@ -117,19 +117,19 @@ var FormCtrl = function(
 
       if(newRecord) {
         // Redirect back to index
-        $window.location.href = '/videos#/shows/' + show.id;
+        $window.location.href = '/app#/videos/shows/' + show.id;
       } else {
-        $location.path('/index');
+        $location.path('/shows/index');
       }
     }).catch(handleErrors);
   };
 };
 
-FormCtrl.$inject = [
+ShowsFormCtrl.$inject = [
   '$scope', '$routeParams', '$location', '$window',
-  'ShowApp', 'Show', 'User', 'Notice'
+  'Show', 'User', 'Notice'
 ];
 
-angular.module("ShowApp")
-       .controller('FormCtrl', FormCtrl);
+angular.module("YTBroadcastApp")
+       .controller('ShowsFormCtrl', ShowsFormCtrl);
 }());

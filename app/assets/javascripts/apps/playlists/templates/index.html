@@ -1,3 +1,6 @@
+<hr />
+{{ Auth.currentUser }}
+<hr />
 <div class="row">
   <div class="col-md-3 sidebar">
     <div>
@@ -63,12 +66,11 @@
                   ng-class="{disabled: importingVideos[playlist.id]}"
                   ng-click="reimportVideos(playlist)"
                 ></button>
-                <button
+                <a ng-href="{{videosUrl(playlist)}}"><button
                   title="Videos"
                   type="button"
                   class="btn btn-default glyphicon glyphicon-film"
-                  ng-click="goToPlaylistItems(playlist)"
-                ></button>
+                ></button></a>
               </td>
             </tr>
           </tbody>

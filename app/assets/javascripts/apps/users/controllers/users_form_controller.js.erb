@@ -1,26 +1,22 @@
 /**
  * @ngdoc controller
- * @name FormCtrl
+ * @name UsersFormCtrl
  *
  * @description Logic for index stuffs
  */
 (function() {
   "use strict";
 
-var FormCtrl = function(
+var UsersFormCtrl = function(
   $scope, $routeParams, $location,
-  UserApp, User, CurrentUser, Notice,
-  current_user_data
+  User, Notice,
+  user_data
   ) {
 
   /**
    * Setup
    */
-  User.find($routeParams.id).then(function(response) {
-    $scope.user = User.build(response.data);
-  });
-
-  $scope.currentUser = CurrentUser.build(current_user_data.data);
+  $scope.user = User.build(user_data.data);
 
   // Handle error response from server side
   var handleErrors = function(response) {
@@ -31,13 +27,13 @@ var FormCtrl = function(
    * Scope methods
    */
   $scope.cancel= function() {
-    $location.path('/index');
+    $location.path('/users/index');
   };
 
   $scope.destroy = function() {
     if(confirm('This will remove the user from the system\nThis cannot be undone!')) {
       $scope.user.destroy().then(function() {
-        $location.path('/index');
+        $location.path('/users/index');
       });
     };
   }
@@ -48,17 +44,17 @@ var FormCtrl = function(
     // existing ones
     $scope.user.change_roles = true;
     $scope.user.save().then(function() {
-      $location.path('/index');
+      $location.path('/users/index');
     }).catch(handleErrors);
   };
 };
 
-FormCtrl.$inject = [
+UsersFormCtrl.$inject = [
   '$scope', '$routeParams', '$location',
-  'UserApp', 'User', 'CurrentUser', 'Notice',
-  'current_user_data'
+  'User', 'Notice',
+  'user_data'
 ];
 
-angular.module("UserApp")
-       .controller('FormCtrl', FormCtrl);
+angular.module("YTBroadcastApp")
+       .controller('UsersFormCtrl', UsersFormCtrl);
 }());

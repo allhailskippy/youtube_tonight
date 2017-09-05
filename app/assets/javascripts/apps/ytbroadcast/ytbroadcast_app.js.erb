@@ -1,0 +1,25 @@
+//= require_self
+/**
+ * @ngdoc overview
+ * @name YTBroadcastApp
+ *
+ * @description The YTBroadcastApp is used for viewing shows.
+ * This file is where the routes are defined for this app
+ */
+(function(){
+'use strict';
+var routesConfig = function($locationProvider, $routeProvider) {
+  $routeProvider.
+  otherwise({
+    redirectTo: '/shows/index'
+  });
+  $locationProvider
+    .html5Mode(false)
+    .hashPrefix('');
+};
+
+routesConfig.$inject = ['$locationProvider', '$routeProvider'];
+
+angular.module('YTBroadcastApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf', 'tableSort', 'ui.sortable', 'ui.bootstrap-slider', 'ui.bootstrap-select', 'ngTasty'])
+       .config(routesConfig);
+})();

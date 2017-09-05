@@ -25,16 +25,15 @@
           <td class="text-center">
             <span
               title="Edit Details"
-              class="btn-sm btn-default glyphicon glyphicon-edit"
+              class="btn btn-sm btn-default glyphicon glyphicon-edit"
               aria-hidden="true"
               ng-click="edit(show)"
             ></span>
-            <span
+            <a ng-href="{{videoUrl(show)}}"><button
               title="Manage Videos"
-              class="btn-sm btn-success glyphicon glyphicon-film"
+              class="btn btn-sm btn-success glyphicon glyphicon-film"
               aria-hidden="true"
-              ng-click="videos(show)"
-            ></span>
+            ></button></a>
           </td>
         </tr>
       </tbody>
