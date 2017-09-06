@@ -57,12 +57,18 @@ module SpecHelpers
 
   def angular_is_available?
     is_angular = page.evaluate_script("typeof(angular) != 'undefined';")
+
     return false unless is_angular
 
     injector_script = <<-JS
       angular.element(#{ng_app}).injector()
     JS
-    res = page.evaluate_script(injector_script)
+    res = nil
+    wait_until do
+      res = page.evaluate_script(injector_script)
+      res != nil
+    end
+
     return false unless res
 
     true

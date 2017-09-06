@@ -24,11 +24,6 @@ var PlaylistsIndexCtrl = function(
   /**
    * Scope methods
    */
-  // Redirect to the video list for this playlist
-  $scope.videosUrl = function(playlist) {
-    return '/app/#videos/playlists/' + playlist.id;
-  };
-
   // Table pagination setup
   $scope.init = {
     'count': 10,

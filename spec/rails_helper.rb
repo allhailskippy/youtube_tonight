@@ -29,13 +29,21 @@ end
 
 require 'spec_helper'
 require 'rspec/rails'
+require 'capybara'
+require 'capybara/rspec'
 require 'capybara/rails'
 require 'capybara/poltergeist'
 require 'sidekiq/testing'
 require 'declarative_authorization/maintenance'
+require 'selenium-webdriver'
+require 'site_prism'
+
 require_relative 'helpers/spec_helpers.rb'
-#require_relative 'helpers/matchers'
-Dir[File.dirname(__FILE__) + '/support/**/*.rb'].each { |f| require f }
+
+# Require libraries
+['support', 'pages'].each do |lib|
+  Dir["#{File.dirname(__FILE__)}/#{lib}/**/*.rb"].each {|f| require f}
+end
 
 Capybara.register_driver :poltergeist do |app|
   opts = { port: 51_674 }
@@ -95,6 +103,10 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.before(:each) do
+    Authorization.current_user = User.find(SYSTEM_ADMIN_ID)
   end
 
   config.around do |example|

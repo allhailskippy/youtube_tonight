@@ -67,6 +67,10 @@ var User = function(
       return $promise;
     };
 
+    user.playlistsUrl = function() {
+      return '/app#/playlists/' + user.id + '/index';
+    }
+
     return user;
   };
 

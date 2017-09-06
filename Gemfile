@@ -67,6 +67,7 @@ group :test do
   gem 'simplecov', require: false
   gem 'simplecov-rcov', require: false
   gem 'database_cleaner'
+  gem 'site_prism'
 end
 
 group :development, :test do
