@@ -87,7 +87,7 @@ class User < ActiveRecord::Base
     roles.destroy_all
     roles.reload
 
-    if !requires_auth
+    unless requires_auth
       self.role_titles ||= []
       self.role_titles.each do |title|
         next if !Authorization.current_user.try(:is_admin) && title == 'admin'

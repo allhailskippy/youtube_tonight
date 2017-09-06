@@ -28,6 +28,7 @@ var User = function(
     // Wrapper method for de-authorizing a user
     user.deAuthorize = function() {
       user.requires_auth = true;
+      user.change_roles = true;
       return user.save();
     };
 

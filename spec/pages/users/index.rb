@@ -2,7 +2,7 @@ class Actions < SitePrism::Section
   element :authorize, "span[title='Authorize']"
   element :deauthorize, "span[title='De-Authorize']"
   element :edit, "span[title='Edit User']"
-  element :videos, "button[title='Playlists']"
+  element :videos, "a.videos"
 end
 
 class UserRow < SitePrism::Section
