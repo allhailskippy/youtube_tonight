@@ -1,0 +1,5 @@
+admin_user:
+  id: 1
+  name: Admin User
+  email: admin@example.com
+  requires_auth: false

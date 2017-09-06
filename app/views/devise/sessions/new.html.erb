@@ -2,7 +2,7 @@
   <div class="col-md-3 sidebar">
     <h1>Sign In</h1>
   </div>
-  <div class="col-md-9 col-md-offset-3 main">
+  <div class="col-md-9 col-md-offset-3 main" id="login">
     <% if devise_mapping.omniauthable? %>
       <% resource_class.omniauth_providers.each do |provider| %>
         <%= link_to image_tag('google_sign_in.png'), omniauth_authorize_path(resource_name, provider) %>

@@ -31,4 +31,21 @@ Youtubetonight::Application.configure do
 
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
+
+  config.eager_load = false
+
+  config.assets.compile = true
+  config.assets.digest = false
+  config.log_level = :warn
+
+  # YouTube
+  YOUTUBE_API_KEY = 'YOUTUBE_API_KEY'
+ 
+  GOOGLE_CLIENT_ID = 'GOOGLE_CLIENT_ID'
+  GOOGLE_CLIENT_SECRET = 'GOOGLE_CLIENT_SECRET'
+
+  # Websockets
+  WEBSOCKET_URL = 'WEBSOCKET_URL'
+
+  SYSTEM_ADMIN_ID = 1
 end
