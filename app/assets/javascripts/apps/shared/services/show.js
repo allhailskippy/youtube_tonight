@@ -49,6 +49,12 @@ var Show = function(ShowApi) {
     show.saveButtonStr = function() {
       return show.isNewRecord() ? 'Create New Show' : 'Update Show';
     };
+
+    // Link to videos page
+    show.videoUrl = function() {
+      return '/app#/videos/shows/' + show.id
+    };
+
     return show;
   };
 

@@ -107,6 +107,11 @@ glyphicon.disabled {
   height: 60px;
 }
 
+.profile-image-icon {
+  width: 30px;
+  height: 30px;
+}
+
 .playlist-image {
   width: 120px;
   height: 90px;

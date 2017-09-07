@@ -1,7 +1,6 @@
 <div class="row">
   <div class="col-md-3 sidebar">
-    <h1>Shows</h1>
-    <hr />
+    <h2>Shows</h2>
     <button type="button" class="btn btn-success" ng-click="addNew()">Add New Show</button>
   </div>
   <div class="col-md-9 col-md-offset-3 main">
@@ -22,16 +21,16 @@
           <td>{{ show.title }}</td>
           <td class="text-center">{{ show.air_date }}</td>
           <td class="text-center">{{ show.video_count || 0 }}</td>
-          <td class="text-center">
+          <td class="text-right">
             <span
               title="Edit Details"
-              class="btn btn-sm btn-default glyphicon glyphicon-edit"
+              class="btn btn-primary glyphicon glyphicon-edit"
               aria-hidden="true"
               ng-click="edit(show)"
             ></span>
-            <a ng-href="{{videoUrl(show)}}"><button
+            <a href-func="show.videoUrl()"><button
               title="Manage Videos"
-              class="btn btn-sm btn-success glyphicon glyphicon-film"
+              class="btn btn-primary glyphicon glyphicon-film"
               aria-hidden="true"
             ></button></a>
           </td>
