@@ -114,10 +114,9 @@ describe 'Host User: /app#/users/:user_id/edit', js: true, type: :feature do
   it 'does not get the edit page' do
     @users_edit_page = UsersEditPage.new
     @users_edit_page.load(user_id: host.id)
-    sleep 2
-    expected = find('body').text
-    expect(expected).to eq('Unauthorized')
-    expect(page.current_url).to end_with("/unauthorized")
+    wait_for_angular_requests_to_finish
+
+    expect(page.current_url).to end_with("/app#/unauthorized")
   end
 end
 

@@ -32,7 +32,7 @@
     $rootScope.$on('$routeChangeStart', function(scope, next, current) {
       var permission = (next.$$route && next.$$route.permission) || undefined;
       if(angular.isString(permission) && !$rootScope.auth(permission)) {
-        $window.location.href = '/unauthorized';
+        $window.location.href = '/app#/unauthorized';
       }
     });
   };

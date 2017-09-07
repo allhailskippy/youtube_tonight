@@ -209,10 +209,9 @@ describe 'Host User: /app#/users/index', js: true, type: :feature do
   it 'does not get the index' do
     @users_index_page = UsersIndexPage.new
     @users_index_page.load
-    sleep 2
-    expected = find('body').text
-    expect(expected).to eq('Unauthorized')
-    expect(page.current_url).to end_with("/unauthorized")
+    wait_for_angular_requests_to_finish
+
+    expect(page.current_url).to end_with("/app#/unauthorized")
   end
 end
 
