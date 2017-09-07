@@ -40,13 +40,13 @@
               ></span>
               <span
                 title="Edit User"
-                class="btn btn-default glyphicon glyphicon-edit"
+                class="btn btn-primary glyphicon glyphicon-edit"
                 ng-if="$root.currentUser.is_admin"
                 ng-click="edit(user)"
               ></span>
             </span>
             <a
-              class="videos btn btn-default glyphicon glyphicon-th-list"
+              class="videos btn btn-primary glyphicon glyphicon-th-list"
               href-func="user.playlistsUrl()"
               title="Playlists"
               ng-if="canReadPlaylists"

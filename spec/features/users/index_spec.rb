@@ -3,10 +3,10 @@ require 'rails_helper'
 describe 'Admin User: /app#/users/index', js: true, type: :feature do
   subject { page }
 
-  let(:admin) { u = without_access_control { create(:user, name: 'User 1') }; User.find(u.id) }
-  let(:host1) { u = without_access_control { create(:user, name: 'Host 1', role_titles: [:host]) }; User.find(u.id) }
-  let(:host2) { u = without_access_control { create(:user, name: 'Host 2', role_titles: [], requires_auth: true) }; User.find(u.id) }
-  let(:host3) { u = without_access_control { create(:user, name: 'Host 3', role_titles: [:host, :admin]) }; User.find(u.id) }
+  let(:admin) { create_user() }
+  let(:host1) { create_user(name: 'Host 1', role_titles: [:host]) }
+  let(:host2) { create_user(name: 'Host 2', role_titles: [], requires_auth: true) }
+  let(:host3) { create_user(name: 'Host 3', role_titles: [:host, :admin]) }
   let(:preload) { admin; host1; host2; host3 }
 
   before do
@@ -95,6 +95,21 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
         # Reauthorize
         row.sec_actions.authorize.click()
         wait_for_angular_requests_to_finish
+
+        # Verify
+        host1.reload
+        expect(host1.role_titles).to eq([:host])
+        expect(host1.requires_auth).to eq(false)
+        expected = row.sec_actions.deauthorize['ng-click']
+        expect(expected).to eq('deAuthorize(user)')
+      end
+
+      it 'aborts toggle requrest for host1' do
+        # Deauthorize
+        row = @users_index_page.find_row(host1)
+        dismiss_confirm("Are you sure you want to de-authorize this user?\nThey will no longer be allowed to sign in.") do
+          row.sec_actions.deauthorize.click()
+        end
 
         # Verify
         host1.reload
@@ -194,6 +209,7 @@ describe 'Host User: /app#/users/index', js: true, type: :feature do
   it 'does not get the index' do
     @users_index_page = UsersIndexPage.new
     @users_index_page.load
+    sleep 2
     expected = find('body').text
     expect(expected).to eq('Unauthorized')
     expect(page.current_url).to end_with("/unauthorized")
@@ -212,6 +228,6 @@ describe 'Not Logged In: /app#/users/index', js: true, type: :feature do
     @users_index_page.load
     wait_for_angular_requests_to_finish
 
-    expect(page.current_url).to end_with("/users/sign_in#/users/index")
+    expect(page.current_url).to include("/users/sign_in")
   end
 end

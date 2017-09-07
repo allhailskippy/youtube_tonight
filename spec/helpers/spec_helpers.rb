@@ -97,4 +97,11 @@ module SpecHelpers
   def scroll_to(y)
     page.execute_script "window.scrollTo(0,#{y});"
   end
+
+  def create_user(options = {})
+    u = without_access_control do
+      create(:user, options)
+    end
+    User.find(u.id)
+  end
 end
