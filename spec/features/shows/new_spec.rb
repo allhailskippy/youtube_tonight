@@ -27,6 +27,13 @@ describe 'Admin User: /app#/shows/new', js: true, type: :feature do
     expect(errors).to include("Host must be selected")
   end
 
+  it 'cancels' do
+    @shows_new_page.cancel.click
+    wait_for_angular_requests_to_finish
+
+    expect(page.current_url).to end_with("/app#/shows/index")
+  end
+
   it 'creates a new show with one host for today' do
     @form.title.set('New Show Title')
     @form.air_date.click
