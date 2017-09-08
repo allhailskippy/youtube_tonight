@@ -27,7 +27,7 @@ class ShowsForm < SitePrism::Section
   element :title, ".show-title"
   element :air_date, ".show-air-date"
   element :show_hosts, ".show-hosts"
-  element :available_hosts, ".available-hosts"
+  element :available_hosts, ".show-available-hosts"
   element :submit, "button[type='submit']"
 
   sections :sec_show_hosts, UserInfoSection, ".show-hosts user-info"
@@ -51,5 +51,7 @@ class ShowsNewPage < ShowsFormPage
 end
 
 class ShowsEditPage < ShowsFormPage
-  set_url "/app#/shows/{user_id}/edit"
+  set_url "/app#/shows/{show_id}/edit"
+
+  element :delete, ".show-delete"
 end
