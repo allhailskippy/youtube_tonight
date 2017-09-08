@@ -1,5 +1,5 @@
 class Show < ActiveRecord::Base
-  attr_accessor :video_count, :hosts
+  attr_accessor :video_count
 
   ##
   # Validations
@@ -19,7 +19,6 @@ class Show < ActiveRecord::Base
   ##
   # Hooks
   #
-  before_save :update_hosts
 
   ##
   # Methods
@@ -35,12 +34,14 @@ class Show < ActiveRecord::Base
     @hosts || users.collect(&:id).join(',')
   end
 
-  # Deal with roles on update
-  def update_hosts
+  # Deal with hosts if passed in this way
+  def hosts=(ids)
+    @hosts = ids
+
     # Wipe out any existing roles
     users.destroy_all
     users.reload
 
-    users << User.where('id in (?)', hosts.split(',')).all
+    users << User.where('id in (?)', ids.split(',')).all
   end
 end

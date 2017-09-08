@@ -1,7 +1,12 @@
 <div class="row">
   <div class="col-md-3 sidebar">
     <h2>Shows</h2>
-    <button type="button" class="btn btn-primary create-show" ng-click="addNew()">Create Show</button>
+    <button
+      type="button"
+      class="btn btn-primary create-show"
+      ng-click="addNew()"
+      ng-if="auth('shows.create')"
+    >Create Show</button>
   </div>
   <div class="col-md-9 col-md-offset-3 main">
     <notices notices="notices"></notices>
@@ -27,6 +32,7 @@
               class="btn btn-primary glyphicon glyphicon-edit edit"
               aria-hidden="true"
               ng-click="edit(show)"
+              ng-if="auth('shows.update')"
             ></span>
             <a
               href-func="show.videoUrl()"

@@ -89,39 +89,61 @@ describe 'Admin User: /app#/shows/index', js: true, type: :feature do
     end
   end
 end
-#
-#describe 'Host User: /app#/users/index', js: true, type: :feature do
-#  subject { page }
-#
-#  let(:host) { create_user(role_titles: [:host]) }
-#  let(:preload) { host }
-#
-#  before do
-#    preload if defined?(preload)
-#    sign_in(host)
-#  end
-#
-#  it 'does not get the index' do
-#    @users_index_page = UsersIndexPage.new
-#    @users_index_page.load
-#    wait_for_angular_requests_to_finish
-#
-#    expect(page.current_url).to end_with("/app#/unauthorized")
-#  end
-#end
-#
-#describe 'Not Logged In: /app#/users/index', js: true, type: :feature do
-#  subject { page }
-#
-#  before do
-#    preload if defined?(preload)
-#  end
-#
-#  it 'goes to sign in' do
-#    @users_index_page = UsersIndexPage.new
-#    @users_index_page.load
-#    wait_for_angular_requests_to_finish
-#
-#    expect(page.current_url).to include("/users/sign_in")
-#  end
-#end
+
+describe 'Host User: /app#/shows/index', js: true, type: :feature do
+  subject { page }
+
+  let(:host) { create_user(role_titles: [:host]) }
+  let(:show1) { create(:show, users: [host]) }
+  let(:show2) { create(:show, users: [host]) }
+  let(:show3) { create(:show) }
+  let(:preload) { show1; show2; show3 }
+
+  before do
+    preload if defined?(preload)
+    sign_in(host)
+    @shows_index_page = ShowsIndexPage.new
+    @shows_index_page.load
+    wait_for_angular_requests_to_finish
+  end
+
+  it 'gets the shows the user can host' do
+    expect(@shows_index_page.rows.length).to eq(2)
+
+    [show1, show2].each do |show|
+      row = @shows_index_page.find_show(show)
+
+      expect(row.show_id.text).to eq(show.id.to_s)
+      expect(row.title.text).to eq(show.title)
+      expect(row.air_date.text).to eq(show.air_date.to_s(:db))
+      expect(row.video_count.text).to eq(show.videos.count.to_s)
+    end
+
+    expect(@shows_index_page.find_show(show3)).to be_nil
+  end
+
+  it 'does not have the create button' do
+  end
+
+  it 'does not have the edit button' do
+  end
+
+  it 'has the movies button' do
+  end
+end
+
+describe 'Not Logged In: /app#/shows/index', js: true, type: :feature do
+  subject { page }
+
+  before do
+    preload if defined?(preload)
+  end
+
+  it 'goes to sign in' do
+    @shows_index_page = ShowsIndexPage.new
+    @shows_index_page.load
+    wait_for_angular_requests_to_finish
+
+    expect(page.current_url).to include("/users/sign_in")
+  end
+end

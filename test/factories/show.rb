@@ -2,6 +2,7 @@ FactoryGirl.define do
   factory :show do
     air_date { Date.tomorrow }
     sequence(:title) {|n| "Show Title #{n}" }
+    users { [FactoryGirl.create(:user)] }
 
     factory :show_with_videos do
       transient do
