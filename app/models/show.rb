@@ -26,7 +26,7 @@ class Show < ActiveRecord::Base
   def self.as_json_hash
     {
       include: :users,
-      methods: [:video_count]
+      methods: [:video_count, :hosts]
     }
   end
 
