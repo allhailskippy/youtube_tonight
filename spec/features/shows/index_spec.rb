@@ -123,12 +123,36 @@ describe 'Host User: /app#/shows/index', js: true, type: :feature do
   end
 
   it 'does not have the create button' do
+    expect { @shows_index_page.create_show }.to raise_error(Capybara::ElementNotFound)
   end
 
   it 'does not have the edit button' do
+    [show1, show2].each do |show|
+      row = @shows_index_page.find_show(show)
+      expect { row.sec_actions.edit }.to raise_error(Capybara::ElementNotFound)
+    end
   end
 
-  it 'has the movies button' do
+  it 'has the videos button' do
+    [show1, show2].each do |show|
+      row = @shows_index_page.find_show(show)
+      expected = row.sec_actions.videos['href']
+      expect(expected).to end_with("/app#/videos/shows/#{show.id}")
+    end
+  end
+
+  describe 'videos' do
+    it 'goes for show1' do
+      row = @shows_index_page.find_show(show1)
+      row.sec_actions.videos.click()
+      expect(page.current_url).to end_with("/app#/videos/shows/#{show1.id}")
+    end
+
+    it 'goes for show2' do
+      row = @shows_index_page.find_show(show2)
+      row.sec_actions.videos.click()
+      expect(page.current_url).to end_with("/app#/videos/shows/#{show2.id}")
+    end
   end
 end
 
