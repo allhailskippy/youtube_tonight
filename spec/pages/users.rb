@@ -1,9 +1,34 @@
+class UsersIndexPage < SitePrism::Page
+  set_url "/app#/users/index"
+
+  element :users, "#users"
+
+  sections :user_rows, "#users tbody tr" do
+    element :user_id, ".user-id"
+    element :profile_image, ".profile img"
+    element :name, ".user-name"
+    element :email, ".user-email"
+    element :roles, ".user-roles"
+
+    section :sec_actions, ".actions" do
+      element :authorize, "span[title='Authorize']"
+      element :deauthorize, "span[title='De-Authorize']"
+      element :edit, "span[title='Edit User']"
+      element :videos, "a.videos"
+    end
+  end
+
+  def find_row(user)
+    user_rows.find{|ur| ur.user_id.text == user.id.to_s }
+  end
+end
+
 class UsersEditPage < SitePrism::Page
   set_url "/app#/users/{user_id}/edit"
 
   element :delete_button, ".sidebar button.delete"
 
-  elements :errors, "div[notices='notices'] .alert"
+  elements :errors, "div[notices='notices'] .alert-danger"
 
   section :form, ".main .panel" do
     element :name, "input[name='name']"
