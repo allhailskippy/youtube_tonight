@@ -20,7 +20,7 @@ var routesConfig = function($routeProvider) {
   when('/shows/new', {
     controller: 'ShowsFormCtrl',
     templateUrl: '<%= asset_path("apps/shows/templates/form.html") %>',
-    permission: 'shows.new'
+    permission: 'shows.create'
   }).
   when('/shows/:show_id/edit', {
     controller: 'ShowsFormCtrl',

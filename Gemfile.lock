@@ -210,6 +210,7 @@ GEM
     paranoia (2.3.1)
       activerecord (>= 4.0, < 5.2)
     pg (0.20.0)
+    phantomjs (2.1.1.0)
     poltergeist (1.16.0)
       capybara (~> 2.1)
       cliver (~> 0.3.1)
@@ -413,6 +414,7 @@ DEPENDENCIES
   omniauth-google-oauth2
   paranoia (~> 2.0)
   pg (= 0.20.0)
+  phantomjs
   poltergeist
   rails (= 4.2.9)
   rails-assets-angular!

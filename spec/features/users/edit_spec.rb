@@ -27,7 +27,7 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
     @form.name.set('Edited Name')
     @form.email.set('fake@email.com')
     @form.requires_auth.set(true)
-    @form.actions.submit.trigger(:click)
+    @form.actions.submit.click
     wait_for_angular_requests_to_finish
 
     # Verify
@@ -51,7 +51,8 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
     @form.name.set('Edited Name 2')
     @form.email.set('fake2@email.com')
     @form.select_role('Host')
-    @form.actions.submit.trigger(:click)
+    blur
+    @form.actions.submit.click
     wait_for_angular_requests_to_finish
 
     # Verify
@@ -68,7 +69,8 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
     @form.name.set('Edited Name 3')
     @form.email.set('fake2@email.com')
     @form.select_role('Host')
-    @form.actions.cancel.trigger(:click)
+    blur
+    @form.actions.cancel.click
 
     # Verify no changes have been made
     u = User.find(user.id)
@@ -82,7 +84,7 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
 
   it 'deletes the user' do
     accept_confirm("This will remove the user from the system\nThis cannot be undone!") do
-      @users_edit_page.delete_button.trigger(:click)
+      @users_edit_page.delete_button.click
     end
     wait_for_angular_requests_to_finish
 
@@ -92,7 +94,7 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
 
   it 'cancels the delete request' do
     dismiss_confirm("This will remove the user from the system\nThis cannot be undone!") do
-      @users_edit_page.delete_button.trigger(:click)
+      @users_edit_page.delete_button.click
     end
 
     expect(User.find(user.id)).to eq(user)

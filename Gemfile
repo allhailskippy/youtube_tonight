@@ -64,6 +64,7 @@ group :test do
   gem 'capybara'
   gem 'selenium-webdriver'
   gem 'poltergeist'
+  gem 'phantomjs', :require => 'phantomjs/poltergeist'
   gem 'simplecov', require: false
   gem 'simplecov-rcov', require: false
   gem 'database_cleaner'

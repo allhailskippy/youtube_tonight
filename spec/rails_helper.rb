@@ -45,17 +45,6 @@ require_relative 'helpers/spec_helpers.rb'
   Dir["#{File.dirname(__FILE__)}/#{lib}/**/*.rb"].each {|f| require f}
 end
 
-Capybara.register_driver :poltergeist do |app|
-  opts = { port: 51_674 }
-
-  unless ENV['JSLOG'].present?
-    null_logger = File.open(File::NULL, 'w')
-    opts[:phantomjs_logger] = null_logger
-  end
-
-  Capybara::Poltergeist::Driver.new(app, opts)
-end
-
 if %w(false f no n).include?(ENV['HEADLESS'].to_s.downcase)
   Capybara.javascript_driver = :selenium
 
@@ -79,6 +68,16 @@ if %w(false f no n).include?(ENV['HEADLESS'].to_s.downcase)
     end
   end
 else
+  Capybara.register_driver :poltergeist do |app|
+    opts = { port: 51_674, phantomjs: Phantomjs.path}
+
+    unless ENV['JSLOG'].present?
+      null_logger = File.open(File::NULL, 'w')
+      opts[:phantomjs_logger] = null_logger
+    end
+
+    Capybara::Poltergeist::Driver.new(app, :phantomjs => Phantomjs.path)
+  end
   Capybara.javascript_driver = :poltergeist
 end
 

@@ -198,7 +198,7 @@ end
 describe 'Host User: /app#/users/index', js: true, type: :feature do
   subject { page }
 
-  let(:host) { u = without_access_control { create(:user, role_titles: [:host]) }; User.find(u.id) }
+  let(:host) { create_user(role_titles: [:host]) }
   let(:preload) { host }
 
   before do
