@@ -19,6 +19,8 @@ class User < ActiveRecord::Base
   ##
   # Validation
   #
+  validates :name, presence: true
+  validates :email, presence: true
   validates :role_titles,
     presence: {
       message: "must be selected"
