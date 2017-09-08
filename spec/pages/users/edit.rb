@@ -3,6 +3,8 @@ class UsersEditPage < SitePrism::Page
 
   element :delete_button, ".sidebar button.delete"
 
+  elements :errors, "div[notices='notices'] .alert"
+
   section :form, ".main .panel" do
     element :name, "input[name='name']"
     element :email, "input[name='email']"
@@ -22,6 +24,7 @@ class UsersEditPage < SitePrism::Page
     def select_role(role)
       role_title_sec.select_button.click
       role_title_sec.dropdown.find('span', text: role).click
+      find('body').click # Clears the dropdown
     end
   end
 end
