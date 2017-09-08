@@ -102,3 +102,36 @@ describe 'Admin User: /app#/shows/new', js: true, type: :feature do
     expect(new_show.users).to include(user2)
   end
 end
+
+describe 'Host User: /app#/shows/new', js: true, type: :feature do
+  subject { page }
+
+  before do
+    preload if defined?(preload)
+    sign_in_host
+  end
+
+  it 'does not get the new page' do
+    @shows_new_page = ShowsNewPage.new
+    @shows_new_page.load()
+    wait_for_angular_requests_to_finish
+
+    expect(page.current_url).to end_with("/app#/unauthorized")
+  end
+end
+
+describe 'Not Logged In: /app#/shows/new', js: true, type: :feature do
+  subject { page }
+
+  before do
+    preload if defined?(preload)
+  end
+
+  it 'goes to sign in' do
+    @shows_new_page = ShowsNewPage.new
+    @shows_new_page.load
+    wait_for_angular_requests_to_finish
+
+    expect(page.current_url).to include("/users/sign_in")
+  end
+end

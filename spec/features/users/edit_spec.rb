@@ -2,15 +2,14 @@ require 'rails_helper'
 
 describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
   subject { page }
-  let(:admin) { create_user() }
 
   describe 'Standard behaviour' do
     let(:user) { create_user(name: 'User 1', email: 'email@test.com', requires_auth: false) }
-    let(:preload) { admin; user }
+    let(:preload) { user }
 
     before do
       preload if defined?(preload)
-      sign_in(admin)
+      sign_in_admin
       @users_edit_page = UsersEditPage.new
       @users_edit_page.load(user_id: user.id)
       wait_for_angular_requests_to_finish
@@ -116,11 +115,11 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
 
   describe 'With no roles initially' do
     let(:user) { create_user(role_titles: []) }
-    let(:preload) { admin; user }
+    let(:preload) { user }
 
     before do
       preload if defined?(preload)
-      sign_in(admin)
+      sign_in_admin
       @users_edit_page = UsersEditPage.new
       @users_edit_page.load(user_id: user.id)
       wait_for_angular_requests_to_finish
@@ -140,17 +139,14 @@ end
 describe 'Host User: /app#/users/:user_id/edit', js: true, type: :feature do
   subject { page }
 
-  let(:host) { u = without_access_control { create(:user, role_titles: [:host]) }; User.find(u.id) }
-  let(:preload) { host }
-
   before do
     preload if defined?(preload)
-    sign_in(host)
+    sign_in_host
   end
 
   it 'does not get the edit page' do
     @users_edit_page = UsersEditPage.new
-    @users_edit_page.load(user_id: host.id)
+    @users_edit_page.load(user_id: @host.id)
     wait_for_angular_requests_to_finish
 
     expect(page.current_url).to end_with("/app#/unauthorized")

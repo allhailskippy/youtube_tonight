@@ -44,8 +44,13 @@ module SpecHelpers
   end
 
   def sign_in_admin()
-    admin = create_user(role_titles: [:admin])
-    sign_in(admin)
+    @admin = create_user(role_titles: [:admin])
+    sign_in(@admin)
+  end
+
+  def sign_in_host()
+    @host = create_user(role_titles: [:host])
+    sign_in(@host)
   end
 
   def wait_until
