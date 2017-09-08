@@ -18,6 +18,13 @@ describe 'Admin User: /app#/shows/new', js: true, type: :feature do
   end
 
   it 'validates' do
+    @form.submit.click
+    wait_for_angular_requests_to_finish
+
+    errors = @shows_new_page.errors.collect(&:text)
+    expect(errors).to include("Title can't be blank")
+    expect(errors).to include("Air date is not a date")
+    expect(errors).to include("Host must be selected")
   end
 
   it 'creates a new show with one host for today' do

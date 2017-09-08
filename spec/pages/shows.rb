@@ -39,6 +39,8 @@ class ShowsForm < SitePrism::Section
 end
 
 class ShowsFormPage < SitePrism::Page
+  elements :errors, "div[notices='notices'] .alert-danger"
+
   section :form, ShowsForm, '.main .show-form'
   section :sec_air_date, DatePickerSection, "#ui-datepicker-div"
 end

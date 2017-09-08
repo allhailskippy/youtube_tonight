@@ -98,7 +98,7 @@ private
   end
 
   def user_params
-    params.require(:user).permit(
+    params.fetch(:user, {}).permit(
       :id,
       :name,
       :email,
