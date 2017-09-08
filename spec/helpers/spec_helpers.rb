@@ -43,6 +43,11 @@ module SpecHelpers
     set_authorization(user)
   end
 
+  def sign_in_admin()
+    admin = create_user(role_titles: [:admin])
+    sign_in(admin)
+  end
+
   def wait_until
     Timeout.timeout(Capybara.default_max_wait_time) do
       loop do

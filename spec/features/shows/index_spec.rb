@@ -40,7 +40,7 @@ describe 'Admin User: /app#/shows/index', js: true, type: :feature do
   describe 'actions' do
     it 'has all the right buttons' do
       [show1, show2, show3].each do |show|
-        row = @shows_index_page.find_row(show)
+        row = @shows_index_page.find_show(show)
         expected = row.sec_actions.edit['ng-click']
         expect(expected).to eq('edit(show)')
         expected = row.sec_actions.videos['href']
@@ -50,19 +50,19 @@ describe 'Admin User: /app#/shows/index', js: true, type: :feature do
 
     describe 'goes to edit' do
       it 'goes to edit for show1' do
-        row = @shows_index_page.find_row(show1)
+        row = @shows_index_page.find_show(show1)
         row.sec_actions.edit.click()
         expect(page.current_url).to end_with("/app#/shows/#{show1.id}/edit")
       end
 
       it 'goes to edit for show2' do
-        row = @shows_index_page.find_row(show2)
+        row = @shows_index_page.find_show(show2)
         row.sec_actions.edit.click()
         expect(page.current_url).to end_with("/app#/shows/#{show2.id}/edit")
       end
 
       it 'goes to edit for show3' do
-        row = @shows_index_page.find_row(show3)
+        row = @shows_index_page.find_show(show3)
         row.sec_actions.edit.click()
         expect(page.current_url).to end_with("/app#/shows/#{show3.id}/edit")
       end
@@ -70,19 +70,19 @@ describe 'Admin User: /app#/shows/index', js: true, type: :feature do
 
     describe 'videos' do
       it 'goes for show1' do
-        row = @shows_index_page.find_row(show1)
+        row = @shows_index_page.find_show(show1)
         row.sec_actions.videos.click()
         expect(page.current_url).to end_with("/app#/videos/shows/#{show1.id}")
       end
 
       it 'goes for show2' do
-        row = @shows_index_page.find_row(show2)
+        row = @shows_index_page.find_show(show2)
         row.sec_actions.videos.click()
         expect(page.current_url).to end_with("/app#/videos/shows/#{show2.id}")
       end
 
       it 'goes for show3' do
-        row = @shows_index_page.find_row(show3)
+        row = @shows_index_page.find_show(show3)
         row.sec_actions.videos.click()
         expect(page.current_url).to end_with("/app#/videos/shows/#{show3.id}")
       end
