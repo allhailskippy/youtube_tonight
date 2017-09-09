@@ -71,7 +71,7 @@ var Playlist = function(PlaylistApi) {
     }
 
     playlist.videosUrl = function() {
-      return '/app/#videos/playlists/' + playlist.id;
+      return '/app#/videos/playlists/' + playlist.id;
     };
 
     return playlist;

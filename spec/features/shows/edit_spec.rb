@@ -19,10 +19,10 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
   before do
     preload if defined?(preload)
     sign_in_admin
-    @shows_edit_page= ShowsEditPage.new
-    @shows_edit_page.load(show_id: show.id)
+    @page= ShowsEditPage.new
+    @page.load(show_id: show.id)
     wait_for_angular_requests_to_finish
-    @form = @shows_edit_page.form
+    @form = @page.form
   end
 
   it 'validates' do
@@ -41,14 +41,14 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
     @form.submit.click
     wait_for_angular_requests_to_finish
 
-    errors = @shows_edit_page.errors.collect(&:text)
+    errors = @page.errors.collect(&:text)
     expect(errors).to include("Title can't be blank")
     expect(errors).to include("Air date is not a date")
     expect(errors).to include("Host must be selected")
   end
 
   it 'cancels' do
-    @shows_edit_page.cancel.click
+    @page.cancel.click
     wait_for_angular_requests_to_finish
 
     expect(page.current_url).to end_with("/app#/shows/index")
@@ -56,7 +56,7 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
 
   it 'deletes' do
     accept_confirm do
-      @shows_edit_page.delete.click
+      @page.delete.click
     end
     wait_for_angular_requests_to_finish
 
@@ -66,7 +66,7 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
 
   it 'cancels delete' do
     dismiss_confirm do
-      @shows_edit_page.delete.click
+      @page.delete.click
     end
 
     expect(Show.find(show.id)).to eq(show)
@@ -86,7 +86,7 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
     # Change data
     @form.title.set('Edited Show Title')
     @form.air_date.click
-    @shows_edit_page.sec_air_date.select_today
+    @page.sec_air_date.select_today
     expect(Date.today.to_s(:db)).to eq(@form.air_date.value)
 
     # Bring user3 over
@@ -107,10 +107,10 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
     expect(page.current_url).to end_with("/app#/shows/index")
 
     # Check that it shows up on index after upate
-    @shows_index_page = ShowsIndexPage.new
+    @index_page = ShowsIndexPage.new
     expect(@shows_index_page.notices.collect(&:text)).to include("Successfully Updated Show")
 
-    show = @shows_index_page.find_show(edited_show)
+    show = @index_page.find_show(edited_show)
     expect(show.show_id.text).to eq(edited_show.id.to_s)
     expect(show.title.text).to eq("Edited Show Title")
     expect(show.air_date.text).to eq(Date.today.to_s(:db))
@@ -132,8 +132,8 @@ describe 'Host User: /app#/shows/:show_id/edit', js: true, type: :feature do
   end
 
   it 'does not get the edit page' do
-    @shows_edit_page= ShowsEditPage.new
-    @shows_edit_page.load(show_id: show.id)
+    @page= ShowsEditPage.new
+    @page.load(show_id: show.id)
     wait_for_angular_requests_to_finish
 
     expect(page.current_url).to end_with("/app#/unauthorized")
@@ -150,8 +150,8 @@ describe 'Not Logged In: /app#/shows/:show_id/edit', js: true, type: :feature do
   end
 
   it 'goes to sign in' do
-    @shows_edit_page= ShowsEditPage.new
-    @shows_edit_page.load(show_id: show.id)
+    @page= ShowsEditPage.new
+    @page.load(show_id: show.id)
     wait_for_angular_requests_to_finish
 
     expect(page.current_url).to include("/users/sign_in")

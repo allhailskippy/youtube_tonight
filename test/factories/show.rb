@@ -9,8 +9,8 @@ FactoryGirl.define do
         video_count 5
       end
 
-      after(:create) do |show, evaluator|
-        create_list(:video, evaluator.video_count, parent: show)
+      after(:create) do |show, factory|
+        create_list(:video, factory.video_count, parent: show)
       end
     end
   end
