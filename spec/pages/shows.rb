@@ -28,6 +28,8 @@ class ShowsForm < SitePrism::Section
   element :air_date, ".show-air-date"
   element :show_hosts, ".show-hosts"
   element :available_hosts, ".show-available-hosts"
+  elements :show_hosts_source, ".hosts-source"
+  elements :available_hosts_source, ".available-hosts-source"
   element :submit, "button[type='submit']"
 
   sections :sec_show_hosts, UserInfoSection, ".show-hosts user-info"

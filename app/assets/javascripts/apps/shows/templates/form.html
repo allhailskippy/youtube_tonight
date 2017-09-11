@@ -44,7 +44,7 @@
               <label>Hosts</label>
               <div ui-sortable="hostSortableOptions" class="showHosts show-hosts" ng-model="showHosts">
                 <div ng-repeat="user in showHosts">
-                  <div class="panel panel-primary">
+                  <div class="panel panel-primary hosts-source">
                     <div class="panel-body">
                       <user-info user="user"></user-info>
                     </div>
@@ -56,7 +56,7 @@
               <label>Available Hosts</label>
               <div ui-sortable="hostSortableOptions" class="showHosts show-available-hosts" ng-model="availableHosts">
                 <div ng-repeat="user in availableHosts">
-                  <div class="panel panel-primary">
+                  <div class="panel panel-primary available-hosts-source">
                     <div class="panel-body">
                       <user-info user="user"></user-info>
                     </div>

@@ -138,6 +138,8 @@ end
 
 describe 'Host User: /app#/users/:user_id/edit', js: true, type: :feature do
   subject { page }
+  let(:host) { create_user(role_titles: [:host]) }
+  let(:preload) { host }
 
   before do
     preload if defined?(preload)
@@ -146,7 +148,7 @@ describe 'Host User: /app#/users/:user_id/edit', js: true, type: :feature do
 
   it 'does not get the edit page' do
     @users_edit_page = UsersEditPage.new
-    @users_edit_page.load(user_id: @host.id)
+    @users_edit_page.load(user_id: host.id)
     wait_for_angular_requests_to_finish
 
     expect(page.current_url).to end_with("/app#/unauthorized")

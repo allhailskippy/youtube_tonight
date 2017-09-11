@@ -390,7 +390,7 @@ angular.module('ngTasty.component.table', [
 
   updateServerSideResource = function (updateFrom) {
     if (updateFrom === 'filters') {
-      if (Number.isInteger($scope.init.filterBase)) {
+      if ($scope.init.filterBase % 1 === 0) {
         if ($scope.params.page !== $scope.init.filterBase) {
           filterChangedPage = true;
         }

@@ -29,13 +29,12 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
     # Clear existing data
     @form.title.set('')
     @form.air_date.set('')
-    blur
+    @form.title.click # to clear the air date pop up
+    sleep 1
 
-    @form.sec_show_hosts.each do |host|
-      sleep 1
-      source = host.root_element
+    @form.show_hosts_source.each do |src|
       target = @form.available_hosts
-      source.drag_to(target)
+      src.drag_to(target)
     end
 
     @form.submit.click
@@ -108,7 +107,8 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
 
     # Check that it shows up on index after upate
     @index_page = ShowsIndexPage.new
-    expect(@shows_index_page.notices.collect(&:text)).to include("Successfully Updated Show")
+    wait_for_angular_requests_to_finish
+    expect(@index_page.notices.collect(&:text)).to include("Successfully Updated Show")
 
     show = @index_page.find_show(edited_show)
     expect(show.show_id.text).to eq(edited_show.id.to_s)
