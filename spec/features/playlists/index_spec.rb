@@ -84,7 +84,11 @@ describe 'Admin User: /app#/playlists/index', js: true, type: :feature do
     wait_for_angular_requests_to_finish
   end
 
- it_behaves_like "the index page"
+  it_behaves_like "the index page"
+
+  it 'does not have the back button' do
+    expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+  end
 end
 
 # Check when accessing a different user than the one currently logged in
@@ -105,7 +109,11 @@ describe 'Admin User: /app#/playlists/:user_id/index', js: true, type: :feature 
     wait_for_angular_requests_to_finish
   end
 
- it_behaves_like "the index page"
+  it_behaves_like "the index page"
+
+  it 'has the back button' do
+    expect(@page.back['href']).to end_with('/app#/users/index')
+  end
 end
 
 describe 'Admin User: /app#/playlists/index pagination', js: true, type: :feature do
@@ -152,7 +160,11 @@ describe 'Host User: /app#/playlists/index', js: true, type: :feature do
     wait_for_angular_requests_to_finish
   end
 
- it_behaves_like "the index page"
+  it_behaves_like "the index page"
+
+  it 'does not have the back button' do
+    expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+  end
 end
 
 describe 'Host User: /app#/playlists/index pagination', js: true, type: :feature do
@@ -179,6 +191,10 @@ describe 'Host User: /app#/playlists/index pagination', js: true, type: :feature
     let(:results_method) { :rows }
     let(:site_page) { @page }
   end
+
+  it 'does not have the back button' do
+    expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+  end
 end
 
 # Check when accessing with the current user in the url
@@ -198,7 +214,11 @@ describe 'Host User: /app#/playlists/:user_id/index', js: true, type: :feature d
     wait_for_angular_requests_to_finish
   end
 
- it_behaves_like "the index page"
+  it_behaves_like "the index page"
+
+  it 'does not have the back button' do
+    expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+  end
 end
 
 describe 'Host User: /app#/playlists/:user_id/index pagination', js: true, type: :feature do
@@ -224,6 +244,10 @@ describe 'Host User: /app#/playlists/:user_id/index pagination', js: true, type:
     let(:objects) { playlists }
     let(:results_method) { :rows }
     let(:site_page) { @page }
+  end
+
+  it 'does not have the back button' do
+    expect{@page.back}.to raise_error(Capybara::ElementNotFound)
   end
 end
 

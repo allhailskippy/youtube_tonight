@@ -28,12 +28,16 @@
       $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     });
 
-    // Add front side authorization
     $rootScope.$on('$routeChangeStart', function(scope, next, current) {
+      // Add front side authorization
       var permission = (next.$$route && next.$$route.permission) || undefined;
       if(angular.isString(permission) && !$rootScope.auth(permission)) {
         $window.location.href = '/app#/unauthorized';
       }
+
+      // Add custom data from routes
+      $rootScope.routeData = next.$$route.data;
+      $rootScope.permission = permission;
     });
   };
   runFunc.$inject = ['$rootScope', '$http', '$routeParams', '$location', '$window', 'CurrentUser', 'UserInfo', 'Auth', 'User'];

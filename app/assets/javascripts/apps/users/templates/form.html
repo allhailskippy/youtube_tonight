@@ -70,11 +70,12 @@
               </select>
             </div>
             <div class="pull-right actions">
-              <button
+              <a
+                id="cancel"
                 title="Cancel"
                 class="btn btn-primary glyphicon glyphicon-arrow-left"
-                ng-click="cancel()"
-              ></button>
+                href-func="user.indexUrl()"
+              ></a>
               <button
                 type="submit"
                 class="btn btn-success"

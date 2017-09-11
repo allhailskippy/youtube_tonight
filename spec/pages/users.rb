@@ -42,7 +42,7 @@ class UsersEditPage < SitePrism::Page
     end
 
     section :actions, ".actions" do
-      element :cancel, "button[title='Cancel']"
+      element :cancel, "#cancel"
       element :submit, "button[type='submit']"
     end
 

@@ -8,7 +8,7 @@
   "use strict";
 
 var PlaylistsIndexCtrl = function(
-  Auth, $scope, $http, $routeParams,
+  $scope, $http,
   Playlist, Notice, User,
   current_user_data
   ) {
@@ -109,7 +109,7 @@ var PlaylistsIndexCtrl = function(
 };
 
 PlaylistsIndexCtrl.$inject = [
-  'Auth', '$scope', '$http', '$routeParams',
+  '$scope', '$http',
   'Playlist', 'Notice', 'User',
   'current_user_data'
 ];

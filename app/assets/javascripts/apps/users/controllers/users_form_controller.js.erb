@@ -8,7 +8,7 @@
   "use strict";
 
 var UsersFormCtrl = function(
-  $scope, $routeParams, $location,
+  $scope, $location,
   User, Notice,
   user_data
   ) {
@@ -26,10 +26,6 @@ var UsersFormCtrl = function(
   /**
    * Scope methods
    */
-  $scope.cancel= function() {
-    $location.path('/users/index');
-  };
-
   $scope.destroy = function() {
     if(confirm('This will remove the user from the system\nThis cannot be undone!')) {
       $scope.user.destroy().then(function() {
@@ -50,7 +46,7 @@ var UsersFormCtrl = function(
 };
 
 UsersFormCtrl.$inject = [
-  '$scope', '$routeParams', '$location',
+  '$scope', '$location',
   'User', 'Notice',
   'user_data'
 ];

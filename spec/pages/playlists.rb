@@ -4,6 +4,7 @@ class PlaylistsIndexPage < SitePrism::Page
   element :playlists, "#playlists"
   element :reimport_playlists, ".reimport"
   element :search, ".search-query"
+  element :back, "#back"
 
   section :user_info, UserInfoSection, ".sidebar user-info"
 
