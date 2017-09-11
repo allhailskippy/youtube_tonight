@@ -133,64 +133,128 @@ describe 'Admin User: /app#/playlists/index pagination', js: true, type: :featur
     let(:results_method) { :rows }
     let(:site_page) { @page }
   end
+end
 
-  it "checks data when flipping pages" do
-    p = @page.pagination
+# Check when accessing the currently logged in user
+describe 'Host User: /app#/playlists/index', js: true, type: :feature do
+  let(:host) { create_user(role_titles: [:host]) }
+  let(:playlist1) { create(:playlist_with_videos, api_title: 'Custom Title', user: host) }
+  let(:playlist2) { create(:playlist_with_videos, api_title: 'Not Searched', user: host, videocount: 10) }
+  let(:playlist3) { create(:playlist_with_videos) }
+  let(:current_user) { host }
+  let(:preload) { current_user; host; playlist1; playlist2; playlist3 }
 
-    # Should be by id descending
-    start_idx = 0
-    end_idx = 9
-    page_num = 1
-    10.times do |i|
-      # Check that the correct objects are shown
-      expected = playlists.reverse[start_idx..end_idx].collect(&:api_title)
-      expect(@page.rows.collect{|r| r.title.text}).to eq(expected)
+  before do
+    preload if defined?(preload)
+    sign_in(host)
+    @page = PlaylistsIndexPage.new
+    @page.load
+    wait_for_angular_requests_to_finish
+  end
 
-      if i < 9
-        page_num += 1
-        p.find_page(page_num.to_s).click
-        wait_for_angular_requests_to_finish
+ it_behaves_like "the index page"
+end
 
-        start_idx += 10
-        end_idx += 10
-      end
+describe 'Host User: /app#/playlists/index pagination', js: true, type: :feature do
+  let(:host) { create_user(role_titles: [:host]) }
+  let(:playlists) do
+    100.times.collect do |n|
+      create(:playlist, api_title: "Title #{n + 1}", user: host)
     end
+  end
+  let(:current_user) { host }
+  let(:preload) { current_user; host; playlists }
+
+  before do
+    preload if defined?(preload)
+    sign_in(host)
+    @page = PlaylistsIndexPage.new
+    @page.load
+    wait_for_angular_requests_to_finish
+  end
+
+  it_should_behave_like "paginated" do
+    let(:page_pagination) { @page.pagination }
+    let(:objects) { playlists }
+    let(:results_method) { :rows }
+    let(:site_page) { @page }
   end
 end
 
-#
-#describe 'Host User: /app#/users/index', js: true, type: :feature do
-#  subject { page }
-#
-#  let(:host) { create_user(role_titles: [:host]) }
-#  let(:preload) { host }
-#
-#  before do
-#    preload if defined?(preload)
-#    sign_in(host)
-#  end
-#
-#  it 'does not get the index' do
-#    @page = PlaylistsIndexPage.new
-#    @page.load
-#    wait_for_angular_requests_to_finish
-#
-#    expect(page.current_url).to end_with("/app#/unauthorized")
-#  end
-#end
-#
-#describe 'Not Logged In: /app#/users/index', js: true, type: :feature do
-#  subject { page }
-#
-#  before do
-#    preload if defined?(preload)
-#  end
-#
-#  it 'goes to sign in' do
-#    @page = PlaylistsIndexPage.new
-#    @page.load
-#    wait_for_angular_requests_to_finish
-#
-#    expect(page.current_url).to include("/users/sign_in")
-#  end
-#end
+# Check when accessing with the current user in the url
+describe 'Host User: /app#/playlists/:user_id/index', js: true, type: :feature do
+  let(:host) { create_user(role_titles: [:host]) }
+  let(:playlist1) { create(:playlist_with_videos, api_title: 'Custom Title', user: host) }
+  let(:playlist2) { create(:playlist_with_videos, api_title: 'Not Searched', user: host, videocount: 10) }
+  let(:playlist3) { create(:playlist_with_videos) }
+  let(:current_user) { host}
+  let(:preload) { current_user; host; playlist1; playlist2; playlist3 }
+
+  before do
+    preload if defined?(preload)
+    sign_in(host)
+    @page = PlaylistsUserIndexPage.new
+    @page.load(user_id: host.id)
+    wait_for_angular_requests_to_finish
+  end
+
+ it_behaves_like "the index page"
+end
+
+describe 'Host User: /app#/playlists/:user_id/index pagination', js: true, type: :feature do
+  let(:host) { create_user(role_titles: [:host]) }
+  let(:playlists) do
+    100.times.collect do |n|
+      create(:playlist, api_title: "Title #{n + 1}", user: host)
+    end
+  end
+  let(:current_user) { host }
+  let(:preload) { current_user; host; playlists }
+
+  before do
+    preload if defined?(preload)
+    sign_in(host)
+    @page = PlaylistsUserIndexPage.new
+    @page.load(user_id: host.id)
+    wait_for_angular_requests_to_finish
+  end
+
+  it_should_behave_like "paginated" do
+    let(:page_pagination) { @page.pagination }
+    let(:objects) { playlists }
+    let(:results_method) { :rows }
+    let(:site_page) { @page }
+  end
+end
+
+describe 'Not Logged In: /app#/playlists/index', js: true, type: :feature do
+  subject { page }
+
+  before do
+    preload if defined?(preload)
+  end
+
+  it 'goes to sign in' do
+    @page = PlaylistsIndexPage.new
+    @page.load
+    wait_for_angular_requests_to_finish
+
+    expect(page.current_url).to include("/users/sign_in")
+  end
+end
+
+describe 'Not Logged In: /app#/playlists/:user_id/index', js: true, type: :feature do
+  subject { page }
+
+  before do
+    preload if defined?(preload)
+  end
+
+  it 'goes to sign in' do
+    @page = PlaylistsUserIndexPage.new
+    @page.load(user_id: 1)
+    wait_for_angular_requests_to_finish
+
+    expect(page.current_url).to include("/users/sign_in")
+  end
+end

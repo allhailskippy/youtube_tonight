@@ -9,7 +9,7 @@
 
 var PlaylistsIndexCtrl = function(
   Auth, $scope, $http, $routeParams,
-  Playlist, Notice, User, CurrentUser,
+  Playlist, Notice, User,
   current_user_data
   ) {
 
@@ -110,7 +110,7 @@ var PlaylistsIndexCtrl = function(
 
 PlaylistsIndexCtrl.$inject = [
   'Auth', '$scope', '$http', '$routeParams',
-  'Playlist', 'Notice', 'User', 'CurrentUser',
+  'Playlist', 'Notice', 'User',
   'current_user_data'
 ];
 
