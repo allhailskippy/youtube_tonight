@@ -11,5 +11,6 @@ FactoryGirl.define do
     sequence(:api_title) {|n| "Api Title #{n}" }
     api_duration "PT22S"
     api_duration_seconds 22
+    sequence(:api_channel_title) {|n| "Channel Title #{n}" }
   end
 end

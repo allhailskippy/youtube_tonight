@@ -81,7 +81,6 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
       expect(userinfo.user_id.text).to eq(user.id.to_s)
     end
 
-
     # Change data
     @form.title.set('Edited Show Title')
     @form.air_date.click

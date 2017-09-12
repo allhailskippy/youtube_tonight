@@ -1,5 +1,6 @@
 require 'rails_helper'
 require_relative '../shared/pagination'
+require_relative '../shared/user_info'
 
 # There are 2 ways to access this page;
 # Either the user can be specified, or the currently logged in user is used
@@ -27,11 +28,8 @@ shared_examples "the index page" do
     expect(@page.reimport_playlists['ng-click']).to eq("reimportPlaylists()")
   end
 
-  it 'has the user info section' do
-    ui = @page.user_info
-    expect(ui.user_id.text).to eq(current_user.id.to_s)
-    expect(ui.name.text).to eq(current_user.name)
-    expect(ui.email.text).to eq(current_user.email)
+  it_should_behave_like "user_info" do
+    let(:user_info) { @page.user_info }
   end
 
   it 'searches correctly' do
@@ -84,7 +82,9 @@ describe 'Admin User: /app#/playlists/index', js: true, type: :feature do
     wait_for_angular_requests_to_finish
   end
 
-  it_behaves_like "the index page"
+  it_behaves_like "the index page" do
+    let(:current_user) { admin }
+  end
 
   it 'does not have the back button' do
     expect{@page.back}.to raise_error(Capybara::ElementNotFound)
@@ -109,7 +109,9 @@ describe 'Admin User: /app#/playlists/:user_id/index', js: true, type: :feature 
     wait_for_angular_requests_to_finish
   end
 
-  it_behaves_like "the index page"
+  it_behaves_like "the index page" do
+    let(:current_user) { user }
+  end
 
   it 'has the back button' do
     expect(@page.back['href']).to end_with('/app#/users/index')
@@ -160,7 +162,9 @@ describe 'Host User: /app#/playlists/index', js: true, type: :feature do
     wait_for_angular_requests_to_finish
   end
 
-  it_behaves_like "the index page"
+  it_behaves_like "the index page" do
+    let(:current_user) { host }
+  end
 
   it 'does not have the back button' do
     expect{@page.back}.to raise_error(Capybara::ElementNotFound)
@@ -214,7 +218,9 @@ describe 'Host User: /app#/playlists/:user_id/index', js: true, type: :feature d
     wait_for_angular_requests_to_finish
   end
 
-  it_behaves_like "the index page"
+  it_behaves_like "the index page" do
+    let(:current_user) { host }
+  end
 
   it 'does not have the back button' do
     expect{@page.back}.to raise_error(Capybara::ElementNotFound)
