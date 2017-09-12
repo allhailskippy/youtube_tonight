@@ -3,16 +3,10 @@ require_relative '../shared/pagination'
 require_relative '../shared/user_info'
 require_relative '../shared/playlist_info'
 
-# Check when accessing the currently logged in user
-describe 'Admin User: /app#/videos/playlists/:playlist_id', js: true, type: :feature do
-  let(:admin) { create_user(role_titles: [:admin]) }
-  let(:playlist) { create(:playlist_with_videos, user: admin, videocount: 3) }
-  let(:preload) { admin; playlist }
+shared_examples "the index page" do
+  let(:playlist) { create(:playlist_with_videos, user: current_user, videocount: 3) }
 
   before do
-    preload if defined?(preload)
-    sign_in(admin)
-    @page = VideosIndexPage.new
     @page.load(playlist_id: playlist.id)
     wait_for_angular_requests_to_finish
   end
@@ -40,7 +34,6 @@ describe 'Admin User: /app#/videos/playlists/:playlist_id', js: true, type: :fea
 
   it_should_behave_like "user_info" do
     let(:user_info) { @page.user_info }
-    let(:current_user) { admin }
   end
 
   it_should_behave_like "playlist_info" do
@@ -55,9 +48,8 @@ describe 'Admin User: /app#/videos/playlists/:playlist_id', js: true, type: :fea
   end
 end
 
-describe 'Admin User: /app#/videos/playlists/:playlist_id durations', js: true, type: :feature do
-  let(:admin) { create_user(role_titles: [:admin]) }
-  let(:playlist) { create(:playlist, user: admin) }
+shared_examples "duration" do
+  let(:playlist) { create(:playlist, user: current_user) }
   let(:video1) { create(:video, parent: playlist, api_duration: 'PT44S') }
   let(:video2) { create(:video, parent: playlist, api_duration: 'PT45S') }
   let(:video3) { create(:video, parent: playlist, api_duration: 'PT1M29S') }
@@ -68,13 +60,9 @@ describe 'Admin User: /app#/videos/playlists/:playlist_id durations', js: true, 
   let(:video8) { create(:video, parent: playlist, api_duration: 'PT1H30M15S') }
   let(:video9) { create(:video, parent: playlist, api_duration: 'PT2H29M20S') }
   let(:video10) { create(:video, parent: playlist, api_duration: 'PT2H30M30S') }
-
-  let(:preload) { admin; playlist; video1; video2; video3; video4; video5; video6; video7; video8; video9; video10 }
+  let(:preload) { playlist; video1; video2; video3; video4; video5; video6; video7; video8; video9; video10 }
 
   before do
-    preload if defined?(preload)
-    sign_in(admin)
-    @page = VideosIndexPage.new
     @page.load(playlist_id: playlist.id)
     wait_for_angular_requests_to_finish
   end
@@ -122,111 +110,79 @@ describe 'Admin User: /app#/videos/playlists/:playlist_id durations', js: true, 
   end
 end
 
-describe 'Admin User: /app#/playlists/index pagination', js: true, type: :feature do
+# Check when accessing the currently logged in user
+describe 'Admin User: /app#/videos/playlists/:playlist_id', js: true, type: :feature do
   let(:admin) { create_user(role_titles: [:admin]) }
-  let(:playlist) do
-    create(:playlist_with_videos, user: admin, videocount: 100)
-  end
-  let(:preload) { admin; playlist }
+  let(:current_user) { admin }
+  let(:preload) { admin }
 
   before do
     preload if defined?(preload)
-    sign_in_admin
+    sign_in(admin)
     @page = VideosIndexPage.new
-    @page.load(playlist_id: playlist.id)
-    wait_for_angular_requests_to_finish
   end
 
+  it_behaves_like "the index page"
+  it_behaves_like "duration"
+
   it_should_behave_like "paginated" do
+    let(:playlist) { create(:playlist_with_videos, user: admin, videocount: 100) }
     let(:page_pagination) { @page.pagination_top }
     let(:objects) { playlist.videos }
     let(:results_method) { :rows }
     let(:site_page) { @page }
+
+    before do
+      sign_in_admin
+      @page.load(playlist_id: playlist.id)
+      wait_for_angular_requests_to_finish
+    end
   end
 end
-#
-## Check when accessing the currently logged in user
-#describe 'Host User: /app#/playlists/index', js: true, type: :feature do
-#  let(:host) { create_user(role_titles: [:host]) }
-#  let(:playlist1) { create(:playlist_with_videos, api_title: 'Custom Title', user: host) }
-#  let(:playlist2) { create(:playlist_with_videos, api_title: 'Not Searched', user: host, videocount: 10) }
-#  let(:playlist3) { create(:playlist_with_videos) }
-#  let(:current_user) { host }
-#  let(:preload) { current_user; host; playlist1; playlist2; playlist3 }
-#
-#  before do
-#    preload if defined?(preload)
-#    sign_in(host)
-#    @page = PlaylistsIndexPage.new
-#    @page.load
-#    wait_for_angular_requests_to_finish
-#  end
-#
-#  it_behaves_like "the index page"
-#
-#  it 'does not have the back button' do
-#    expect{@page.back}.to raise_error(Capybara::ElementNotFound)
-#  end
-#end
-#
-#describe 'Host User: /app#/playlists/index pagination', js: true, type: :feature do
-#  let(:host) { create_user(role_titles: [:host]) }
-#  let(:playlists) do
-#    100.times.collect do |n|
-#      create(:playlist, api_title: "Title #{n + 1}", user: host)
-#    end
-#  end
-#  let(:current_user) { host }
-#  let(:preload) { current_user; host; playlists }
-#
-#  before do
-#    preload if defined?(preload)
-#    sign_in(host)
-#    @page = PlaylistsIndexPage.new
-#    @page.load
-#    wait_for_angular_requests_to_finish
-#  end
-#
-#  it_should_behave_like "paginated" do
-#    let(:page_pagination) { @page.pagination }
-#    let(:objects) { playlists }
-#    let(:results_method) { :rows }
-#    let(:site_page) { @page }
-#  end
-#
-#  it 'does not have the back button' do
-#    expect{@page.back}.to raise_error(Capybara::ElementNotFound)
-#  end
-#end
-#
-#describe 'Not Logged In: /app#/playlists/index', js: true, type: :feature do
-#  subject { page }
-#
-#  before do
-#    preload if defined?(preload)
-#  end
-#
-#  it 'goes to sign in' do
-#    @page = PlaylistsIndexPage.new
-#    @page.load
-#    wait_for_angular_requests_to_finish
-#
-#    expect(page.current_url).to include("/users/sign_in")
-#  end
-#end
-#
-#describe 'Not Logged In: /app#/playlists/:user_id/index', js: true, type: :feature do
-#  subject { page }
-#
-#  before do
-#    preload if defined?(preload)
-#  end
-#
-#  it 'goes to sign in' do
-#    @page = PlaylistsUserIndexPage.new
-#    @page.load(user_id: 1)
-#    wait_for_angular_requests_to_finish
-#
-#    expect(page.current_url).to include("/users/sign_in")
-#  end
-#end
+
+# Check when accessing a host user
+describe 'Host User: /app#/videos/playlists/:playlist_id', js: true, type: :feature do
+  let(:host) { create_user(role_titles: [:host]) }
+  let(:current_user) { host }
+  let(:preload) { host }
+
+  before do
+    preload if defined?(preload)
+    sign_in(host)
+    @page = VideosIndexPage.new
+  end
+
+  it_behaves_like "the index page"
+  it_behaves_like "duration"
+
+  it_should_behave_like "paginated" do
+    let(:playlist) { create(:playlist_with_videos, user: host, videocount: 100) }
+    let(:page_pagination) { @page.pagination_top }
+    let(:objects) { playlist.videos }
+    let(:results_method) { :rows }
+    let(:site_page) { @page }
+
+    before do
+      sign_in(host)
+      @page.load(playlist_id: playlist.id)
+      wait_for_angular_requests_to_finish
+    end
+  end
+end
+
+# Check when accessing a non-logged in user
+describe 'Not Logged In: /app#/videos/playlists/:playlist_id', js: true, type: :feature do
+  subject { page }
+
+  before do
+    preload if defined?(preload)
+  end
+
+  it 'goes to sign in' do
+    @page = VideosIndexPage.new
+    @page.load(playlist_id: 1)
+    wait_for_angular_requests_to_finish
+
+    expect(page.current_url).to include("/users/sign_in")
+  end
+end
