@@ -1,6 +1,7 @@
 require 'rails_helper'
 require_relative '../shared/pagination'
 require_relative '../shared/user_info'
+require_relative '../shared/playlist_info'
 
 # Check when accessing the currently logged in user
 describe 'Admin User: /app#/videos/playlists/:playlist_id', js: true, type: :feature do
@@ -42,11 +43,15 @@ describe 'Admin User: /app#/videos/playlists/:playlist_id', js: true, type: :fea
     let(:current_user) { admin }
   end
 
+  it_should_behave_like "playlist_info" do
+    let(:playlist_info ) { @page.playlist_info }
+  end
+
   it 'starts the preview' do
-    skip 'TODO'
-    #row = @page.find_row(playlist.videos.first)
-    #row.preview_start.click
-    #wait_for_angular_requests_to_finish
+    row = @page.find_row(playlist.videos.first)
+    row.preview_start.click
+    wait_for_angular_requests_to_finish
+    expect(row.preview_start['disabled']).to eq("true")
   end
 end
 

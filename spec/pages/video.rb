@@ -17,6 +17,7 @@ class VideosIndexPage < SitePrism::Page
   end
 
   section :user_info, UserInfoSection, ".sidebar user-info"
+  section :playlist_info, PlaylistInfoSection, ".sidebar playlist-info"
   section :pagination_top, PaginationSection, "#pagination-top"
   section :pagination_bottom, PaginationSection, "#pagination-bottom"
 
