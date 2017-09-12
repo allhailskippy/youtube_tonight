@@ -52,7 +52,7 @@ var Show = function(ShowApi) {
 
     // Link to videos page
     show.videoUrl = function() {
-      return '/app#/videos/shows/' + show.id
+      return '/#/shows/' + show.id + '/videos';
     };
 
     return show;

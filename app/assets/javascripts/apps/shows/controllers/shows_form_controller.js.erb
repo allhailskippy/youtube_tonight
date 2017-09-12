@@ -85,7 +85,7 @@ var ShowsFormCtrl = function(
     Notice.reset();
 
     // Send to index
-    $location.path('/shows/index');
+    $location.path('/shows');
   };
 
   // Deletes a show
@@ -94,7 +94,7 @@ var ShowsFormCtrl = function(
       $scope.currentShow.destroy().then(function() {
         Notice.setSuccesses('Successfully Deleted Show');
         Show.clearCurrentShow();
-        $location.path('/shows/index');
+        $location.path('/shows');
       }).catch(handleErrors);
     }
   };
@@ -117,9 +117,9 @@ var ShowsFormCtrl = function(
 
       if(newRecord) {
         // Redirect back to index
-        $window.location.href = '/app#/videos/shows/' + show.id;
+        $window.location.href = '/#/shows/' + show.id + '/videos';
       } else {
-        $location.path('/shows/index');
+        $location.path('/shows');
       }
     }).catch(handleErrors);
   };

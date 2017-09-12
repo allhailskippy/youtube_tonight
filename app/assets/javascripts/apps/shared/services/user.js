@@ -69,11 +69,11 @@ var User = function(
     };
 
     user.indexUrl = function() {
-      return '/app#/users/index';
+      return '/#/users';
     };
 
     user.playlistsUrl = function() {
-      return '/app#/playlists/' + user.id + '/index';
+      return '/#/users/' + user.id + '/playlists';
     };
 
     return user;

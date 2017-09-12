@@ -32,11 +32,15 @@
       // Add front side authorization
       var permission = (next.$$route && next.$$route.permission) || undefined;
       if(angular.isString(permission) && !$rootScope.auth(permission)) {
-        $window.location.href = '/app#/unauthorized';
+        $window.location.href = '/#/unauthorized';
       }
 
       // Add custom data from routes
-      $rootScope.routeData = next.$$route.data;
+      try {
+        $rootScope.routeData = next.$$route.data || {};
+      } catch(err) {
+        $rootScope.routeData = {};
+      }
       $rootScope.permission = permission;
     });
   };

@@ -11,7 +11,7 @@
 'use strict';
 var routesConfig = function($routeProvider) {
   $routeProvider.
-  when('/users/index', {
+  when('/users', {
     controller: 'UsersIndexCtrl',
     templateUrl: '<%= asset_path("apps/users/templates/index.html") %>',
     permission: 'users.index'

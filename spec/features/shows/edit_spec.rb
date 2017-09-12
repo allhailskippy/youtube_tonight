@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
+describe 'Admin User: /#/shows/:show_id/edit', js: true, type: :feature do
   let(:user1) { create_user() }
   let(:user2) { create_user(role_titles: [:host]) }
   let(:user3) { create_user(role_titles: [:host, :admin]) }
@@ -49,7 +49,7 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
     @page.cancel.click
     wait_for_angular_requests_to_finish
 
-    expect(page.current_url).to end_with("/app#/shows/index")
+    expect(page.current_url).to end_with("/#/shows")
   end
 
   it 'deletes' do
@@ -59,7 +59,7 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
     wait_for_angular_requests_to_finish
 
     expect { Show.find(show.id) }.to raise_error(ActiveRecord::RecordNotFound)
-    expect(page.current_url).to end_with("/app#/shows/index")
+    expect(page.current_url).to end_with("/#/shows")
   end
 
   it 'cancels delete' do
@@ -68,7 +68,7 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
     end
 
     expect(Show.find(show.id)).to eq(show)
-    expect(page.current_url).to end_with("/app#/shows/#{show.id}/edit")
+    expect(page.current_url).to end_with("/#/shows/#{show.id}/edit")
   end
 
   it 'edits a show' do
@@ -101,7 +101,7 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
 
     # Goes to the videos page
     edited_show = Show.find(show.id)
-    expect(page.current_url).to end_with("/app#/shows/index")
+    expect(page.current_url).to end_with("/#/shows")
 
     # Check that it shows up on index after upate
     @index_page = ShowsIndexPage.new
@@ -119,14 +119,14 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
   end
 end
 
-describe 'Host User: /app#/shows/:show_id/edit', js: true, type: :feature do
+describe 'Host User: /#/shows/:show_id/edit', js: true, type: :feature do
   it_behaves_like "unauthorized" do
     let(:show) { create(:show) }
     let(:loader) { sign_in_host; ShowsEditPage.new.load(show_id: show.id) }
   end
 end
 
-describe 'Not Logged In: /app#/shows/:show_id/edit', js: true, type: :feature do
+describe 'Not Logged In: /#/shows/:show_id/edit', js: true, type: :feature do
   it_behaves_like "guest_access" do
     let(:show) { create(:show) }
     let(:loader) { ShowsEditPage.new.load(show_id: show.id) }

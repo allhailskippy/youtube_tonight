@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Admin User: /app#/shows/new', js: true, type: :feature do
+describe 'Admin User: /#/shows/new', js: true, type: :feature do
   let(:user1) { create_user() }
   let(:user2) { create_user(role_titles: [:host]) }
   let(:user3) { create_user(role_titles: [:host, :admin]) }
@@ -30,7 +30,7 @@ describe 'Admin User: /app#/shows/new', js: true, type: :feature do
     @page.cancel.click
     wait_for_angular_requests_to_finish
 
-    expect(page.current_url).to end_with("/app#/shows/index")
+    expect(page.current_url).to end_with("/#/shows")
   end
 
   it 'creates a new show with one host for today' do
@@ -48,7 +48,7 @@ describe 'Admin User: /app#/shows/new', js: true, type: :feature do
 
     # Goes to the videos page
     new_show = Show.where(title: 'New Show Title').last
-    expect(page.current_url).to end_with("/app#/videos/shows/#{new_show.id}")
+    expect(page.current_url).to end_with("/#/shows/#{new_show.id}/videos")
 
     # Check that it shows up on index after create
     @index_page = ShowsIndexPage.new
@@ -83,7 +83,7 @@ describe 'Admin User: /app#/shows/new', js: true, type: :feature do
 
     # Goes to the videos page
     new_show = Show.where(title: 'New Show Title 2').last
-    expect(page.current_url).to end_with("/app#/videos/shows/#{new_show.id}")
+    expect(page.current_url).to end_with("/#/shows/#{new_show.id}/videos")
 
     # Check that it shows up on index after create
     @index_page = ShowsIndexPage.new
@@ -102,13 +102,13 @@ describe 'Admin User: /app#/shows/new', js: true, type: :feature do
   end
 end
 
-describe 'Host User: /app#/shows/new', js: true, type: :feature do
+describe 'Host User: /#/shows/new', js: true, type: :feature do
   it_behaves_like "unauthorized" do
     let(:loader) { sign_in_host; ShowsNewPage.new.load }
   end
 end
 
-describe 'Not Logged In: /app#/shows/new', js: true, type: :feature do
+describe 'Not Logged In: /#/shows/new', js: true, type: :feature do
   it_behaves_like "guest_access" do
     let(:loader) { ShowsNewPage.new.load }
   end

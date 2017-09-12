@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
+describe 'Admin User: /#/users/:user_id/edit', js: true, type: :feature do
   describe 'Standard behaviour' do
     let(:user) { create_user(name: 'User 1', email: 'email@test.com', requires_auth: false) }
     let(:preload) { user }
@@ -48,7 +48,7 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
       expect(u.requires_auth).to eq(true)
       expect(u.role_titles).to eq([])
 
-      expect(page.current_url).to end_with("/users/index")
+      expect(page.current_url).to end_with("/users")
     end
 
     it 'submits the edit page for admin: change role to host' do
@@ -72,7 +72,7 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
       expect(u.requires_auth).to eq(false)
       expect(u.role_titles).to eq([:admin, :host])
 
-      expect(page.current_url).to end_with("/users/index")
+      expect(page.current_url).to end_with("/users")
     end
 
     it 'cancels' do
@@ -88,7 +88,7 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
       expect(u.requires_auth).to eq(false)
       expect(u.role_titles).to eq([:admin])
 
-      expect(page.current_url).to end_with("/users/index")
+      expect(page.current_url).to end_with("/users")
     end
 
     it 'deletes the user' do
@@ -98,7 +98,7 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
       wait_for_angular_requests_to_finish
 
       expect { User.find(user.id) }.to raise_error(ActiveRecord::RecordNotFound)
-      expect(page.current_url).to end_with("/users/index")
+      expect(page.current_url).to end_with("/users")
     end
 
     it 'cancels the delete request' do
@@ -107,7 +107,7 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
       end
 
       expect(User.find(user.id)).to eq(user)
-      expect(page.current_url).to end_with("/app#/users/#{user.id}/edit")
+      expect(page.current_url).to end_with("/#/users/#{user.id}/edit")
     end
   end
 
@@ -134,14 +134,14 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
   end
 end
 
-describe 'Host User: /app#/users/:user_id/edit', js: true, type: :feature do
+describe 'Host User: /#/users/:user_id/edit', js: true, type: :feature do
   it_behaves_like "unauthorized" do
     let(:host) { create_user(role_titles: [:host]) }
     let(:loader) { sign_in(host); UsersEditPage.new.load(user_id: host.id) }
   end
 end
 
-describe 'Not Logged In: /app#/users/:users_id/edit', js: true, type: :feature do
+describe 'Not Logged In: /#/users/:users_id/edit', js: true, type: :feature do
   it_behaves_like "guest_access" do
     let(:loader) { UsersEditPage.new.load }
   end

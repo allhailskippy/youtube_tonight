@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Admin User: /app#/users/index', js: true, type: :feature do
+describe 'Admin User: /#/users', js: true, type: :feature do
   let(:admin) { create_user() }
   let(:host1) { create_user(name: 'Host 1', role_titles: [:host]) }
   let(:host2) { create_user(name: 'Host 2', role_titles: [], requires_auth: true) }
@@ -50,7 +50,7 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
       expected = row.sec_actions.edit['ng-click']
       expect(expected).to eq('edit(user)')
       expected = row.sec_actions.videos['href']
-      expect(expected).to end_with("/app#/playlists/#{host1.id}/index")
+      expect(expected).to end_with("/#/users/#{host1.id}/playlists")
 
       # Host 2
       row = @page.find_row(host2)
@@ -60,7 +60,7 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
       expected = row.sec_actions.edit['ng-click']
       expect(expected).to eq('edit(user)')
       expected = row.sec_actions.videos['href']
-      expect(expected).to end_with("/app#/playlists/#{host2.id}/index")
+      expect(expected).to end_with("/#/users/#{host2.id}/playlists")
 
       # Host 3
       row = @page.find_row(host3)
@@ -69,7 +69,7 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
       expected = row.sec_actions.edit['ng-click']
       expect(expected).to eq('edit(user)')
       expected = row.sec_actions.videos['href']
-      expect(expected).to end_with("/app#/playlists/#{host3.id}/index")
+      expect(expected).to end_with("/#/users/#{host3.id}/playlists")
     end
 
     describe 'authorization' do
@@ -147,19 +147,19 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
       it 'for host1' do
         row = @page.find_row(host1)
         row.sec_actions.edit.click()
-        expect(page.current_url).to end_with("/app#/users/#{host1.id}/edit")
+        expect(page.current_url).to end_with("/#/users/#{host1.id}/edit")
       end
 
       it 'for host2' do
         row = @page.find_row(host2)
         row.sec_actions.edit.click()
-        expect(page.current_url).to end_with("/app#/users/#{host2.id}/edit")
+        expect(page.current_url).to end_with("/#/users/#{host2.id}/edit")
       end
 
       it 'for host3' do
         row = @page.find_row(host3)
         row.sec_actions.edit.click()
-        expect(page.current_url).to end_with("/app#/users/#{host3.id}/edit")
+        expect(page.current_url).to end_with("/#/users/#{host3.id}/edit")
       end
     end
 
@@ -167,37 +167,37 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
       it 'goes for admin' do
         row = @page.find_row(admin)
         row.sec_actions.videos.click()
-        expect(page.current_url).to end_with("/app#/playlists/#{admin.id}/index")
+        expect(page.current_url).to end_with("/#/users/#{admin.id}/playlists")
       end
 
       it 'goes for host1' do
         row = @page.find_row(host1)
         row.sec_actions.videos.click()
-        expect(page.current_url).to end_with("/app#/playlists/#{host1.id}/index")
+        expect(page.current_url).to end_with("/#/users/#{host1.id}/playlists")
       end
 
       it 'goes for host2' do
         row = @page.find_row(host2)
         row.sec_actions.videos.click()
-        expect(page.current_url).to end_with("/app#/playlists/#{host2.id}/index")
+        expect(page.current_url).to end_with("/#/users/#{host2.id}/playlists")
       end
 
       it 'goes for host3' do
         row = @page.find_row(host3)
         row.sec_actions.videos.click()
-        expect(page.current_url).to end_with("/app#/playlists/#{host3.id}/index")
+        expect(page.current_url).to end_with("/#/users/#{host3.id}/playlists")
       end
     end
   end
 end
 
-describe 'Host User: /app#/users/index', js: true, type: :feature do
+describe 'Host User: /#/users', js: true, type: :feature do
   it_behaves_like "unauthorized" do
     let(:loader) { sign_in_host; UsersIndexPage.new.load }
   end
 end
 
-describe 'Not Logged In: /app#/users/index', js: true, type: :feature do
+describe 'Not Logged In: /#/users', js: true, type: :feature do
   it_behaves_like "guest_access" do
     let(:loader) { UsersIndexPage.new.load }
   end

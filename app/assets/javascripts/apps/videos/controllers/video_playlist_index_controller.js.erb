@@ -26,7 +26,7 @@ var VideosPlaylistIndexCtrl = function(
   $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.playlist_id);
 
   $scope.playlist = Playlist.build(playlist_data.data);
-  $scope.playlist_url = '/app#/playlists/' + $scope.playlist.user_id + '/index';
+  $scope.playlist_url = '/#/playlists/' + $scope.playlist.user_id + '/index';
 
   $scope.user = User.build({})
   User.find($scope.playlist.user_id).then(function(response) {

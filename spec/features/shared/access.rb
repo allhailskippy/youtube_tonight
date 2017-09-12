@@ -16,6 +16,6 @@ shared_examples "unauthorized" do
   end
 
   it "goes to unauthorized" do
-    expect(page.current_url).to end_with("/app#/unauthorized")
+    expect(page.current_url).to end_with("/#/unauthorized")
   end
 end

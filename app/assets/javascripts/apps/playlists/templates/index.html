@@ -5,7 +5,7 @@
         Playlists
         <span class="pull-right">
           <a
-            ng-if="auth('users.index') && routeData.showBackButton"
+            ng-if="auth('users.index') && routeData.userPath"
             id="back"
             title="Back"
             class="btn btn-primary glyphicon glyphicon-arrow-left"
@@ -79,7 +79,7 @@
                   ng-class="{disabled: importingVideos[playlist.id]}"
                   ng-click="reimportVideos(playlist)"
                 ></button>
-                <a href-func="playlist.videosUrl()"
+                <a href-func="playlist.videosUrl(routeData.userPath)"
                   title="Videos"
                   type="button"
                   class="videos btn btn-primary glyphicon glyphicon-film"

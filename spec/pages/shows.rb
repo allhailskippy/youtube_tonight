@@ -1,5 +1,5 @@
 class ShowsIndexPage < SitePrism::Page
-  set_url "/app#/shows/index"
+  set_url "/#/shows"
 
   elements :notices, "div[notices='notices'] .alert-success"
 
@@ -49,11 +49,11 @@ class ShowsFormPage < SitePrism::Page
 end
 
 class ShowsNewPage < ShowsFormPage
-  set_url "/app#/shows/new"
+  set_url "/#/shows/new"
 end
 
 class ShowsEditPage < ShowsFormPage
-  set_url "/app#/shows/{show_id}/edit"
+  set_url "/#/shows/{show_id}/edit"
 
   element :delete, ".show-delete"
 end

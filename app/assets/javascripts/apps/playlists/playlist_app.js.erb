@@ -11,12 +11,12 @@
 
 var routesConfig = function($routeProvider) {
   $routeProvider.
-  when('/playlists/:user_id/index', {
+  when('/users/:user_id/playlists', {
     controller: 'PlaylistsIndexCtrl',
     templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>',
     permission: 'playlists.index',
     data: {
-      showBackButton: true
+      userPath: true
     },
     resolve: {
       current_user_data: ['User', '$route', function(User, $route) {
@@ -24,12 +24,12 @@ var routesConfig = function($routeProvider) {
       }]
     }
   }).
-  when('/playlists/index', {
+  when('/playlists', {
     controller: 'PlaylistsIndexCtrl',
     templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>',
     permission: 'playlists.index',
     data: {
-      showBackButton: false
+      userPath: false
     },
     resolve: {
       current_user_data: ['CurrentUser', function(CurrentUser) {

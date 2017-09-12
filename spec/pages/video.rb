@@ -1,5 +1,5 @@
 class VideosIndexPage < SitePrism::Page
-  set_url "/app#/videos/playlists/{playlist_id}"
+  set_url "/#/playlists/{playlist_id}/videos"
 
   element :reimport_videos, "#reimport-videos"
   element :back, "#back"

@@ -29,7 +29,7 @@ var UsersFormCtrl = function(
   $scope.destroy = function() {
     if(confirm('This will remove the user from the system\nThis cannot be undone!')) {
       $scope.user.destroy().then(function() {
-        $location.path('/users/index');
+        $location.path('/users');
       });
     };
   }
@@ -40,7 +40,7 @@ var UsersFormCtrl = function(
     // existing ones
     $scope.user.change_roles = true;
     $scope.user.save().then(function() {
-      $location.path('/users/index');
+      $location.path('/users');
     }).catch(handleErrors);
   };
 };

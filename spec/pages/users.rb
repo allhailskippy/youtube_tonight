@@ -1,5 +1,5 @@
 class UsersIndexPage < SitePrism::Page
-  set_url "/app#/users/index"
+  set_url "/#/users"
 
   element :users, "#users"
 
@@ -24,7 +24,7 @@ class UsersIndexPage < SitePrism::Page
 end
 
 class UsersEditPage < SitePrism::Page
-  set_url "/app#/users/{user_id}/edit"
+  set_url "/#/users/{user_id}/edit"
 
   element :delete_button, ".sidebar button.delete"
 

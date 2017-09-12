@@ -18,7 +18,11 @@ shared_examples "the index page" do
       expect(expected).to eq("reimportVideos(playlist)")
 
       expected = row.sec_actions.videos['href']
-      expect(expected).to end_with("/app#/videos/playlists/#{playlist.id}")
+      if userPath
+        expect(expected).to end_with("/#/users/#{playlist.user_id}/playlists/#{playlist.id}/videos")
+      else
+        expect(expected).to end_with("/#/playlists/#{playlist.id}/videos")
+      end
     end
 
     expect(@page.reimport_playlists['ng-click']).to eq("reimportPlaylists()")
@@ -49,20 +53,28 @@ shared_examples "the index page" do
       it 'goes for playlist1' do
         row = @page.find_row(playlist1)
         row.sec_actions.videos.click()
-        expect(page.current_url).to end_with("/app#/videos/playlists/#{playlist1.id}")
+        if userPath
+          expect(page.current_url).to end_with("/#/users/#{playlist1.user_id}/playlists/#{playlist1.id}/videos")
+        else
+          expect(page.current_url).to end_with("/#/playlists/#{playlist1.id}/videos")
+        end
       end
 
       it 'goes for playlist2' do
         row = @page.find_row(playlist2)
         row.sec_actions.videos.click()
-        expect(page.current_url).to end_with("/app#/videos/playlists/#{playlist2.id}")
+        if userPath
+          expect(page.current_url).to end_with("/#/users/#{playlist2.user_id}/playlists/#{playlist2.id}/videos")
+        else
+          expect(page.current_url).to end_with("/#/playlists/#{playlist2.id}/videos")
+        end
       end
     end
   end
 end
 
 # Check when accessing the currently logged in user
-describe 'Admin User: /app#/playlists/index', js: true, type: :feature do
+describe 'Admin User: /#/playlists/index', js: true, type: :feature do
   let(:admin) { create_user(role_titles: [:admin]) }
   let(:playlist1) { create(:playlist_with_videos, api_title: 'Custom Title', user: admin) }
   let(:playlist2) { create(:playlist_with_videos, api_title: 'Not Searched', user: admin, videocount: 10) }
@@ -80,6 +92,7 @@ describe 'Admin User: /app#/playlists/index', js: true, type: :feature do
 
   it_behaves_like "the index page" do
     let(:current_user) { admin }
+    let(:userPath) { false }
   end
 
   it 'does not have the back button' do
@@ -88,7 +101,7 @@ describe 'Admin User: /app#/playlists/index', js: true, type: :feature do
 end
 
 # Check when accessing a different user than the one currently logged in
-describe 'Admin User: /app#/playlists/:user_id/index', js: true, type: :feature do
+describe 'Admin User: /#/playlists/:user_id/index', js: true, type: :feature do
   let(:admin) { create_user(role_titles: [:admin]) }
   let(:user) { create_user(role_titles: [:host]) }
   let(:playlist1) { create(:playlist_with_videos, api_title: 'Custom Title', user: user) }
@@ -107,14 +120,15 @@ describe 'Admin User: /app#/playlists/:user_id/index', js: true, type: :feature 
 
   it_behaves_like "the index page" do
     let(:current_user) { user }
+    let(:userPath) { true }
   end
 
   it 'has the back button' do
-    expect(@page.back['href']).to end_with('/app#/users/index')
+    expect(@page.back['href']).to end_with('/#/users')
   end
 end
 
-describe 'Admin User: /app#/playlists/index pagination', js: true, type: :feature do
+describe 'Admin User: /#/playlists pagination', js: true, type: :feature do
   let(:admin) { create_user(role_titles: [:admin]) }
   let(:user) { create_user(role_titles: [:host]) }
   let(:playlists) do
@@ -142,7 +156,7 @@ describe 'Admin User: /app#/playlists/index pagination', js: true, type: :featur
 end
 
 # Check when accessing the currently logged in user
-describe 'Host User: /app#/playlists/index', js: true, type: :feature do
+describe 'Host User: /#/playlists', js: true, type: :feature do
   let(:host) { create_user(role_titles: [:host]) }
   let(:playlist1) { create(:playlist_with_videos, api_title: 'Custom Title', user: host) }
   let(:playlist2) { create(:playlist_with_videos, api_title: 'Not Searched', user: host, videocount: 10) }
@@ -160,6 +174,7 @@ describe 'Host User: /app#/playlists/index', js: true, type: :feature do
 
   it_behaves_like "the index page" do
     let(:current_user) { host }
+    let(:userPath) { false }
   end
 
   it 'does not have the back button' do
@@ -167,7 +182,7 @@ describe 'Host User: /app#/playlists/index', js: true, type: :feature do
   end
 end
 
-describe 'Host User: /app#/playlists/index pagination', js: true, type: :feature do
+describe 'Host User: /#/playlists pagination', js: true, type: :feature do
   let(:host) { create_user(role_titles: [:host]) }
   let(:playlists) do
     100.times.collect do |n|
@@ -198,7 +213,7 @@ describe 'Host User: /app#/playlists/index pagination', js: true, type: :feature
 end
 
 # Check when accessing with the current user in the url
-describe 'Host User: /app#/playlists/:user_id/index', js: true, type: :feature do
+describe 'Host User: /#/users/:user_id/playlists', js: true, type: :feature do
   let(:host) { create_user(role_titles: [:host]) }
   let(:playlist1) { create(:playlist_with_videos, api_title: 'Custom Title', user: host) }
   let(:playlist2) { create(:playlist_with_videos, api_title: 'Not Searched', user: host, videocount: 10) }
@@ -216,6 +231,7 @@ describe 'Host User: /app#/playlists/:user_id/index', js: true, type: :feature d
 
   it_behaves_like "the index page" do
     let(:current_user) { host }
+    let(:userPath) { true }
   end
 
   it 'does not have the back button' do
@@ -223,7 +239,7 @@ describe 'Host User: /app#/playlists/:user_id/index', js: true, type: :feature d
   end
 end
 
-describe 'Host User: /app#/playlists/:user_id/index pagination', js: true, type: :feature do
+describe 'Host User: /#/users/:user_id/playlists pagination', js: true, type: :feature do
   let(:host) { create_user(role_titles: [:host]) }
   let(:playlists) do
     100.times.collect do |n|
@@ -253,13 +269,13 @@ describe 'Host User: /app#/playlists/:user_id/index pagination', js: true, type:
   end
 end
 
-describe 'Not Logged In: /app#/playlists/index', js: true, type: :feature do
+describe 'Not Logged In: /#/playlists', js: true, type: :feature do
   it_behaves_like "guest_access" do
     let(:loader) { PlaylistsUserIndexPage.new.load }
   end
 end
 
-describe 'Not Logged In: /app#/playlists/:user_id/index', js: true, type: :feature do
+describe 'Not Logged In: /#/users/:user_id/playlists', js: true, type: :feature do
   it_behaves_like "guest_access" do
     let(:loader) { PlaylistsUserIndexPage.new.load(user_id: 1) }
   end

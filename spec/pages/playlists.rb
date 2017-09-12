@@ -1,5 +1,5 @@
 class PlaylistsIndexPage < SitePrism::Page
-  set_url "/app#/playlists/index"
+  set_url "/#/playlists"
 
   element :playlists, "#playlists"
   element :reimport_playlists, ".reimport"
@@ -29,5 +29,5 @@ end
 
 # Same page, but with a user id in the url
 class PlaylistsUserIndexPage < PlaylistsIndexPage
-  set_url "/app#/playlists/{user_id}/index"
+  set_url "/#/users/{user_id}/playlists"
 end

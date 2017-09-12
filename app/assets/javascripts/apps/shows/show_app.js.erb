@@ -12,7 +12,7 @@
 
 var routesConfig = function($routeProvider) {
   $routeProvider.
-  when('/shows/index', {
+  when('/shows', {
     controller: 'ShowsIndexCtrl',
     templateUrl: '<%= asset_path("apps/shows/templates/index.html") %>',
     permission: 'shows.index'

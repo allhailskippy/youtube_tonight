@@ -26,7 +26,7 @@ shared_examples "the index page" do
   it 'goes back' do
     @page.back.click
     wait_for_angular_requests_to_finish
-    expect(page.current_url).to end_with("/app#/playlists/index")
+    expect(page.current_url).to end_with("/#/playlists")
   end
 
   it_should_behave_like "user_info" do
@@ -108,7 +108,7 @@ shared_examples "duration" do
 end
 
 # Check when accessing the currently logged in user
-describe 'Admin User: /app#/videos/playlists/:playlist_id', js: true, type: :feature do
+describe 'Admin User: /#/playlists/:playlist_id/videos', js: true, type: :feature do
   let(:admin) { create_user(role_titles: [:admin]) }
   let(:current_user) { admin }
   let(:preload) { admin }
@@ -138,7 +138,7 @@ describe 'Admin User: /app#/videos/playlists/:playlist_id', js: true, type: :fea
 end
 
 # Check when accessing a host user
-describe 'Host User: /app#/videos/playlists/:playlist_id', js: true, type: :feature do
+describe 'Host User: /#/playlists/:playlist_id/videos', js: true, type: :feature do
   let(:host) { create_user(role_titles: [:host]) }
   let(:current_user) { host }
   let(:preload) { host }
@@ -168,7 +168,7 @@ describe 'Host User: /app#/videos/playlists/:playlist_id', js: true, type: :feat
 end
 
 # Check when accessing a non-logged in user
-describe 'Not Logged In: /app#/videos/playlists/:playlist_id', js: true, type: :feature do
+describe 'Not Logged In: /#/playlists/:playlist_id/videos', js: true, type: :feature do
   it_behaves_like "guest_access" do
     let(:loader) { VideosIndexPage.new.load(playlist_id: 1) }
   end
