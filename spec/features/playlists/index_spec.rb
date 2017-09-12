@@ -1,12 +1,8 @@
 require 'rails_helper'
-require_relative '../shared/pagination'
-require_relative '../shared/user_info'
 
 # There are 2 ways to access this page;
 # Either the user can be specified, or the currently logged in user is used
 shared_examples "the index page" do
-  subject { page }
-
   it 'gets the index' do
     expect(@page.rows.length).to eq(2)
 
@@ -258,33 +254,13 @@ describe 'Host User: /app#/playlists/:user_id/index pagination', js: true, type:
 end
 
 describe 'Not Logged In: /app#/playlists/index', js: true, type: :feature do
-  subject { page }
-
-  before do
-    preload if defined?(preload)
-  end
-
-  it 'goes to sign in' do
-    @page = PlaylistsIndexPage.new
-    @page.load
-    wait_for_angular_requests_to_finish
-
-    expect(page.current_url).to include("/users/sign_in")
+  it_behaves_like "guest_access" do
+    let(:loader) { PlaylistsUserIndexPage.new.load }
   end
 end
 
 describe 'Not Logged In: /app#/playlists/:user_id/index', js: true, type: :feature do
-  subject { page }
-
-  before do
-    preload if defined?(preload)
-  end
-
-  it 'goes to sign in' do
-    @page = PlaylistsUserIndexPage.new
-    @page.load(user_id: 1)
-    wait_for_angular_requests_to_finish
-
-    expect(page.current_url).to include("/users/sign_in")
+  it_behaves_like "guest_access" do
+    let(:loader) { PlaylistsUserIndexPage.new.load(user_id: 1) }
   end
 end

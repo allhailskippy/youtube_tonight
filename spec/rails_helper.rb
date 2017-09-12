@@ -41,7 +41,7 @@ require 'site_prism'
 require_relative 'helpers/spec_helpers.rb'
 
 # Require libraries
-['support', 'pages'].each do |lib|
+['support', 'pages', 'features/shared'].each do |lib|
   Dir["#{File.dirname(__FILE__)}/#{lib}/**/*.rb"].each {|f| require f}
 end
 

@@ -1,7 +1,4 @@
 require 'rails_helper'
-require_relative '../shared/pagination'
-require_relative '../shared/user_info'
-require_relative '../shared/playlist_info'
 
 shared_examples "the index page" do
   let(:playlist) { create(:playlist_with_videos, user: current_user, videocount: 3) }
@@ -172,17 +169,7 @@ end
 
 # Check when accessing a non-logged in user
 describe 'Not Logged In: /app#/videos/playlists/:playlist_id', js: true, type: :feature do
-  subject { page }
-
-  before do
-    preload if defined?(preload)
-  end
-
-  it 'goes to sign in' do
-    @page = VideosIndexPage.new
-    @page.load(playlist_id: 1)
-    wait_for_angular_requests_to_finish
-
-    expect(page.current_url).to include("/users/sign_in")
+  it_behaves_like "guest_access" do
+    let(:loader) { VideosIndexPage.new.load(playlist_id: 1) }
   end
 end

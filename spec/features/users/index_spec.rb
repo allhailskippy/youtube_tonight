@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 describe 'Admin User: /app#/users/index', js: true, type: :feature do
-  subject { page }
-
   let(:admin) { create_user() }
   let(:host1) { create_user(name: 'Host 1', role_titles: [:host]) }
   let(:host2) { create_user(name: 'Host 2', role_titles: [], requires_auth: true) }
@@ -12,21 +10,19 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
   before do
     preload if defined?(preload)
     sign_in(admin)
-    @users_index_page = UsersIndexPage.new
-    @users_index_page.load
+    @page = UsersIndexPage.new
+    @page.load
     wait_for_angular_requests_to_finish
   end
 
   it 'gets the index' do
-    expect(@users_index_page.user_rows.length).to eq(4)
+    expect(@page.user_rows.length).to eq(4)
 
-    @users_index_page.user_rows.each do |ur|
+    @page.user_rows.each do |ur|
       user = User.find(ur.user_id.text.to_i)
-
       expect(ur.profile_image['src']).to eq(user.profile_image)
       expect(ur.name.text).to eq(user.name)
       expect(ur.email.text).to eq(user.email)
-
       expected = user.role_titles.map{|r| r.capitalize }.join(', ')
       expect(ur.roles.text).to eq(expected)
     end
@@ -41,13 +37,13 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
   describe 'actions' do
     it 'has all the right buttons' do
       # Admin
-      row = @users_index_page.find_row(admin)
+      row = @page.find_row(admin)
       expect { row.sec_actions.deauthorize }.to raise_error(Capybara::ElementNotFound)
       expect { row.sec_actions.authorize }.to raise_error(Capybara::ElementNotFound)
       expect { row.sec_actions.edit }.to raise_error(Capybara::ElementNotFound)
 
       # Host 1
-      row = @users_index_page.find_row(host1)
+      row = @page.find_row(host1)
       expected = row.sec_actions.deauthorize['ng-click']
       expect(expected).to eq('deAuthorize(user)')
       expect { row.sec_actions.authorize }.to raise_error(Capybara::ElementNotFound)
@@ -57,7 +53,7 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
       expect(expected).to end_with("/app#/playlists/#{host1.id}/index")
 
       # Host 2
-      row = @users_index_page.find_row(host2)
+      row = @page.find_row(host2)
       expect { row.sec_actions.deauthorize }.to raise_error(Capybara::ElementNotFound)
       expected = row.sec_actions.authorize['ng-click']
       expect(expected).to eq('authorize(user)')
@@ -67,7 +63,7 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
       expect(expected).to end_with("/app#/playlists/#{host2.id}/index")
 
       # Host 3
-      row = @users_index_page.find_row(host3)
+      row = @page.find_row(host3)
       expect { row.sec_actions.deauthorize }.to raise_error(Capybara::ElementNotFound)
       expect { row.sec_actions.authorize }.to raise_error(Capybara::ElementNotFound)
       expected = row.sec_actions.edit['ng-click']
@@ -79,7 +75,7 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
     describe 'authorization' do
       it 'toggles host1' do
         # Deauthorize
-        row = @users_index_page.find_row(host1)
+        row = @page.find_row(host1)
         accept_confirm("Are you sure you want to de-authorize this user?\nThey will no longer be allowed to sign in.") do
           row.sec_actions.deauthorize.click()
         end
@@ -106,7 +102,7 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
 
       it 'aborts toggle requrest for host1' do
         # Deauthorize
-        row = @users_index_page.find_row(host1)
+        row = @page.find_row(host1)
         dismiss_confirm("Are you sure you want to de-authorize this user?\nThey will no longer be allowed to sign in.") do
           row.sec_actions.deauthorize.click()
         end
@@ -121,7 +117,7 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
 
       it 'toggles host2' do
         # Authorize
-        row = @users_index_page.find_row(host2)
+        row = @page.find_row(host2)
         row.sec_actions.authorize.click()
         wait_for_angular_requests_to_finish
 
@@ -149,19 +145,19 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
 
     describe 'goes to edit' do
       it 'for host1' do
-        row = @users_index_page.find_row(host1)
+        row = @page.find_row(host1)
         row.sec_actions.edit.click()
         expect(page.current_url).to end_with("/app#/users/#{host1.id}/edit")
       end
 
       it 'for host2' do
-        row = @users_index_page.find_row(host2)
+        row = @page.find_row(host2)
         row.sec_actions.edit.click()
         expect(page.current_url).to end_with("/app#/users/#{host2.id}/edit")
       end
 
       it 'for host3' do
-        row = @users_index_page.find_row(host3)
+        row = @page.find_row(host3)
         row.sec_actions.edit.click()
         expect(page.current_url).to end_with("/app#/users/#{host3.id}/edit")
       end
@@ -169,25 +165,25 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
 
     describe 'videos' do
       it 'goes for admin' do
-        row = @users_index_page.find_row(admin)
+        row = @page.find_row(admin)
         row.sec_actions.videos.click()
         expect(page.current_url).to end_with("/app#/playlists/#{admin.id}/index")
       end
 
       it 'goes for host1' do
-        row = @users_index_page.find_row(host1)
+        row = @page.find_row(host1)
         row.sec_actions.videos.click()
         expect(page.current_url).to end_with("/app#/playlists/#{host1.id}/index")
       end
 
       it 'goes for host2' do
-        row = @users_index_page.find_row(host2)
+        row = @page.find_row(host2)
         row.sec_actions.videos.click()
         expect(page.current_url).to end_with("/app#/playlists/#{host2.id}/index")
       end
 
       it 'goes for host3' do
-        row = @users_index_page.find_row(host3)
+        row = @page.find_row(host3)
         row.sec_actions.videos.click()
         expect(page.current_url).to end_with("/app#/playlists/#{host3.id}/index")
       end
@@ -196,37 +192,13 @@ describe 'Admin User: /app#/users/index', js: true, type: :feature do
 end
 
 describe 'Host User: /app#/users/index', js: true, type: :feature do
-  subject { page }
-
-  let(:host) { create_user(role_titles: [:host]) }
-  let(:preload) { host }
-
-  before do
-    preload if defined?(preload)
-    sign_in(host)
-  end
-
-  it 'does not get the index' do
-    @users_index_page = UsersIndexPage.new
-    @users_index_page.load
-    wait_for_angular_requests_to_finish
-
-    expect(page.current_url).to end_with("/app#/unauthorized")
+  it_behaves_like "unauthorized" do
+    let(:loader) { sign_in_host; UsersIndexPage.new.load }
   end
 end
 
 describe 'Not Logged In: /app#/users/index', js: true, type: :feature do
-  subject { page }
-
-  before do
-    preload if defined?(preload)
-  end
-
-  it 'goes to sign in' do
-    @users_index_page = UsersIndexPage.new
-    @users_index_page.load
-    wait_for_angular_requests_to_finish
-
-    expect(page.current_url).to include("/users/sign_in")
+  it_behaves_like "guest_access" do
+    let(:loader) { UsersIndexPage.new.load }
   end
 end

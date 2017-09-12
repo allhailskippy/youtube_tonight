@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
-  subject { page }
-
   describe 'Standard behaviour' do
     let(:user) { create_user(name: 'User 1', email: 'email@test.com', requires_auth: false) }
     let(:preload) { user }
@@ -10,10 +8,10 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
     before do
       preload if defined?(preload)
       sign_in_admin
-      @users_edit_page = UsersEditPage.new
-      @users_edit_page.load(user_id: user.id)
+      @page = UsersEditPage.new
+      @page.load(user_id: user.id)
       wait_for_angular_requests_to_finish
-      @form = @users_edit_page.form
+      @form = @page.form
     end
 
     describe 'validation' do
@@ -23,7 +21,7 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
         @form.actions.submit.click
         wait_for_angular_requests_to_finish
 
-        errors = @users_edit_page.errors.collect(&:text)
+        errors = @page.errors.collect(&:text)
         expect(errors).to include("Name can't be blank")
         expect(errors).to include("Email can't be blank")
       end
@@ -95,7 +93,7 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
 
     it 'deletes the user' do
       accept_confirm("This will remove the user from the system\nThis cannot be undone!") do
-        @users_edit_page.delete_button.click
+        @page.delete_button.click
       end
       wait_for_angular_requests_to_finish
 
@@ -105,7 +103,7 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
 
     it 'cancels the delete request' do
       dismiss_confirm("This will remove the user from the system\nThis cannot be undone!") do
-        @users_edit_page.delete_button.click
+        @page.delete_button.click
       end
 
       expect(User.find(user.id)).to eq(user)
@@ -120,53 +118,31 @@ describe 'Admin User: /app#/users/:user_id/edit', js: true, type: :feature do
     before do
       preload if defined?(preload)
       sign_in_admin
-      @users_edit_page = UsersEditPage.new
-      @users_edit_page.load(user_id: user.id)
+      @page = UsersEditPage.new
+      @page.load(user_id: user.id)
       wait_for_angular_requests_to_finish
-      @form = @users_edit_page.form
+      @form = @page.form
     end
 
     it 'test' do
       @form.actions.submit.click
       wait_for_angular_requests_to_finish
 
-      errors = @users_edit_page.errors.collect(&:text)
+      errors = @page.errors.collect(&:text)
       expect(errors).to include("Roles must be selected")
     end
   end
 end
 
 describe 'Host User: /app#/users/:user_id/edit', js: true, type: :feature do
-  subject { page }
-  let(:host) { create_user(role_titles: [:host]) }
-  let(:preload) { host }
-
-  before do
-    preload if defined?(preload)
-    sign_in_host
-  end
-
-  it 'does not get the edit page' do
-    @users_edit_page = UsersEditPage.new
-    @users_edit_page.load(user_id: host.id)
-    wait_for_angular_requests_to_finish
-
-    expect(page.current_url).to end_with("/app#/unauthorized")
+  it_behaves_like "unauthorized" do
+    let(:host) { create_user(role_titles: [:host]) }
+    let(:loader) { sign_in(host); UsersEditPage.new.load(user_id: host.id) }
   end
 end
 
 describe 'Not Logged In: /app#/users/:users_id/edit', js: true, type: :feature do
-  subject { page }
-
-  before do
-    preload if defined?(preload)
-  end
-
-  it 'goes to sign in' do
-    @users_edit_page = UsersEditPage.new
-    @users_edit_page.load(user_id: 1)
-    wait_for_angular_requests_to_finish
-
-    expect(page.current_url).to include("/users/sign_in")
+  it_behaves_like "guest_access" do
+    let(:loader) { UsersEditPage.new.load }
   end
 end

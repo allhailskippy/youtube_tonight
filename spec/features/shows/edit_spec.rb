@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
-  subject { page }
   let(:user1) { create_user() }
   let(:user2) { create_user(role_titles: [:host]) }
   let(:user3) { create_user(role_titles: [:host, :admin]) }
@@ -19,7 +18,7 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
   before do
     preload if defined?(preload)
     sign_in_admin
-    @page= ShowsEditPage.new
+    @page = ShowsEditPage.new
     @page.load(show_id: show.id)
     wait_for_angular_requests_to_finish
     @form = @page.form
@@ -121,38 +120,15 @@ describe 'Admin User: /app#/shows/:show_id/edit', js: true, type: :feature do
 end
 
 describe 'Host User: /app#/shows/:show_id/edit', js: true, type: :feature do
-  subject { page }
-  let(:show) { create(:show) }
-  let(:preload) { show }
-
-  before do
-    preload if defined?(preload)
-    sign_in_host
-  end
-
-  it 'does not get the edit page' do
-    @page= ShowsEditPage.new
-    @page.load(show_id: show.id)
-    wait_for_angular_requests_to_finish
-
-    expect(page.current_url).to end_with("/app#/unauthorized")
+  it_behaves_like "unauthorized" do
+    let(:show) { create(:show) }
+    let(:loader) { sign_in_host; ShowsEditPage.new.load(show_id: show.id) }
   end
 end
 
 describe 'Not Logged In: /app#/shows/:show_id/edit', js: true, type: :feature do
-  subject { page }
-  let(:show) { create(:show) }
-  let(:preload) { show }
-
-  before do
-    preload if defined?(preload)
-  end
-
-  it 'goes to sign in' do
-    @page= ShowsEditPage.new
-    @page.load(show_id: show.id)
-    wait_for_angular_requests_to_finish
-
-    expect(page.current_url).to include("/users/sign_in")
+  it_behaves_like "guest_access" do
+    let(:show) { create(:show) }
+    let(:loader) { ShowsEditPage.new.load(show_id: show.id) }
   end
 end
