@@ -55,7 +55,7 @@ var controller = function(
 
             $scope.searchResults.push(video);
           });
-        });
+        }).catch(Notice.handleerrors);
       }, 250);
     }
   });

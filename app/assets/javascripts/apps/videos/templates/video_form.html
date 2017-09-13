@@ -109,14 +109,14 @@
     </div>
   </div>
 </div>
-<div ng-repeat="video in searchResults track by $index" class="panel panel-primary">
+<div ng-repeat="video in searchResults track by $index" class="panel panel-primary search-results">
   <div class="panel">
     <div class="panel-body">
       <div class="col-md-1 text-center">
         <br />
         <button
           type="submit"
-          class="btn btn-success"
+          class="btn btn-success select-result"
           ng-click="selectResult(video)"
           ng-disabled="video.api_video_id == currentVideo.api_video_id"
         >Select</button>

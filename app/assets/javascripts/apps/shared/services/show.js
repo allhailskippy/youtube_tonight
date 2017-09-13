@@ -50,6 +50,10 @@ var Show = function(ShowApi) {
       return show.isNewRecord() ? 'Create New Show' : 'Update Show';
     };
 
+    show.indexUrl = function() {
+      return '/#/shows';
+    };
+
     // Link to videos page
     show.videoUrl = function() {
       return '/#/shows/' + show.id + '/videos';

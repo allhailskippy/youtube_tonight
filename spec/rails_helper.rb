@@ -2,14 +2,14 @@
 #   HEADLESS=false rspec spec/features/test_name
 #
 # In headless mode, print console.logs to the terminal:
-#   JSLOG=1 rspec spec/features/something
+#   JSLOG=true rspec spec/features/something
 #
 # In non-headless mode, slow down interaction with the browser:
 # (useful for debugging synchronization problems)
-#   SLOW=1 rspec spec/features/something
+#   SLOW=true rspec spec/features/something
 #
 # Take a screenshot everytime a failure occurs:
-#   FAILURE_SCREENSHOTS=1 rspec spec/features/something
+#   FAILURE_SCREENSHOTS=true rspec spec/features/something
 
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
@@ -69,17 +69,18 @@ if %w(false f no n).include?(ENV['HEADLESS'].to_s.downcase)
   end
 else
   Capybara.register_driver :poltergeist do |app|
-    opts = { port: 51_674, phantomjs: Phantomjs.path}
+    opts = { phantomjs: Phantomjs.path}
 
     unless ENV['JSLOG'].present?
       null_logger = File.open(File::NULL, 'w')
       opts[:phantomjs_logger] = null_logger
     end
 
-    Capybara::Poltergeist::Driver.new(app, :phantomjs => Phantomjs.path)
+    Capybara::Poltergeist::Driver.new(app, opts)
   end
   Capybara.javascript_driver = :poltergeist
 end
+Capybara.server_port = 12345
 
 WebMock.disable_net_connect!(allow_localhost: true)
 ActiveRecord::Migration.maintain_test_schema!

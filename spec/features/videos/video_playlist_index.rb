@@ -20,7 +20,7 @@ shared_examples "the index page" do
   end
 
   it 'has the back button' do
-    expect(@page.back['href']).to end_with('/playlists/index')
+    expect(@page.back['href']).to end_with('/#/playlists')
   end
 
   it 'goes back' do
@@ -41,7 +41,7 @@ shared_examples "the index page" do
     row = @page.find_row(playlist.videos.first)
     row.preview_start.click
     wait_for_angular_requests_to_finish
-    expect(row.preview_start['disabled']).to eq("true")
+    expect(row.preview_start['disabled']).to eq("disabled")
   end
 end
 
@@ -116,7 +116,7 @@ describe 'Admin User: /#/playlists/:playlist_id/videos', js: true, type: :featur
   before do
     preload if defined?(preload)
     sign_in(admin)
-    @page = VideosIndexPage.new
+    @page = VideosPlaylistIndexPage.new
   end
 
   it_behaves_like "the index page"
@@ -146,7 +146,7 @@ describe 'Host User: /#/playlists/:playlist_id/videos', js: true, type: :feature
   before do
     preload if defined?(preload)
     sign_in(host)
-    @page = VideosIndexPage.new
+    @page = VideosPlaylistIndexPage.new
   end
 
   it_behaves_like "the index page"
@@ -170,6 +170,6 @@ end
 # Check when accessing a non-logged in user
 describe 'Not Logged In: /#/playlists/:playlist_id/videos', js: true, type: :feature do
   it_behaves_like "guest_access" do
-    let(:loader) { VideosIndexPage.new.load(playlist_id: 1) }
+    let(:loader) { VideosPlaylistIndexPage.new.load(playlist_id: 1) }
   end
 end
