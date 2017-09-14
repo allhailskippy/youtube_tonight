@@ -32,7 +32,7 @@ def stub_search_results(amount = 1)
   allow(YoutubeApi).to receive(:get_video_info).and_return(response)
 end
 
-shared_examples "the index page" do
+shared_examples "the video show index page" do
   context 'index page actions' do
     let(:show) { create(:show, users: [current_user]) }
     let(:video1) { create(:video, parent: show, start_time: 10, end_time: 15) }
@@ -163,7 +163,7 @@ shared_examples "the index page" do
       wait_for_angular_requests_to_finish
 
       # Should start disabled
-      expect(@page.selected_video.add_to_queue["disabled"]).to eq("true")
+      expect(@page.selected_video.add_to_queue["disabled"]).to be true
 
       # Verify search results
       row = @page.search_results.first
@@ -237,7 +237,7 @@ shared_examples "the index page" do
       row.select_result.click
 
       # Verify select button is disabled
-      expect(row.select_result['disabled']).to eq('true')
+      expect(row.select_result['disabled']).to be true
 
       # Expect other results to still be enabled
       row = @page.search_results.last
@@ -274,7 +274,7 @@ shared_examples "the index page" do
       row = @page.search_results.first
       expect(row.select_result['disabled']).to be_blank
       row = @page.search_results.last
-      expect(row.select_result['disabled']).to eq('true')
+      expect(row.select_result['disabled']).to be true
     end
   end
 
@@ -393,7 +393,7 @@ describe 'Admin User: /#/shows/:show_id/videos', js: true, type: :feature do
     @page = VideosShowsIndexPage.new
   end
 
-  it_behaves_like "the index page"
+  it_behaves_like "the video show index page"
   it_behaves_like "duration"
 end
 
@@ -409,7 +409,7 @@ describe 'Host User: /#/shows/:show_id/videos', js: true, type: :feature do
     @page = VideosShowsIndexPage.new
   end
 
-  it_behaves_like "the index page"
+  it_behaves_like "the video show index page"
   it_behaves_like "duration"
 end
 

@@ -19,6 +19,7 @@ RSpec.configure do |config|
 
   config.profile_examples = 10
   config.order = :random
+  config.default_path = 'spec/features'
 
   Kernel.srand config.seed
 end

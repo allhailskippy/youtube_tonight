@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-shared_examples "the index page" do
+shared_examples "the video playlist index page" do
   let(:playlist) { create(:playlist_with_videos, user: current_user, videocount: 3) }
 
   before do
@@ -119,7 +119,7 @@ describe 'Admin User: /#/playlists/:playlist_id/videos', js: true, type: :featur
     @page = VideosPlaylistIndexPage.new
   end
 
-  it_behaves_like "the index page"
+  it_behaves_like "the video playlist index page"
   it_behaves_like "duration"
 
   it_should_behave_like "paginated" do
@@ -149,7 +149,7 @@ describe 'Host User: /#/playlists/:playlist_id/videos', js: true, type: :feature
     @page = VideosPlaylistIndexPage.new
   end
 
-  it_behaves_like "the index page"
+  it_behaves_like "the video playlist index page"
   it_behaves_like "duration"
 
   it_should_behave_like "paginated" do
