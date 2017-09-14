@@ -80,6 +80,35 @@ shared_examples "the video show index page" do
       wait_for_angular_requests_to_finish
       expect(page.current_url).to end_with("/#/shows")
     end
+
+    it 'sorts' do
+      ids = @page.rows.collect{|r| r.root_element["id"]  }
+      expected = ["video_#{video1.id}", "video_#{video2.id}", "video_#{video3.id}"]
+      expect(ids).to eq(expected)
+      page.execute_script %Q{
+        var source = $('#videos .ui-sortable-handle').first();
+        var height = source.height() + 10;
+        source.simulate('drag-n-drop', { dy: height, interpolation: { stepWidth: 10, stepDelay: 5 }})
+      }
+      sleep 1
+      wait_for_angular_requests_to_finish
+
+      ids = @page.rows.collect{|r| r.root_element["id"]  }
+      expected = ["video_#{video2.id}", "video_#{video1.id}", "video_#{video3.id}"]
+      expect(ids).to eq(expected)
+
+      page.execute_script %Q{
+        var source = $($('#videos .ui-sortable-handle')[1]);
+        var height = source.height() + 10;
+        source.simulate('drag-n-drop', { dy: height, interpolation: { stepWidth: 10, stepDelay: 5 }})
+      }
+      sleep 1
+      wait_for_angular_requests_to_finish
+
+      ids = @page.rows.collect{|r| r.root_element["id"]  }
+      expected = ["video_#{video2.id}", "video_#{video3.id}", "video_#{video1.id}"]
+      expect(ids).to eq(expected)
+    end
   end
 
   context 'add new video' do

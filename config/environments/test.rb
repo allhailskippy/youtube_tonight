@@ -38,6 +38,7 @@ Youtubetonight::Application.configure do
   config.assets.compile = true
   config.assets.digest = false
   config.log_level = :warn
+  config.assets.precompile += %w( jquery.simulate.js jquery.simulate.ext.js jquery.simulate.drag-n-drop.js)
 
   # YouTube
   YOUTUBE_API_KEY = 'YOUTUBE_API_KEY'
