@@ -96,7 +96,9 @@ describe 'Admin User: /#/playlists/index', js: true, type: :feature do
   end
 
   it 'does not have the back button' do
-    expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+    using_wait_time(0) do
+      expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+    end
   end
 end
 
@@ -178,7 +180,9 @@ describe 'Host User: /#/playlists', js: true, type: :feature do
   end
 
   it 'does not have the back button' do
-    expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+    using_wait_time(0) do
+      expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+    end
   end
 end
 
@@ -208,7 +212,9 @@ describe 'Host User: /#/playlists pagination', js: true, type: :feature do
   end
 
   it 'does not have the back button' do
-    expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+    using_wait_time(0) do
+      expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+    end
   end
 end
 
@@ -235,7 +241,9 @@ describe 'Host User: /#/users/:user_id/playlists', js: true, type: :feature do
   end
 
   it 'does not have the back button' do
-    expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+    using_wait_time(0) do
+      expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+    end
   end
 end
 
@@ -265,7 +273,9 @@ describe 'Host User: /#/users/:user_id/playlists pagination', js: true, type: :f
   end
 
   it 'does not have the back button' do
-    expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+    using_wait_time(0) do
+      expect{@page.back}.to raise_error(Capybara::ElementNotFound)
+    end
   end
 end
 

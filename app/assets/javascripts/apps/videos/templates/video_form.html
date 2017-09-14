@@ -48,6 +48,7 @@
           <div class="form-group">
             <label for="start_time">Start At (Seconds):</label>
             <input
+              name="start_time"
               class="form-control"
               type="number"
               min="0"
@@ -59,6 +60,7 @@
           <div class="form-group">
             <label for="end_time">End At (Seconds):</label>
             <input
+              name="end_time"
               class="form-control"
               type="number"
               min="0"
@@ -69,12 +71,12 @@
         <div class="col-md-8">&nbsp;</div>
       </div>
     </form>
-    <div>
+    <div id="selected-video">
       <div class="col-md-1 text-center">
         <br />
         <button
           type="submit"
-          class="btn btn-primary"
+          class="btn btn-primary clear-video"
           ng-click="selectResult()"
           ng-show="hasVideo()"
         >Clear</button>
@@ -86,12 +88,14 @@
         ></video-show>
         <div class="pull-right">
           <button
+            id="cancel"
             title="Cancel"
             class="btn btn-primary glyphicon glyphicon-arrow-left"
             ng-disabled="!canCancel()"
             ng-click="cancel()"
           ></button>
           <button
+            id="add-to-queue"
             type="submit"
             class="btn btn-success"
             ng-click="save()"
@@ -99,6 +103,7 @@
             ng-show="!currentVideo.id"
           >Add To Queue</button>
           <button
+            id="update"
             type="submit"
             class="btn btn-success"
             ng-click="update()"

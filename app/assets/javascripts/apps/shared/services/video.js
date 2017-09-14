@@ -23,7 +23,9 @@ var Video = function(
     'title',
     'api_video_id',
     'api_duration',
-    'api_duration_seconds'
+    'api_duration_seconds',
+    'parent_id',
+    'parent_type'
   ];
 
   self.formatAttributes = [
@@ -76,9 +78,12 @@ var Video = function(
 
       var params = {
         video: saveData,
-        show_id: video['show_id'],
-        playlist_id: video['playlist_id']
       };
+      if(video.parent_type == 'Show') {
+        jQuery.merge(params, { show_id: video.parent_id });
+      } else if(video.parent_type == 'Playlist') {
+        jQuery.merge(params, { playlist_id: video.parent_id });
+      }
 
       // Different calls for new vs existing
       if(video.id) {

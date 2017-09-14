@@ -118,13 +118,17 @@ describe 'Host User: /#/shows', js: true, type: :feature do
   end
 
   it 'does not have the create button' do
-    expect { @page.create_show }.to raise_error(Capybara::ElementNotFound)
+    using_wait_time(0) do
+      expect { @page.create_show }.to raise_error(Capybara::ElementNotFound)
+    end
   end
 
   it 'does not have the edit button' do
     [show1, show2].each do |show|
       row = @page.find_show(show)
-      expect { row.sec_actions.edit }.to raise_error(Capybara::ElementNotFound)
+      using_wait_time(0) do
+        expect { row.sec_actions.edit }.to raise_error(Capybara::ElementNotFound)
+      end
     end
   end
 

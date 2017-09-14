@@ -22,7 +22,7 @@ var controller = function(
   $scope.showId = $routeParams.show_id;
   $scope.dispatcher = ConnectionHelper.getDispatcher();
   $scope.channel = ConnectionHelper.getChannel('video_player');
-  $scope.currentVideo = $scope.currentVideo || Video.build({parent_id: $scope.showId, parent_type: 'show'});
+  $scope.currentVideo = $scope.currentVideo || Video.build({parent_id: $scope.showId, parent_type: 'Show'});
   $scope.searchResults = [];
   var searchTimeout;
 
@@ -32,7 +32,7 @@ var controller = function(
   $scope.$watch('currentVideo.search', function(newVal, oldVal) {
     if(newVal == '') {
       // Clear current video if we clear the search
-      $scope.currentVideo = Video.build({parent_id: $scope.showId, parent_type: 'show'});
+      $scope.currentVideo = Video.build({parent_id: $scope.showId, parent_type: 'Show'});
       $scope.searchResults = [];
     }
 
@@ -47,12 +47,12 @@ var controller = function(
           $scope.searchResults = [];
           $scope.currentVideo = Video.build({
             parent_id: $scope.showId,
-            parent_type: 'show',
+            parent_type: 'Show',
             search: $scope.currentVideo.search
           });
           angular.forEach(response.data, function(result) {
             var yt = YoutubeParser.build(result)
-            var video = Video.setFromYoutubeParser(yt, { parent_id: $scope.showId, parent_type: 'show'});
+            var video = Video.setFromYoutubeParser(yt, { parent_id: $scope.showId, parent_type: 'Show'});
 
             $scope.searchResults.push(video);
           });
@@ -67,7 +67,7 @@ var controller = function(
   $scope.save = function() {
     $scope.currentVideo.parent_id = $scope.showId;
     $scope.currentVideo.save().then(function() {
-      $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'show' });
+      $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'Show' });
 
       // This is called on the parent controller.
       // Is defined in the scope section below
@@ -79,7 +79,7 @@ var controller = function(
   $scope.selectResult = function(video) {
     // If we're clearing, build a new video object
     if(!video) {
-      video = Video.build({ parent_id: $scope.showId, parent_type: 'show' });
+      video = Video.build({ parent_id: $scope.showId, parent_type: 'Show' });
     }
     // Keep current search value
     if($scope.currentVideo) {
@@ -90,7 +90,7 @@ var controller = function(
 
   $scope.update = function() {
     $scope.currentVideo.save().then(function() {
-      $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'show' });
+      $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'Show' });
 
       // This is called on the parent controller.
       // Is defined in the scope section below
@@ -111,7 +111,7 @@ var controller = function(
       $scope.closeForm();
     }
     $scope.searchResults = [];
-    $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'show' });
+    $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'Show' });
   };
 
   $scope.hasVideo = function() {

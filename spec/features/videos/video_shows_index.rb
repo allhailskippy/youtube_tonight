@@ -1,64 +1,95 @@
 require 'rails_helper'
 
+def stub_search_results(amount = 1)
+  response_options = [{
+    "video_id": "1234abcd",
+    "published_at": "2017-04-01T11:07:36.000+00:00",
+    "channel_id": "channelid",
+    "channel_title": "channel title",
+    "description": "this is a description",
+    "thumbnail_default_url": "https://i.ytimg.com/vi/furTlhb-990/default.jpg",
+    "thumbnail_medium_url": "https://i.ytimg.com/vi/furTlhb-990/mqdefault.jpg",
+    "thumbnail_high_url": "https://i.ytimg.com/vi/furTlhb-990/hqdefault.jpg",
+    "title": "fake title",
+    "link": "https://www.youtube.com/v/1234abcd",
+    "duration": "PT18M13S",
+    "duration_seconds": 1093.0
+  },{
+    "video_id": "2222abcd",
+    "published_at": "2017-04-02T12:00:37.000+00:00",
+    "channel_id": "channelid2",
+    "channel_title": "different channel title",
+    "description": "this is also a description",
+    "thumbnail_default_url": "https://i.ytimg.com/vi/furTlhb-990/default.jpg",
+    "thumbnail_medium_url": "https://i.ytimg.com/vi/furTlhb-990/mqdefault.jpg",
+    "thumbnail_high_url": "https://i.ytimg.com/vi/furTlhb-990/hqdefault.jpg",
+    "title": "second title",
+    "link": "https://www.youtube.com/v/1234abcd",
+    "duration": "PT1M13S",
+    "duration_seconds": 73.0
+  }]
+  response = response_options[0, amount]
+  allow(YoutubeApi).to receive(:get_video_info).and_return(response)
+end
+
 shared_examples "the index page" do
-  let(:show) { create(:show, users: [current_user]) }
-  let(:video1) { create(:video, parent: show, start_time: 10, end_time: 15) }
-  let(:video2) { create(:video, parent: show) }
-  let(:video3) { create(:video, parent: show) }
-  let(:preload) { show; video1; video2; video3; show.reload }
+  context 'index page actions' do
+    let(:show) { create(:show, users: [current_user]) }
+    let(:video1) { create(:video, parent: show, start_time: 10, end_time: 15) }
+    let(:video2) { create(:video, parent: show) }
+    let(:video3) { create(:video, parent: show) }
+    let(:preload) { show; video1; video2; video3; show.reload }
 
-  before do
-    @page.load(show_id: show.id)
-    wait_for_angular_requests_to_finish
-  end
+    before do
+      @page.load(show_id: show.id)
+      wait_for_angular_requests_to_finish
+    end
 
-  it 'gets the index' do
-    expect(@page.rows.length).to eq(3)
-    show.videos.each do |video|
-      row = @page.find_row(video)
-      expect(row.thumbnail['src']).to eq(video.api_thumbnail_default_url)
-      expect(row.title.text).to eq("Title: #{video.title}")
-      expect(row.channel.text).to eq("Channel: #{video.api_channel_title}")
-      if(video.start_time)
-        expect(row.start_at.text).to eq("Start At: #{video.start_time}")
+    it 'gets the index' do
+      expect(@page.rows.length).to eq(3)
+      show.videos.each do |video|
+        row = @page.find_row(video)
+        expect(row.thumbnail['src']).to eq(video.api_thumbnail_default_url)
+        expect(row.title.text).to eq("Title: #{video.title}")
+        expect(row.channel.text).to eq("Channel: #{video.api_channel_title}")
+        if(video.start_time)
+          expect(row.start_at.text).to eq("Start At: #{video.start_time}")
+        end
+        if(video.end_time)
+          expect(row.end_at.text).to eq("End At: #{video.end_time}")
+        end
       end
-      if(video.end_time)
-        expect(row.end_at.text).to eq("End At: #{video.end_time}")
-      end
+    end
+
+    it 'has the add video button' do
+      expect(@page.add_video['ng-click']).to eq('addVideo()')
+    end
+
+    it 'has the back button' do
+      expect(@page.back['href']).to end_with('/#/shows')
+    end
+
+    it 'goes back' do
+      @page.back.click
+      wait_for_angular_requests_to_finish
+      expect(page.current_url).to end_with("/#/shows")
     end
   end
 
-  it 'has the add video button' do
-    expect(@page.add_video['ng-click']).to eq('addVideo()')
-  end
-
-  it 'has the back button' do
-    expect(@page.back['href']).to end_with('/#/shows')
-  end
-
-  it 'goes back' do
-    @page.back.click
-    wait_for_angular_requests_to_finish
-    expect(page.current_url).to end_with("/#/shows")
-  end
-
   context 'add new video' do
+    let(:show) { create(:show, users: [current_user]) }
+    let(:video1) { create(:video, parent: show, start_time: 10, end_time: 15) }
+    let(:video2) { create(:video, parent: show) }
+    let(:video3) { create(:video, parent: show) }
+    let(:preload) { show; video1; video2; video3; show.reload }
+
+    before do
+      @page.load(show_id: show.id)
+      wait_for_angular_requests_to_finish
+    end
+
     it 'goes adds a new video to the show' do
-      response = [{
-        "video_id": "1234abcd",
-        "published_at": "2017-04-01T11:07:36.000+00:00",
-        "channel_id": "channelid",
-        "channel_title": "channel title",
-        "description": "this is a description",
-        "thumbnail_default_url": "https://i.ytimg.com/vi/furTlhb-990/default.jpg",
-        "thumbnail_medium_url": "https://i.ytimg.com/vi/furTlhb-990/mqdefault.jpg",
-        "thumbnail_high_url": "https://i.ytimg.com/vi/furTlhb-990/hqdefault.jpg",
-        "title": "fake title",
-        "link": "https://www.youtube.com/v/1234abcd",
-        "duration": "PT18M13S",
-        "duration_seconds": 1093.0
-      }]
-      allow(YoutubeApi).to receive(:get_video_info).and_return(response)
+      stub_search_results()
 
       @page.add_video.click
       sleep 1
@@ -70,14 +101,220 @@ shared_examples "the index page" do
       wait_for_angular_requests_to_finish
 
       expect(@page.search_results.length).to eq(1)
-      
+
+      # Verify search results
       row = @page.search_results.first
       expect(row.select_result['ng-click']).to eq('selectResult(video)')
       expect(row.thumbnail['src']).to eq('https://i.ytimg.com/vi/furTlhb-990/default.jpg')
       expect(row.preview_start['ng-click']).to eq('play()')
       expect(row.title.text).to eq('Title: fake title')
       expect(row.channel.text).to eq('Channel: channel title')
-      expect(row.duration.text).to eq('Duration: 18 minutes (18m13s)') 
+      expect(row.duration.text).to eq('Duration: 18 minutes (18m13s)')
+      expect(row.select_result['ng-click']).to eq('selectResult(video)')
+
+      # Select video
+      row.select_result.click
+
+      # Verify that the video got selected
+      row = @page.selected_video
+      expect(row.clear['ng-click']).to eq('selectResult()')
+      expect(row.thumbnail['src']).to eq('https://i.ytimg.com/vi/furTlhb-990/default.jpg')
+      expect(row.preview_start['ng-click']).to eq('play()')
+      expect(row.title.text).to eq('Title: fake title')
+      expect(row.channel.text).to eq('Channel: channel title')
+      expect(row.duration.text).to eq('Duration: 18 minutes (18m13s)')
+
+      # Set values
+      @page.video_form.title.set('changed title')
+      @page.video_form.start_at.set('5')
+      @page.video_form.end_at.set('30')
+
+      # Verify values are changes
+      expect(row.title.text).to eq('Title: changed title')
+      expect(row.start_at.text).to eq('Start At: 5')
+      expect(row.end_at.text).to eq('End At: 30')
+
+      expect(row.add_to_queue["ng-click"]).to eq('save()')
+      row.add_to_queue.click()
+      wait_for_angular_requests_to_finish
+
+      # Verify the video got added
+      expect(@page.rows.length).to eq(4)
+
+      row = @page.rows.last
+      expect(row.thumbnail['src']).to eq('https://i.ytimg.com/vi/furTlhb-990/default.jpg')
+      expect(row.preview_start['ng-click']).to eq('play()')
+      expect(row.title.text).to eq('Title: changed title')
+      expect(row.channel.text).to eq('Channel: channel title')
+      expect(row.duration.text).to eq('Duration: 18 minutes (18m13s)')
+      expect(row.start_at.text).to eq('Start At: 5')
+      expect(row.end_at.text).to eq('End At: 30')
+    end
+
+    it 'cannot add to queue until a video has been selected' do
+      stub_search_results()
+
+      @page.add_video.click
+      sleep 1
+
+      @page.video_form.search.set('search text')
+      blur
+      sleep 1
+      wait_for_angular_requests_to_finish
+
+      # Should start disabled
+      expect(@page.selected_video.add_to_queue["disabled"]).to eq("true")
+
+      # Verify search results
+      row = @page.search_results.first
+      row.select_result.click
+
+      # Should end not-disabled
+      expect(@page.selected_video.add_to_queue["disabled"]).to be_blank
+    end
+
+    it 'can clear a selected video' do
+      stub_search_results()
+
+      @page.add_video.click
+      sleep 1
+      expect(@page.video_form).to_not be_nil
+
+      @page.video_form.search.set('search text')
+      blur
+      sleep 1
+      wait_for_angular_requests_to_finish
+
+      expect(@page.search_results.length).to eq(1)
+
+      row = @page.search_results.first
+      row.select_result.click
+
+      # Verify that the video got selected
+      row = @page.selected_video
+      row.clear.click()
+
+      using_wait_time(0) do
+        expect { @page.video_form.title }.to raise_error(Capybara::ElementNotFound)
+        expect { @page.video_form.start_at }.to raise_error(Capybara::ElementNotFound)
+        expect { @page.video_form.end_at }.to raise_error(Capybara::ElementNotFound)
+        expect{row.thumbnail}.to  raise_error(Capybara::ElementNotFound)
+        expect{row.preview_start}.to raise_error(Capybara::ElementNotFound)
+        expect{row.title}.to raise_error(Capybara::ElementNotFound)
+        expect{row.channel}.to raise_error(Capybara::ElementNotFound)
+        expect{row.duration}.to raise_error(Capybara::ElementNotFound)
+      end
+    end
+
+    it 'can cancel adding a video' do
+      expect(@page.rows.length).to eq(3)
+
+      @page.add_video.click
+      sleep 1
+      expect(@page.video_form).to_not be_nil
+
+      expect(@page.selected_video.cancel['ng-click']).to eq('cancel()')
+      @page.selected_video.cancel.click
+
+      expect(@page.rows.length).to eq(3)
+    end
+
+    it 'disables the select button for the currently selected video' do
+      stub_search_results(2)
+
+      @page.add_video.click
+      sleep 1
+      expect(@page.video_form).to_not be_nil
+
+      @page.video_form.search.set('search text')
+      blur
+      sleep 1
+      wait_for_angular_requests_to_finish
+
+      expect(@page.search_results.length).to eq(2)
+
+      row = @page.search_results.first
+      row.select_result.click
+
+      # Verify select button is disabled
+      expect(row.select_result['disabled']).to eq('true')
+
+      # Expect other results to still be enabled
+      row = @page.search_results.last
+      expect(row.select_result['disabled']).to be_blank
+    end
+
+    it 'can select a different video' do
+      stub_search_results(2)
+
+      @page.add_video.click
+      sleep 1
+      expect(@page.video_form).to_not be_nil
+
+      @page.video_form.search.set('search text')
+      blur
+      sleep 1
+      wait_for_angular_requests_to_finish
+
+      expect(@page.search_results.length).to eq(2)
+
+      row = @page.search_results.first
+      row.select_result.click
+
+      row = @page.selected_video
+      expect(row.title.text).to eq('Title: fake title')
+
+      row = @page.search_results.last
+      row.select_result.click
+
+      row = @page.selected_video
+      expect(row.title.text).to eq('Title: second title')
+
+      # select buttons are set correctly
+      row = @page.search_results.first
+      expect(row.select_result['disabled']).to be_blank
+      row = @page.search_results.last
+      expect(row.select_result['disabled']).to eq('true')
+    end
+  end
+
+  context 'show has no videos' do
+    let(:show) { create(:show, users: [current_user]) }
+    let(:preload) { show }
+
+    before do
+      @page.load(show_id: show.id)
+      wait_for_angular_requests_to_finish
+    end
+
+    it 'should show the form to start' do
+      stub_search_results()
+
+      expect(@page.video_form).to_not be_nil
+
+      @page.video_form.search.set('search text')
+      blur
+      sleep 1
+      wait_for_angular_requests_to_finish
+
+      @page.search_results.first.select_result.click
+      @page.video_form.title.set('changed title')
+      @page.video_form.start_at.set('5')
+      @page.video_form.end_at.set('30')
+      @page.selected_video.add_to_queue.click()
+      wait_for_angular_requests_to_finish
+
+      # Only one video should be shown now
+      expect(@page.rows.length).to eq(1)
+
+      row = @page.rows.first
+      expect(row.thumbnail['src']).to eq('https://i.ytimg.com/vi/furTlhb-990/default.jpg')
+      expect(row.preview_start['ng-click']).to eq('play()')
+      expect(row.title.text).to eq('Title: changed title')
+      expect(row.channel.text).to eq('Channel: channel title')
+      expect(row.duration.text).to eq('Duration: 18 minutes (18m13s)')
+      expect(row.start_at.text).to eq('Start At: 5')
+      expect(row.end_at.text).to eq('End At: 30')
     end
   end
 end

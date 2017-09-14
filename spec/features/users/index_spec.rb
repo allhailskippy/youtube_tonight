@@ -38,15 +38,19 @@ describe 'Admin User: /#/users', js: true, type: :feature do
     it 'has all the right buttons' do
       # Admin
       row = @page.find_row(admin)
-      expect { row.sec_actions.deauthorize }.to raise_error(Capybara::ElementNotFound)
-      expect { row.sec_actions.authorize }.to raise_error(Capybara::ElementNotFound)
-      expect { row.sec_actions.edit }.to raise_error(Capybara::ElementNotFound)
+      using_wait_time(0) do
+        expect { row.sec_actions.deauthorize }.to raise_error(Capybara::ElementNotFound)
+        expect { row.sec_actions.authorize }.to raise_error(Capybara::ElementNotFound)
+        expect { row.sec_actions.edit }.to raise_error(Capybara::ElementNotFound)
+      end
 
       # Host 1
       row = @page.find_row(host1)
       expected = row.sec_actions.deauthorize['ng-click']
       expect(expected).to eq('deAuthorize(user)')
-      expect { row.sec_actions.authorize }.to raise_error(Capybara::ElementNotFound)
+      using_wait_time(0) do
+        expect { row.sec_actions.authorize }.to raise_error(Capybara::ElementNotFound)
+      end
       expected = row.sec_actions.edit['ng-click']
       expect(expected).to eq('edit(user)')
       expected = row.sec_actions.videos['href']
@@ -54,7 +58,9 @@ describe 'Admin User: /#/users', js: true, type: :feature do
 
       # Host 2
       row = @page.find_row(host2)
-      expect { row.sec_actions.deauthorize }.to raise_error(Capybara::ElementNotFound)
+      using_wait_time(0) do
+        expect { row.sec_actions.deauthorize }.to raise_error(Capybara::ElementNotFound)
+      end
       expected = row.sec_actions.authorize['ng-click']
       expect(expected).to eq('authorize(user)')
       expected = row.sec_actions.edit['ng-click']
@@ -64,8 +70,10 @@ describe 'Admin User: /#/users', js: true, type: :feature do
 
       # Host 3
       row = @page.find_row(host3)
-      expect { row.sec_actions.deauthorize }.to raise_error(Capybara::ElementNotFound)
-      expect { row.sec_actions.authorize }.to raise_error(Capybara::ElementNotFound)
+      using_wait_time(0) do
+        expect { row.sec_actions.deauthorize }.to raise_error(Capybara::ElementNotFound)
+        expect { row.sec_actions.authorize }.to raise_error(Capybara::ElementNotFound)
+      end
       expected = row.sec_actions.edit['ng-click']
       expect(expected).to eq('edit(user)')
       expected = row.sec_actions.videos['href']
