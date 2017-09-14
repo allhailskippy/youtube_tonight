@@ -41,11 +41,11 @@ shared_examples "the video playlist index page" do
     row = @page.find_row(playlist.videos.first)
     row.preview_start.click
     wait_for_angular_requests_to_finish
-    expect(row.preview_start['disabled']).to eq("disabled")
+    expect(row.preview_start['disabled']).to be_truthy
   end
 end
 
-shared_examples "duration" do
+shared_examples "video playlist duration" do
   let(:playlist) { create(:playlist, user: current_user) }
   let(:video1) { create(:video, parent: playlist, api_duration: 'PT44S') }
   let(:video2) { create(:video, parent: playlist, api_duration: 'PT45S') }
@@ -120,7 +120,7 @@ describe 'Admin User: /#/playlists/:playlist_id/videos', js: true, type: :featur
   end
 
   it_behaves_like "the video playlist index page"
-  it_behaves_like "duration"
+  it_behaves_like "video playlist duration"
 
   it_should_behave_like "paginated" do
     let(:playlist) { create(:playlist_with_videos, user: admin, videocount: 100) }
@@ -150,7 +150,7 @@ describe 'Host User: /#/playlists/:playlist_id/videos', js: true, type: :feature
   end
 
   it_behaves_like "the video playlist index page"
-  it_behaves_like "duration"
+  it_behaves_like "video playlist duration"
 
   it_should_behave_like "paginated" do
     let(:playlist) { create(:playlist_with_videos, user: host, videocount: 100) }

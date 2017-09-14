@@ -111,6 +111,7 @@ var controller = function(
       $scope.closeForm();
     }
     $scope.searchResults = [];
+    $scope.queryVideos();
     $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'Show' });
   };
 

@@ -78,7 +78,7 @@
           type="submit"
           class="btn btn-primary clear-video"
           ng-click="selectResult()"
-          ng-show="hasVideo()"
+          ng-show="hasVideo() && !currentVideo.id"
         >Clear</button>
       </div>
       <div class="col-md-11">

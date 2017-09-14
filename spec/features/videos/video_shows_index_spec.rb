@@ -64,6 +64,7 @@ shared_examples "the video show index page" do
       expect(@page.launch_broadcast['ng-click']).to eq('launchBroadcastPlayer()')
       new_window = window_opened_by { @page.launch_broadcast.click() }
       expect(new_window).to_not be_blank
+      new_window.close
     end
 
     it 'has the add video button' do
@@ -220,6 +221,7 @@ shared_examples "the video show index page" do
 
       expect(@page.selected_video.cancel['ng-click']).to eq('cancel()')
       @page.selected_video.cancel.click
+      wait_for_angular_requests_to_finish
 
       expect(@page.rows.length).to eq(3)
     end
@@ -310,6 +312,73 @@ shared_examples "the video show index page" do
     end
   end
 
+  context 'edit video' do
+    let(:show) { create(:show, users: [current_user]) }
+    let(:video1) { create(:video, parent: show, title: 'Video Title', start_time: 10, end_time: 15) }
+    let(:preload) { show; video1 }
+
+    before do
+      @page.load(show_id: show.id)
+      wait_for_angular_requests_to_finish
+    end
+
+    it 'can edit a video' do
+      row = @page.find_row(video1)
+      expect(row.edit['ng-click']).to eq('editVideo(video)')
+      row.edit.click()
+      sleep 1
+
+
+      expect(@page.video_form).to_not be_nil
+      row = @page.selected_video
+      expect(row.title.text).to eq("Title: #{video1.title}")
+      expect(row.start_at.text).to eq("Start At: #{video1.start_time}")
+      expect(row.end_at.text).to eq("End At: #{video1.end_time}")
+
+      @page.video_form.title.set('edited title')
+      @page.video_form.start_at.set('')
+      @page.video_form.end_at.set('')
+
+      expect(row.update['ng-click']).to eq('update()')
+      row.update.click()
+      sleep 1
+      wait_for_angular_requests_to_finish
+
+      row = @page.find_row(video1)
+      expect(row.title.text).to eq("Title: edited title")
+      using_wait_time(0) do
+        expect { row.start_at }.to raise_error(Capybara::ElementNotFound)
+        expect { row.end_at }.to raise_error(Capybara::ElementNotFound)
+      end
+    end
+
+    it 'cancels edit' do
+      row = @page.find_row(video1)
+      expect(row.edit['ng-click']).to eq('editVideo(video)')
+      row.edit.click()
+      sleep 1
+
+      expect(@page.video_form).to_not be_nil
+      row = @page.selected_video
+      expect(row.title.text).to eq("Title: #{video1.title}")
+      expect(row.start_at.text).to eq("Start At: #{video1.start_time}")
+      expect(row.end_at.text).to eq("End At: #{video1.end_time}")
+
+      @page.video_form.title.set('edited title')
+      @page.video_form.start_at.set('')
+      @page.video_form.end_at.set('')
+
+      expect(row.cancel['ng-click']).to eq('cancel()')
+      row.cancel.click
+      wait_for_angular_requests_to_finish
+
+      row = @page.find_row(video1)
+      expect(row.title.text).to eq("Title: Video Title")
+      expect(row.start_at.text).to eq("Start At: 10")
+      expect(row.end_at.text).to eq("End At: 15")
+    end
+  end
+
   context 'show has no videos' do
     let(:show) { create(:show, users: [current_user]) }
     let(:preload) { show }
@@ -371,7 +440,7 @@ shared_examples "the video show index page" do
   end
 end
 
-shared_examples "duration" do
+shared_examples "video shows duration" do
   let(:show) { create(:show, users: [current_user]) }
   let(:video1) { create(:video, parent: show, api_duration: 'PT44S') }
   let(:video2) { create(:video, parent: show, api_duration: 'PT45S') }
@@ -446,7 +515,7 @@ describe 'Admin User: /#/shows/:show_id/videos', js: true, type: :feature do
   end
 
   it_behaves_like "the video show index page"
-  it_behaves_like "duration"
+  it_behaves_like "video shows duration"
 end
 
 # Check when accessing a host user
@@ -462,7 +531,7 @@ describe 'Host User: /#/shows/:show_id/videos', js: true, type: :feature do
   end
 
   it_behaves_like "the video show index page"
-  it_behaves_like "duration"
+  it_behaves_like "video shows duration"
 end
 
 # Check when accessing a non-logged in user
