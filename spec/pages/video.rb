@@ -20,6 +20,7 @@ end
 
 class VideosCommonPage < SitePrism::Page
   element :back, "#back"
+  elements :errors, "div[notices='notices'] .alert-danger"
   sections :rows, VideoShowSection, "#videos .video-row"
 
   def find_row(video)

@@ -310,6 +310,37 @@ shared_examples "the video show index page" do
 
       expect(@page.rows.length).to eq(3)
     end
+
+    it 'checks validation' do
+      stub_search_results()
+
+      @page.add_video.click
+      sleep 1
+      expect(@page.video_form).to_not be_nil
+
+      @page.video_form.search.set('search text')
+      blur
+      sleep 1
+      wait_for_angular_requests_to_finish
+
+      expect(@page.search_results.length).to eq(1)
+      row = @page.search_results.first
+      row.select_result.click
+      sleep 1
+
+      @page.video_form.title.set('')
+      @page.video_form.start_at.set('30')
+      @page.video_form.end_at.set('5')
+
+      row = @page.selected_video
+      row.add_to_queue.click()
+      wait_for_angular_requests_to_finish
+
+      errors = @page.errors.collect(&:text)
+      expect(errors.length).to eq(2)
+      expect(errors).to include("Title can't be blank")
+      expect(errors).to include("Start At cannot be greater than End At")
+    end
   end
 
   context 'edit video' do
@@ -376,6 +407,25 @@ shared_examples "the video show index page" do
       expect(row.title.text).to eq("Title: Video Title")
       expect(row.start_at.text).to eq("Start At: 10")
       expect(row.end_at.text).to eq("End At: 15")
+    end
+
+    it 'checks validation' do
+      row = @page.find_row(video1)
+      row.edit.click()
+      sleep 1
+
+      @page.video_form.title.set('')
+      @page.video_form.start_at.set('30')
+      @page.video_form.end_at.set('5')
+
+      row = @page.selected_video
+      row.update.click()
+      wait_for_angular_requests_to_finish
+
+      errors = @page.errors.collect(&:text)
+      expect(errors.length).to eq(2)
+      expect(errors).to include("Title can't be blank")
+      expect(errors).to include("Start At cannot be greater than End At")
     end
   end
 
