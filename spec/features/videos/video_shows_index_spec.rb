@@ -59,6 +59,11 @@ shared_examples "the video show index page" do
           expect(row.end_at.text).to eq("End At: #{video.end_time}")
         end
       end
+
+      # Has the launch broadcast button
+      expect(@page.launch_broadcast['ng-click']).to eq('launchBroadcastPlayer()')
+      new_window = window_opened_by { @page.launch_broadcast.click() }
+      expect(new_window).to_not be_blank
     end
 
     it 'has the add video button' do
@@ -163,7 +168,7 @@ shared_examples "the video show index page" do
       wait_for_angular_requests_to_finish
 
       # Should start disabled
-      expect(@page.selected_video.add_to_queue["disabled"]).to be true
+      expect(@page.selected_video.add_to_queue["disabled"]).to be_truthy
 
       # Verify search results
       row = @page.search_results.first
@@ -237,7 +242,7 @@ shared_examples "the video show index page" do
       row.select_result.click
 
       # Verify select button is disabled
-      expect(row.select_result['disabled']).to be true
+      expect(row.select_result['disabled']).to be_truthy
 
       # Expect other results to still be enabled
       row = @page.search_results.last
@@ -274,7 +279,34 @@ shared_examples "the video show index page" do
       row = @page.search_results.first
       expect(row.select_result['disabled']).to be_blank
       row = @page.search_results.last
-      expect(row.select_result['disabled']).to be true
+      expect(row.select_result['disabled']).to be_truthy
+    end
+
+    it 'can delete a video' do
+      expect(@page.rows.length).to eq(3)
+
+      row = @page.find_row(video1)
+      expect(row.delete['ng-click']).to eq('destroy(video)')
+
+      accept_confirm("Are you sure you want to delete this video from the queue?\nThis cannot be undone.") do
+        row.delete.click
+      end
+      wait_for_angular_requests_to_finish
+
+      expect(@page.rows.length).to eq(2)
+    end
+
+    it 'cancels deleting a video' do
+      expect(@page.rows.length).to eq(3)
+
+      row = @page.find_row(video1)
+      expect(row.delete['ng-click']).to eq('destroy(video)')
+
+      dismiss_confirm("Are you sure you want to delete this video from the queue?\nThis cannot be undone.") do
+        row.delete.click
+      end
+
+      expect(@page.rows.length).to eq(3)
     end
   end
 
@@ -315,6 +347,26 @@ shared_examples "the video show index page" do
       expect(row.duration.text).to eq('Duration: 18 minutes (18m13s)')
       expect(row.start_at.text).to eq('Start At: 5')
       expect(row.end_at.text).to eq('End At: 30')
+    end
+
+    it 'disables the cancel button until a video is added' do
+      stub_search_results()
+
+      expect(@page.selected_video.cancel['disabled']).to be_truthy
+
+      @page.video_form.search.set('search text')
+      blur
+      sleep 1
+      wait_for_angular_requests_to_finish
+
+      @page.search_results.first.select_result.click
+      @page.selected_video.add_to_queue.click()
+      wait_for_angular_requests_to_finish
+
+      @page.add_video.click
+      sleep 1
+
+      expect(@page.selected_video.cancel['disabled']).to be_blank
     end
   end
 end
