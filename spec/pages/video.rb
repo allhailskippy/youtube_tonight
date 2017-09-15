@@ -19,6 +19,7 @@ class VideoShowSection < SitePrism::Section
 end
 
 class VideosCommonPage < SitePrism::Page
+  section :menu, MenuSection, "nav"
   element :back, "#back"
   elements :errors, "div[notices='notices'] .alert-danger"
   sections :rows, VideoShowSection, "#videos .video-row"

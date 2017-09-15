@@ -14,6 +14,11 @@ describe 'Admin User: /#/users/:user_id/edit', js: true, type: :feature do
       @form = @page.form
     end
 
+    it_behaves_like 'admin menu' do
+      let(:menu) { @page.menu }
+      let(:active) { 'Users' }
+    end
+
     describe 'validation' do
       it 'must have a user name and email' do
         @form.name.set('')
@@ -124,6 +129,11 @@ describe 'Admin User: /#/users/:user_id/edit', js: true, type: :feature do
       @form = @page.form
     end
 
+    it_behaves_like 'admin menu' do
+      let(:menu) { @page.menu }
+      let(:active) { 'Users' }
+    end
+
     it 'test' do
       @form.actions.submit.click
       wait_for_angular_requests_to_finish
@@ -135,14 +145,37 @@ describe 'Admin User: /#/users/:user_id/edit', js: true, type: :feature do
 end
 
 describe 'Host User: /#/users/:user_id/edit', js: true, type: :feature do
-  it_behaves_like "unauthorized" do
-    let(:host) { create_user(role_titles: [:host]) }
-    let(:loader) { sign_in(host); UsersEditPage.new.load(user_id: host.id) }
+  let(:host) { create_user(role_titles: [:host]) }
+  let(:preload) { host }
+
+  before do
+    preload if defined?(preload)
+    sign_in(host)
+    @page = UsersEditPage.new
+    @page.load(user_id: host.id)
+    wait_for_angular_requests_to_finish
   end
+
+  skip 'TODO: Fix this when TID-102 is done' do
+    it_behaves_like 'host menu' do
+      let(:menu) { @page.menu }
+    end
+  end
+
+  it_behaves_like "unauthorized"
 end
 
 describe 'Not Logged In: /#/users/:users_id/edit', js: true, type: :feature do
-  it_behaves_like "guest_access" do
-    let(:loader) { UsersEditPage.new.load }
+  before do
+    preload if defined?(preload)
+    @page = UsersEditPage.new
+    @page.load(user_id: 1)
+    wait_for_angular_requests_to_finish
   end
+
+  it_behaves_like 'guest menu' do
+    let(:menu) { @page.menu }
+  end
+
+  it_behaves_like "guest_access"
 end

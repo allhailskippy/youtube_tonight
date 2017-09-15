@@ -1,5 +1,6 @@
 class ShowsIndexPage < SitePrism::Page
   set_url "/#/shows"
+  section :menu, MenuSection, "nav"
 
   elements :notices, "div[notices='notices'] .alert-success"
 
@@ -41,6 +42,8 @@ class ShowsForm < SitePrism::Section
 end
 
 class ShowsFormPage < SitePrism::Page
+  section :menu, MenuSection, "nav"
+
   elements :errors, "div[notices='notices'] .alert-danger"
   element :cancel, "button.show-cancel"
 

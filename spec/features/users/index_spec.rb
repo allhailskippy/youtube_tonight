@@ -15,6 +15,11 @@ describe 'Admin User: /#/users', js: true, type: :feature do
     wait_for_angular_requests_to_finish
   end
 
+  it_behaves_like 'admin menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Users' }
+  end
+
   it 'gets the index' do
     expect(@page.user_rows.length).to eq(4)
 
@@ -200,13 +205,32 @@ describe 'Admin User: /#/users', js: true, type: :feature do
 end
 
 describe 'Host User: /#/users', js: true, type: :feature do
-  it_behaves_like "unauthorized" do
-    let(:loader) { sign_in_host; UsersIndexPage.new.load }
+  before do
+    preload if defined?(preload)
+    sign_in_host
+    @page = UsersIndexPage.new
+    @page.load
+    wait_for_angular_requests_to_finish
   end
+
+  it_behaves_like 'host menu' do
+    let(:menu) { @page.menu }
+  end
+
+  it_behaves_like "unauthorized"
 end
 
 describe 'Not Logged In: /#/users', js: true, type: :feature do
-  it_behaves_like "guest_access" do
-    let(:loader) { UsersIndexPage.new.load }
+  before do
+    preload if defined?(preload)
+    @page = UsersIndexPage.new
+    @page.load
+    wait_for_angular_requests_to_finish
   end
+
+  it_behaves_like 'guest menu' do
+    let(:menu) { @page.menu }
+  end
+
+  it_behaves_like "guest_access"
 end

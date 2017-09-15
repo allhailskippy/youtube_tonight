@@ -90,6 +90,11 @@ describe 'Admin User: /#/playlists/index', js: true, type: :feature do
     wait_for_angular_requests_to_finish
   end
 
+  it_behaves_like 'admin menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Playlists' }
+  end
+
   it_behaves_like "the index page" do
     let(:current_user) { admin }
     let(:userPath) { false }
@@ -118,6 +123,11 @@ describe 'Admin User: /#/playlists/:user_id/index', js: true, type: :feature do
     @page = PlaylistsUserIndexPage.new
     @page.load(user_id: user.id)
     wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like 'admin menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Playlists' }
   end
 
   it_behaves_like "the index page" do
@@ -149,6 +159,11 @@ describe 'Admin User: /#/playlists pagination', js: true, type: :feature do
     wait_for_angular_requests_to_finish
   end
 
+  it_behaves_like 'admin menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Playlists' }
+  end
+
   it_should_behave_like "paginated" do
     let(:page_pagination) { @page.pagination }
     let(:objects) { playlists }
@@ -172,6 +187,11 @@ describe 'Host User: /#/playlists', js: true, type: :feature do
     @page = PlaylistsIndexPage.new
     @page.load
     wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like 'host menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Playlists' }
   end
 
   it_behaves_like "the index page" do
@@ -202,6 +222,11 @@ describe 'Host User: /#/playlists pagination', js: true, type: :feature do
     @page = PlaylistsIndexPage.new
     @page.load
     wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like 'host menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Playlists' }
   end
 
   it_should_behave_like "paginated" do
@@ -235,6 +260,11 @@ describe 'Host User: /#/users/:user_id/playlists', js: true, type: :feature do
     wait_for_angular_requests_to_finish
   end
 
+  it_behaves_like 'host menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Playlists' }
+  end
+
   it_behaves_like "the index page" do
     let(:current_user) { host }
     let(:userPath) { true }
@@ -265,6 +295,11 @@ describe 'Host User: /#/users/:user_id/playlists pagination', js: true, type: :f
     wait_for_angular_requests_to_finish
   end
 
+  it_behaves_like 'host menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Playlists' }
+  end
+
   it_should_behave_like "paginated" do
     let(:page_pagination) { @page.pagination }
     let(:objects) { playlists }
@@ -280,13 +315,31 @@ describe 'Host User: /#/users/:user_id/playlists pagination', js: true, type: :f
 end
 
 describe 'Not Logged In: /#/playlists', js: true, type: :feature do
-  it_behaves_like "guest_access" do
-    let(:loader) { PlaylistsUserIndexPage.new.load }
+  before do
+    @page = PlaylistsUserIndexPage.new
+    @page.load
+    wait_for_angular_requests_to_finish
   end
+
+  it_behaves_like 'guest menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Playlists' }
+  end
+
+  it_behaves_like "guest_access"
 end
 
 describe 'Not Logged In: /#/users/:user_id/playlists', js: true, type: :feature do
-  it_behaves_like "guest_access" do
-    let(:loader) { PlaylistsUserIndexPage.new.load(user_id: 1) }
+  before do
+    @page = PlaylistsUserIndexPage.new
+    @page.load
+    wait_for_angular_requests_to_finish
   end
+
+  it_behaves_like 'guest menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Playlists' }
+  end
+
+  it_behaves_like "guest_access"
 end

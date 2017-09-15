@@ -1,6 +1,6 @@
 shared_examples "guest_access" do
   before do
-    loader
+    loader if defined?(loader)
     wait_for_angular_requests_to_finish
   end
 
@@ -11,7 +11,7 @@ end
 
 shared_examples "unauthorized" do
   before do
-    loader
+    loader if defined?(loader)
     wait_for_angular_requests_to_finish
   end
 

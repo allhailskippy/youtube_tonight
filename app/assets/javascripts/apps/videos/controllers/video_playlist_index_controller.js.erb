@@ -16,9 +16,6 @@ var VideosPlaylistIndexCtrl = function(
   /**
    * Setup
    */
-  // Ensures the playlist menu item is highlighted
-  angular.element(document.querySelector('#playlists_nav li')).addClass('active');
-
   $scope.dispatcher = ConnectionHelper.getDispatcher();
   $scope.channel = ConnectionHelper.getChannel('video_player');
 

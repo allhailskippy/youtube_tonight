@@ -17,6 +17,11 @@ describe 'Admin User: /#/shows', js: true, type: :feature do
     wait_for_angular_requests_to_finish
   end
 
+  it_behaves_like 'admin menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Shows' }
+  end
+
   it 'gets the index' do
     expect(@page.rows.length).to eq(3)
 
@@ -102,6 +107,11 @@ describe 'Host User: /#/shows', js: true, type: :feature do
     wait_for_angular_requests_to_finish
   end
 
+  it_behaves_like 'host menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Shows' }
+  end
+
   it 'gets the shows the user can host' do
     expect(@page.rows.length).to eq(2)
 
@@ -156,7 +166,16 @@ describe 'Host User: /#/shows', js: true, type: :feature do
 end
 
 describe 'Not Logged In: /#/shows', js: true, type: :feature do
-  it_behaves_like "guest_access" do
-    let(:loader) { ShowsIndexPage.new.load }
+  before do
+    preload if defined?(preload)
+    @page = ShowsIndexPage.new
+    @page.load
+    wait_for_angular_requests_to_finish
   end
+
+  it_behaves_like 'guest menu' do
+    let(:menu) { @page.menu }
+  end
+
+  it_behaves_like "guest_access"
 end

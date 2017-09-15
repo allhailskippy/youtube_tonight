@@ -1,5 +1,6 @@
 class PlaylistsIndexPage < SitePrism::Page
   set_url "/#/playlists"
+  section :menu, MenuSection, "nav"
 
   element :playlists, "#playlists"
   element :reimport_playlists, ".reimport"

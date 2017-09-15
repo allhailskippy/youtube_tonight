@@ -24,6 +24,11 @@ describe 'Admin User: /#/shows/:show_id/edit', js: true, type: :feature do
     @form = @page.form
   end
 
+  it_behaves_like 'admin menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Shows' }
+  end
+
   it 'validates' do
     # Clear existing data
     @form.title.set('')
@@ -120,15 +125,38 @@ describe 'Admin User: /#/shows/:show_id/edit', js: true, type: :feature do
 end
 
 describe 'Host User: /#/shows/:show_id/edit', js: true, type: :feature do
-  it_behaves_like "unauthorized" do
-    let(:show) { create(:show) }
-    let(:loader) { sign_in_host; ShowsEditPage.new.load(show_id: show.id) }
+  let(:show) { create(:show) }
+  let(:preload) { show }
+
+  before do
+    preload if defined?(preload)
+    sign_in_host
+    @page = ShowsEditPage.new
+    @page.load(show_id: show.id)
+    wait_for_angular_requests_to_finish
   end
+
+  it_behaves_like 'host menu' do
+    let(:menu) { @page.menu }
+  end
+
+  it_behaves_like "unauthorized"
 end
 
 describe 'Not Logged In: /#/shows/:show_id/edit', js: true, type: :feature do
-  it_behaves_like "guest_access" do
-    let(:show) { create(:show) }
-    let(:loader) { ShowsEditPage.new.load(show_id: show.id) }
+  let(:show) { create(:show) }
+  let(:preload) { show }
+
+  before do
+    preload if defined?(preload)
+    @page = ShowsEditPage.new
+    @page.load(show_id: show.id)
+    wait_for_angular_requests_to_finish
   end
+
+  it_behaves_like 'guest menu' do
+    let(:menu) { @page.menu }
+  end
+
+  it_behaves_like "guest_access"
 end

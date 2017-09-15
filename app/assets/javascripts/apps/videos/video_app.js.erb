@@ -17,11 +17,13 @@ var routesConfig = function($routeProvider) {
     controller: 'VideosIndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/index.html") %>',
     permission: 'videos.index',
+    menu: 'shows'
   }).
   when('/playlists/:playlist_id/videos', {
     controller: 'VideosPlaylistIndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/playlist_index.html") %>',
     permission: 'videos.index',
+    menu: 'playlists',
     data: {
       userPath: false
     },
@@ -35,6 +37,7 @@ var routesConfig = function($routeProvider) {
     controller: 'VideosPlaylistIndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/playlist_index.html") %>',
     permission: 'videos.index',
+    menu: 'playlists',
     data: {
       userPath: true
     },

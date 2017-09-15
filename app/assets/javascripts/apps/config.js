@@ -42,6 +42,16 @@
         $rootScope.routeData = {};
       }
       $rootScope.permission = permission;
+
+      // Set the active menu item
+      var menu = (next.$$route && next.$$route.menu) || undefined;
+      if(menu) {
+        var menuId = '#' + menu + '_nav li'
+        angular.forEach(document.querySelectorAll('nav li.active'), function(el) {
+          angular.element(el).removeClass('active');
+        });
+        angular.element(document.querySelector(menuId)).addClass('active');
+      }
     });
   };
   runFunc.$inject = ['$rootScope', '$http', '$routeParams', '$location', '$window', 'CurrentUser', 'UserInfo', 'Auth', 'User'];
