@@ -28,6 +28,7 @@ var User = function(
     // Wrapper method for de-authorizing a user
     user.deAuthorize = function() {
       user.requires_auth = true;
+      user.change_roles = true;
       return user.save();
     };
 
@@ -65,6 +66,14 @@ var User = function(
         $promise = UserApi.save(params).$promise;
       }
       return $promise;
+    };
+
+    user.indexUrl = function() {
+      return '/#/users';
+    };
+
+    user.playlistsUrl = function() {
+      return '/#/users/' + user.id + '/playlists';
     };
 
     return user;

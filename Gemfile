@@ -54,8 +54,23 @@ gem 'sass-rails'
 gem 'coffee-rails'
 gem 'uglifier'
 
-# To use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.0.0'
+group :test do
+  gem 'mocha'
+  gem 'rspec-rails'
+  gem 'rspec-retry'
+  gem 'webmock'
+  gem 'mock_redis'
+  gem 'factory_girl_rails'
+  gem 'capybara'
+  gem 'selenium-webdriver'
+  gem 'poltergeist'
+  gem 'phantomjs', :require => 'phantomjs/poltergeist'
+  gem 'simplecov', require: false
+  gem 'simplecov-rcov', require: false
+  gem 'database_cleaner'
+  gem 'site_prism'
+end
 
-# To use debugger
-# gem 'debugger'
+group :development, :test do
+  gem 'byebug'
+end

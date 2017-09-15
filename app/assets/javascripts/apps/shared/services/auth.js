@@ -31,6 +31,10 @@ var Auth = function() {
       if (!self.currentUser) {
         return true;
       }
+
+      if(self.currentUser.requires_auth) {
+        return false;
+      }
       var privilege = permission.split('.')[0];
       var attribute = permission.split('.')[1];
 

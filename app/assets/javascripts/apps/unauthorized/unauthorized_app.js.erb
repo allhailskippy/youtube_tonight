@@ -1,0 +1,22 @@
+//= require_self
+//= require_tree ./controllers
+/**
+ * @ngdoc overview
+ * @name Unauthorized App
+ *
+ * @description Used for showing an unauthorized message
+ */
+(function(){
+'use strict';
+var routesConfig = function($routeProvider) {
+  $routeProvider.
+  when('/unauthorized', {
+    templateUrl: '<%= asset_path("apps/unauthorized/templates/index.html") %>'
+  });
+};
+
+routesConfig.$inject = ['$routeProvider'];
+
+angular.module('YTBroadcastApp')
+       .config(routesConfig);
+})();

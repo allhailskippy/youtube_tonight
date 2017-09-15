@@ -27,7 +27,7 @@ class UsersController < ApplicationController
   def show
     respond_to do |format|
       begin
-        user = User.with_permissions_to(:read).find(params[:id])
+        user = User.with_permissions_to(:show).find(params[:id])
         format.json do
           render json: { data: user.as_json(User.as_json_hash) }
         end
@@ -98,7 +98,7 @@ private
   end
 
   def user_params
-    params.require(:user).permit(
+    params.fetch(:user, {}).permit(
       :id,
       :name,
       :email,

@@ -8,8 +8,8 @@
   "use strict";
 
 var PlaylistsIndexCtrl = function(
-  Auth, $scope, $http, $routeParams,
-  Playlist, Notice, User, CurrentUser,
+  $scope, $http,
+  Playlist, Notice, User,
   current_user_data
   ) {
 
@@ -24,11 +24,6 @@ var PlaylistsIndexCtrl = function(
   /**
    * Scope methods
    */
-  // Redirect to the video list for this playlist
-  $scope.videosUrl = function(playlist) {
-    return '/app/#videos/playlists/' + playlist.id;
-  };
-
   // Table pagination setup
   $scope.init = {
     'count': 10,
@@ -114,8 +109,8 @@ var PlaylistsIndexCtrl = function(
 };
 
 PlaylistsIndexCtrl.$inject = [
-  'Auth', '$scope', '$http', '$routeParams',
-  'Playlist', 'Notice', 'User', 'CurrentUser',
+  '$scope', '$http',
+  'Playlist', 'Notice', 'User',
   'current_user_data'
 ];
 

@@ -11,15 +11,17 @@
 'use strict';
 var routesConfig = function($routeProvider) {
   $routeProvider.
-  when('/users/index', {
+  when('/users', {
     controller: 'UsersIndexCtrl',
     templateUrl: '<%= asset_path("apps/users/templates/index.html") %>',
-    permission: 'users.index'
+    permission: 'users.index',
+    menu: 'users'
   }).
   when('/users/:id/edit', {
     controller: 'UsersFormCtrl',
     templateUrl: '<%= asset_path("apps/users/templates/form.html") %>',
     permission: 'users.update',
+    menu: 'users',
     resolve: {
       user_data: ['$route', 'User', function($route, User) {
         return User.find($route.current.params.id);

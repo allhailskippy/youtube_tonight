@@ -11,20 +11,28 @@
 
 var routesConfig = function($routeProvider) {
   $routeProvider.
-  when('/playlists/:user_id/index', {
+  when('/users/:user_id/playlists', {
     controller: 'PlaylistsIndexCtrl',
     templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>',
     permission: 'playlists.index',
+    menu: 'playlists',
+    data: {
+      userPath: true
+    },
     resolve: {
       current_user_data: ['User', '$route', function(User, $route) {
         return User.find($route.current.params.user_id);
       }]
     }
   }).
-  when('/playlists/index', {
+  when('/playlists', {
     controller: 'PlaylistsIndexCtrl',
     templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>',
     permission: 'playlists.index',
+    menu: 'playlists',
+    data: {
+      userPath: false
+    },
     resolve: {
       current_user_data: ['CurrentUser', function(CurrentUser) {
         return CurrentUser.find();

@@ -35,10 +35,6 @@ var UsersIndexCtrl = function(
     $location.path('/users/' + user.id + '/edit');
   };
 
-  $scope.playlistsUrl = function(user) {
-    return '/app#/playlists/' + user.id + '/index';
-  };
-
   $scope.canReadPlaylists = function(user) {
     return $scope.$root.currentUser.id == user.id || $scope.$root.currentUser.is_admin;
   };

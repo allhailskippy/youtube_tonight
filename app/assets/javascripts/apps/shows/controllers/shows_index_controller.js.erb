@@ -73,10 +73,6 @@ var ShowsIndexCtrl = function(
 
   // Lookup initial list of shows
   $scope.fetchShows();
-
-  $scope.videoUrl = function(show) {
-    return '/app#/videos/shows/' + show.id
-  };
 };
 
 ShowsIndexCtrl.$inject = [

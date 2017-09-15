@@ -12,20 +12,23 @@
 
 var routesConfig = function($routeProvider) {
   $routeProvider.
-  when('/shows/index', {
+  when('/shows', {
     controller: 'ShowsIndexCtrl',
     templateUrl: '<%= asset_path("apps/shows/templates/index.html") %>',
-    permission: 'shows.index'
+    permission: 'shows.index',
+    menu: 'shows'
   }).
   when('/shows/new', {
     controller: 'ShowsFormCtrl',
     templateUrl: '<%= asset_path("apps/shows/templates/form.html") %>',
-    permission: 'shows.new'
+    permission: 'shows.create',
+    menu: 'shows'
   }).
   when('/shows/:show_id/edit', {
     controller: 'ShowsFormCtrl',
     templateUrl: '<%= asset_path("apps/shows/templates/form.html") %>',
-    permission: 'shows.update'
+    permission: 'shows.update',
+    menu: 'shows'
   });
 };
 routesConfig.$inject = ['$routeProvider'];

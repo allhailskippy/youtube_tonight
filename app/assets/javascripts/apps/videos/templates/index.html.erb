@@ -1,10 +1,27 @@
 <div class="row">
   <div class="col-md-3 sidebar">
-    <h3
-      class='show-title'
-      title='{{show.title}}'
-    >{{ show.title }}</h3>
-    <hr />
+    <div>
+      <h2
+        class='show-title'
+        title='{{show.title}}'
+      >{{ show.title }}
+        <span class="pull-right">
+          <a
+            id="back"
+            class="btn btn-primary glyphicon glyphicon-arrow-left"
+            href-func="show.indexUrl(routeData.userPath)"
+            title="Back"
+          ></a>
+        </span>
+      </h2>
+      <button
+        ng-click="addVideo()"
+        id="add-video"
+        class="btn btn-lg btn-primary"
+        ng-disabled="shouldShowForm()"
+      >Add Video</button>
+    </div>
+    <br />
     <div class="text-center">
       <img
         src="<%= asset_path("logo_broadcast.png") %>"
@@ -60,25 +77,19 @@
   </div>
   <div class="col-md-9 col-md-offset-3 main" ng-show="!shouldShowForm()">
     <div class="row">
-      <div class="pull-left">
-        <span
+      <div class="pull-right">
+        <button
+          id="launch_broadcast"
           class="btn btn-lg btn-primary"
           ng-click="launchBroadcastPlayer()"
-        >LAUNCH BROADCAST WINDOW</span>
-      </div>
-      <div class="pull-right">
-        <span
-          ng-click="addVideo()"
-          class="btn btn-lg btn-success"
-          ng-disabled="shouldShowForm()"
-        >Add Video</span>
+        >LAUNCH BROADCAST WINDOW</button>
       </div>
     </div>
     <br />
-    <div class="row">
+    <div class="row" id="videos">
       <div class="list-group" ui-sortable="sortableOptions" ng-model="videos">
         <div ng-repeat="video in videos" class="panel panel-primary">
-          <div class="panel-body row">
+          <div class="panel-body row video-row" id="video_{{video.id}}">
             <div class="col-md-9">
               <video-show
                 video="video"
@@ -91,11 +102,11 @@
             </div>
             <div class="col-md-3 text-right">
               <a href="javascript:void(0)"
-                class="btn btn-default glyphicon glyphicon-pencil"
+                class="btn btn-primary glyphicon glyphicon-pencil edit"
                 ng-click="editVideo(video)"
               ></a>
               <a
-                class="btn btn-danger glyphicon glyphicon-trash"
+                class="btn btn-danger glyphicon glyphicon-trash delete"
                 aria-hidden="true"
                 ng-click="destroy(video)"
               ></a>

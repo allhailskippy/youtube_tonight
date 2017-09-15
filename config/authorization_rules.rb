@@ -17,7 +17,13 @@ authorization do
     includes :guest
 
     has_permission_on :users, :to => [:update, :requires_auth]
-    has_permission_on :shows, :to => :read
+    has_permission_on :users, to: :show do
+      if_attribute id: is { user.id }
+    end
+    has_permission_on :shows do
+      to :read
+      if_attribute :users => contains {user}
+    end
     has_permission_on :youtube_parser, :to => :read
     has_permission_on :broadcasts, :to => :read
     has_permission_on :playlists do

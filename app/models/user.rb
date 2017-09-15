@@ -19,6 +19,8 @@ class User < ActiveRecord::Base
   ##
   # Validation
   #
+  validates :name, presence: true
+  validates :email, presence: true
   validates :role_titles,
     presence: {
       message: "must be selected"
@@ -30,7 +32,7 @@ class User < ActiveRecord::Base
   # Hooks
   #
   after_create :import_playlists
-  before_update :update_roles, if: Proc.new{|r| r.change_roles }
+  before_save :update_roles, if: Proc.new{|r| r.change_roles }
   before_update :deliver_authorized_email, if: Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
 
   ##
@@ -87,10 +89,10 @@ class User < ActiveRecord::Base
     roles.destroy_all
     roles.reload
 
-    if !requires_auth
+    unless requires_auth
       self.role_titles ||= []
       self.role_titles.each do |title|
-        next if !Authorization.current_user.is_admin && title == 'admin'
+        next if !Authorization.current_user.try(:is_admin) && title == 'admin'
         self.roles.build(title: title)
       end
     end

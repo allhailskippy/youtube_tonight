@@ -28,11 +28,36 @@
       $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     });
 
-    // Add front side authorization
     $rootScope.$on('$routeChangeStart', function(scope, next, current) {
+      // Users awaiting authorization get sent to the requires_auth page
+      if($rootScope.currentUser.requires_auth) {
+        scope.preventDefault();
+        $window.location.href = '/users/' + $rootScope.currentUser.id + '/requires_auth';
+      }
+
+      // Add front side authorization
       var permission = (next.$$route && next.$$route.permission) || undefined;
       if(angular.isString(permission) && !$rootScope.auth(permission)) {
-        $window.location.href = '/unauthorized';
+        scope.preventDefault();
+        $window.location.href = '/#/unauthorized';
+      }
+
+      // Add custom data from routes
+      try {
+        $rootScope.routeData = next.$$route.data || {};
+      } catch(err) {
+        $rootScope.routeData = {};
+      }
+      $rootScope.permission = permission;
+
+      // Set the active menu item
+      var menu = (next.$$route && next.$$route.menu) || undefined;
+      if(menu) {
+        var menuId = '#' + menu + '_nav li'
+        angular.forEach(document.querySelectorAll('nav li.active'), function(el) {
+          angular.element(el).removeClass('active');
+        });
+        angular.element(document.querySelector(menuId)).addClass('active');
       }
     });
   };

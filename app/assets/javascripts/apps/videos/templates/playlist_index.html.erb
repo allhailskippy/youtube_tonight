@@ -4,11 +4,12 @@
       <h2>
         Playlist Videos
         <span class="pull-right">
-          <a ng-href="{{playlist_url}}"
-            ><button
-              class="btn btn-primary glyphicon glyphicon-arrow-left"
-              title="Back"
-            ></button></a>
+          <a
+            id="back"
+            class="btn btn-primary glyphicon glyphicon-arrow-left"
+            href-func="playlist.indexUrl(routeData.userPath)"
+            title="Back"
+          ></a>
         </span>
       </h2>
     </div>
@@ -58,6 +59,7 @@
       </div>
       <div class="pull-right">
         <button
+          id="reimport-videos"
           class="btn btn-lg btn-success"
           ng-class="{disabled: importing}"
           ng-click="reimportVideos()"
@@ -66,6 +68,7 @@
     </div>
     <div class="row">
       <div
+        id="videos"
         tasty-table
         bind-resource-callback="getResource"
         bind-theme="theme"
@@ -73,8 +76,8 @@
         bind-filters="filterBy"
         bind-reload="reloadCallback"
       >
-        <div tasty-pagination></div>
-        <div ng-repeat="video in rows" class="panel panel-primary">
+        <div tasty-pagination id="pagination-top"></div>
+        <div ng-repeat="video in rows" class="panel panel-primary video-row" id="video_{{video.id}}">
           <div class="panel-body row">
             <div class="col-md-9">
               <video-show
@@ -91,7 +94,7 @@
             </div>
           </div>
         </div>
-        <div tasty-pagination></div>
+        <div tasty-pagination id="pagination-bottom"></div>
       </div>
     </div>
   </div>

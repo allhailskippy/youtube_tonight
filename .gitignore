@@ -19,3 +19,5 @@ dump.rdb
 config/database.production.yml
 config/environments/credentials.production.yml
 .env
+spec/examples.txt
+.byebug_history

@@ -13,15 +13,34 @@
 
 var routesConfig = function($routeProvider) {
   $routeProvider.
-  when('/videos/shows/:show_id', {
+  when('/shows/:show_id/videos', {
     controller: 'VideosIndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/index.html") %>',
     permission: 'videos.index',
+    menu: 'shows'
   }).
-  when('/videos/playlists/:playlist_id', {
+  when('/playlists/:playlist_id/videos', {
     controller: 'VideosPlaylistIndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/playlist_index.html") %>',
     permission: 'videos.index',
+    menu: 'playlists',
+    data: {
+      userPath: false
+    },
+    resolve: {
+      playlist_data: ['$route', 'Playlist', function($route, Playlist) {
+        return Playlist.find($route.current.params.playlist_id);
+      }]
+    }
+  }).
+  when('/users/:user_id/playlists/:playlist_id/videos', {
+    controller: 'VideosPlaylistIndexCtrl',
+    templateUrl: '<%= asset_path("apps/videos/templates/playlist_index.html") %>',
+    permission: 'videos.index',
+    menu: 'playlists',
+    data: {
+      userPath: true
+    },
     resolve: {
       playlist_data: ['$route', 'Playlist', function($route, Playlist) {
         return Playlist.find($route.current.params.playlist_id);
