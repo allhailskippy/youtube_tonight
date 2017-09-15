@@ -1,0 +1,56 @@
+/**
+ * @ngdoc controller
+ * @name UsersFormCtrl
+ *
+ * @description Logic for index stuffs
+ */
+(function() {
+  "use strict";
+
+var UsersFormCtrl = function(
+  $scope, $location,
+  User, Notice,
+  user_data
+  ) {
+
+  /**
+   * Setup
+   */
+  $scope.user = User.build(user_data.data);
+
+  // Handle error response from server side
+  var handleErrors = function(response) {
+    Notice.handleErrors(response);
+  };
+
+  /**
+   * Scope methods
+   */
+  $scope.destroy = function() {
+    if(confirm('This will remove the user from the system\nThis cannot be undone!')) {
+      $scope.user.destroy().then(function() {
+        $location.path('/users');
+      });
+    };
+  }
+
+  $scope.save = function() {
+    // We update the roles from here, so
+    // let our model know to clear out
+    // existing ones
+    $scope.user.change_roles = true;
+    $scope.user.save().then(function() {
+      $location.path('/users');
+    }).catch(handleErrors);
+  };
+};
+
+UsersFormCtrl.$inject = [
+  '$scope', '$location',
+  'User', 'Notice',
+  'user_data'
+];
+
+angular.module("YTBroadcastApp")
+       .controller('UsersFormCtrl', UsersFormCtrl);
+}());

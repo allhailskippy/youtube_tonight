@@ -32,7 +32,7 @@ class Video < ActiveRecord::Base
   end
 
   def validate_start_end_time
-    if start_time && end_time && start_time >= end_time
+    if start_time && end_time && start_time.to_i >= end_time.to_i
       errors.add(:base, "Start At cannot be greater than End At")
     end
 

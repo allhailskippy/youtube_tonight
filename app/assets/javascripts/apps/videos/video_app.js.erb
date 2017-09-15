@@ -1,33 +1,55 @@
 //= require_self
 //= require_tree ./controllers
-//= require_tree ./services
 //= require_tree ./directives
 /**
  * @ngdoc overview
  * @name Video App
  *
- * @description The VideoApp is used for viewing videos.
+ * @description Used for viewing videos.
  * This file is where the routes are defined for this app
  */
 (function(){
 'use strict';
 
-var routesConfig = function($locationProvider, $routeProvider) {
+var routesConfig = function($routeProvider) {
   $routeProvider.
-  when('/shows/:show_id', {
-    controller: 'IndexCtrl',
-    templateUrl: '<%= asset_path("apps/videos/templates/index.html") %>'
+  when('/shows/:show_id/videos', {
+    controller: 'VideosIndexCtrl',
+    templateUrl: '<%= asset_path("apps/videos/templates/index.html") %>',
+    permission: 'videos.index',
+    menu: 'shows'
   }).
-  when('/playlists/:playlist_id', {
-    controller: 'PlaylistIndexCtrl',
-    templateUrl: '<%= asset_path("apps/videos/templates/playlist_index.html") %>'
+  when('/playlists/:playlist_id/videos', {
+    controller: 'VideosPlaylistIndexCtrl',
+    templateUrl: '<%= asset_path("apps/videos/templates/playlist_index.html") %>',
+    permission: 'videos.index',
+    menu: 'playlists',
+    data: {
+      userPath: false
+    },
+    resolve: {
+      playlist_data: ['$route', 'Playlist', function($route, Playlist) {
+        return Playlist.find($route.current.params.playlist_id);
+      }]
+    }
+  }).
+  when('/users/:user_id/playlists/:playlist_id/videos', {
+    controller: 'VideosPlaylistIndexCtrl',
+    templateUrl: '<%= asset_path("apps/videos/templates/playlist_index.html") %>',
+    permission: 'videos.index',
+    menu: 'playlists',
+    data: {
+      userPath: true
+    },
+    resolve: {
+      playlist_data: ['$route', 'Playlist', function($route, Playlist) {
+        return Playlist.find($route.current.params.playlist_id);
+      }]
+    }
   });
-  $locationProvider
-    .html5Mode(false)
-    .hashPrefix('');
 };
-routesConfig.$inject = ['$locationProvider', '$routeProvider'];
+routesConfig.$inject = ['$routeProvider'];
 
-angular.module('VideoApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf', 'ui.sortable', 'ui.bootstrap-slider', 'ngTasty'])
+angular.module('YTBroadcastApp')
        .config(routesConfig);
 })();

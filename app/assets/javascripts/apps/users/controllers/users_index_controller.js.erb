@@ -1,0 +1,81 @@
+/**
+ * @ngdoc controller
+ * @name UsersIndexCtrl
+ *
+ * @description Logic for index stuffs
+ */
+(function() {
+  "use strict";
+
+var UsersIndexCtrl = function(
+  $scope, $location,
+  User, Playlist, Notice
+  ) {
+
+  /**
+   * Setup
+   */
+  $scope.retrieving = false;
+  $scope.users = [];
+
+  /**
+   * Scope methods
+   */
+  $scope.authorize = function(user) {
+    user.authorize().catch(Notice.handleErrors);
+  };
+
+  $scope.deAuthorize = function(user) {
+    if(confirm("Are you sure you want to de-authorize this user?\nThey will no longer be allowed to sign in.")){
+      user.deAuthorize().catch(Notice.handleErrors);
+    }
+  };
+
+  $scope.edit = function(user) {
+    $location.path('/users/' + user.id + '/edit');
+  };
+
+  $scope.canReadPlaylists = function(user) {
+    return $scope.$root.currentUser.id == user.id || $scope.$root.currentUser.is_admin;
+  };
+
+  // Get all users
+  $scope.fetchUsers = function() {
+    if(!$scope.retreiving) {
+      $scope.retrieving = true;
+      $scope.users = [];
+      $scope.queryUsers();
+    }
+  };
+
+  // Looks up users
+  $scope.queryUsers = function() {
+    // Skip if we're currently looking up users
+    if($scope.querying) { return true; }
+
+    $scope.querying = true;
+
+    var params = {};
+
+    // Lookup campaigns based on params
+    User.query(params).then(function(response) {
+      angular.forEach(response.data, function(user) {
+        $scope.users.push(User.build(user));
+      });
+      $scope.retrieving = false;
+      $scope.querying = false;
+    });
+  };
+
+  // Lookup initial list of users
+  $scope.fetchUsers();
+};
+
+UsersIndexCtrl.$inject = [
+  '$scope', '$location',
+  'User', 'Playlist', 'Notice'
+];
+
+angular.module("YTBroadcastApp")
+       .controller('UsersIndexCtrl', UsersIndexCtrl);
+}());

@@ -1,0 +1,142 @@
+/**
+ * @ngdoc controller
+ * @name VideosPlaylistIndexCtrl
+ *
+ * @description Logic for playlist item stuffs
+ */
+(function() {
+  "use strict";
+
+var VideosPlaylistIndexCtrl = function(
+  $scope, $http, $routeParams,
+  ConnectionHelper, Playlist, Video, Notice, User,
+  playlist_data
+  ) {
+
+  /**
+   * Setup
+   */
+  $scope.dispatcher = ConnectionHelper.getDispatcher();
+  $scope.channel = ConnectionHelper.getChannel('video_player');
+
+  $scope.playlist_id = $routeParams.playlist_id;
+  $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.playlist_id);
+
+  $scope.playlist = Playlist.build(playlist_data.data);
+  $scope.playlist_url = '/#/playlists/' + $scope.playlist.user_id + '/index';
+
+  $scope.user = User.build({})
+  User.find($scope.playlist.user_id).then(function(response) {
+    $scope.user = User.build(response.data);
+    $scope.$applyAsync();
+  });
+
+  // Use new dispatcher because we're unbinding a method later
+  $scope.previewDispatch = ConnectionHelper.newDispatcher();
+  $scope.previewChannel = ConnectionHelper.newChannel('video_player', $scope.previewDispatch);
+
+  /**
+   * Scope methods
+   */
+  // Table pagination setup
+  $scope.init = {
+    'count': 10,
+    'page': 1,
+    'filterBase': 1
+  };
+
+  $scope.filterBy = {
+    'title': '',
+  }
+
+  $scope.theme = {
+    listItemsPerPage: [5, 10, 20, 50],
+    loadOnInit: true
+  };
+
+  $scope.getResource = function (params, paramsObj) {
+    params = {
+      per_page: paramsObj.count,
+      page: paramsObj.page,
+      playlist_id: $scope.playlist_id,
+      'q[api_title_cont]': paramsObj.filters.title
+    };
+
+    var urlApi = '/videos.json?' + $.param(params);
+    return $http.get(urlApi).then(function (response) {
+      $scope.importing = false;
+      var videos = jQuery.map(response.data.data, function(video) {
+        return Video.build(video);
+      });
+
+      return {
+        'rows': videos,
+        'header': [],
+        'pagination': {
+          'count': response.data.per_page,
+          'page': response.data.page,
+          'pages': response.data.total_pages,
+          'size': response.data.total
+        },
+      }
+    }).catch(function() {
+      Notice.handleErrors;
+      $scope.importing = false;
+    });
+  };
+
+  $scope.reloadCallback = function() {};
+
+  $scope.reload = function() {
+    $scope.reloadCallback();
+  };
+
+  $scope.reimportVideos = function() {
+    if($scope.importing) {
+      return false;
+    }
+    var list = Playlist.build({ id: $scope.playlist_id })
+    $scope.importing = true;
+    list.importPlaylists().then(function(response) {
+      Notice.setSuccesses(['Successfully Re-imported Videos']);
+      $scope.reloadCallback();
+    }).catch(function() {
+      Notice.handleErrors;
+    });
+  };
+
+  /**
+   * Event Handlers
+   */
+  // Preview Events
+  $scope.channel.bind('playing', function(message) {
+    if(message.player_id == $scope.previewPlayerId) {
+      $scope.showPreview = true;
+      $scope.$applyAsync();
+    }
+  });
+
+  $scope.channel.bind('stop', function(message) {
+    if(message.player_id == $scope.previewPlayerId) {
+      $scope.showPreview = false;
+      $scope.$applyAsync();
+    };
+  });
+
+  $scope.channel.bind('stopped', function(message) {
+    if(message.player_id == $scope.previewPlayerId) {
+      $scope.showPreview = false;
+      $scope.$applyAsync();
+    };
+  });
+};
+
+VideosPlaylistIndexCtrl.$inject = [
+  '$scope', '$http', '$routeParams',
+  'ConnectionHelper', 'Playlist', 'Video', 'Notice', 'User',
+  'playlist_data'
+];
+
+angular.module("YTBroadcastApp")
+       .controller('VideosPlaylistIndexCtrl', VideosPlaylistIndexCtrl);
+}());

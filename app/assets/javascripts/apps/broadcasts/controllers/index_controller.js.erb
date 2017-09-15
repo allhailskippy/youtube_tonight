@@ -8,26 +8,23 @@
   "use strict";
 
 var IndexCtrl = function(
-  $scope, $routeParams,
-  Show
+  $scope,
+  Show,
+  show_data
   ) {
   /**
    * Setup
    */
-  $scope.show = Show.build({});
-  $scope.showId = $routeParams.show_id;
-  $scope.playerId = 'broadcast-' + $scope.showId;
+  $scope.show = Show.build(show_data.data);
+  $scope.showId = $scope.show.id;
+  $scope.playerId = 'broadcast-' + $scope.show.id;
 
-  if($scope.showId) {
-    Show.find($scope.showId).then(function(response) {
-      $scope.show = Show.build(response.data);
-    });
-  }
 };
 
 IndexCtrl.$inject = [
-  '$scope', '$routeParams',
-  'Show'
+  '$scope',
+  'Show',
+  'show_data'
 ];
 
 angular.module("BroadcastsApp")

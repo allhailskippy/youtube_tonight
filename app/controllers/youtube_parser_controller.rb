@@ -10,7 +10,8 @@ class YoutubeParserController < ApplicationController
       rescue Exception => e
         NewRelic::Agent.notice_error(e)
         format.json do
-          render :json => { :error => e.to_s }
+          render :json => { :error => e.to_s },
+                 :status => :unprocessable_entity
         end
       end
     end

@@ -7,3 +7,5 @@ en:
     attributes:
       user:
         role_titles: Roles
+      show:
+        hosts: Host

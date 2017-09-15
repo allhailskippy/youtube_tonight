@@ -1,0 +1,85 @@
+/**
+ * @ngdoc controller
+ * @name ShowsIndexCtrl
+ *
+ * @description Logic for index stuffs
+ */
+(function() {
+  "use strict";
+
+var ShowsIndexCtrl = function(
+  $scope, $location,
+  Show, Notice
+  ) {
+
+  /**
+   * Setup
+   */
+  $scope.retrieving = false;
+  $scope.shows = [];
+
+  /**
+   * Scope methods
+   */
+  // Grabs all of the shows
+  $scope.addNew = function() {
+    Notice.reset();
+
+    // Clear out any existing show first
+    Show.resetCurrentShow();
+
+    // Show 'new' form
+    $location.path('/shows/new');
+  };
+
+  // Edit a show
+  $scope.edit = function(show) {
+    Notice.reset();
+
+    // Set the show to work on
+    Show.setCurrentShow(show);
+
+    // Show the 'edit' form
+    $location.path('/shows/' + show.id + '/edit');
+  };
+
+  // Get all shows
+  $scope.fetchShows = function() {
+    if(!$scope.retreiving) {
+      $scope.retrieving = true;
+      $scope.shows = []; 
+      $scope.queryShows();
+    }
+  };
+
+  // Looks up shows
+  $scope.queryShows = function() {
+    // Skip if we're currently looking up shows
+    if($scope.querying) { return true; }
+
+    $scope.querying = true;
+
+    var params = {};
+
+    // Lookup campaigns based on params
+    Show.query(params).then(function(response) {
+      angular.forEach(response.data, function(show) {
+        $scope.shows.push(Show.build(show));
+      });
+      $scope.retrieving = false;
+      $scope.querying = false;
+    });
+  };
+
+  // Lookup initial list of shows
+  $scope.fetchShows();
+};
+
+ShowsIndexCtrl.$inject = [
+  '$scope', '$location',
+  'Show', 'Notice'
+];
+
+angular.module("YTBroadcastApp")
+       .controller('ShowsIndexCtrl', ShowsIndexCtrl);
+}());

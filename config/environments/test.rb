@@ -28,7 +28,26 @@ Youtubetonight::Application.configure do
   # The :test delivery method accumulates sent emails in the
   # ActionMailer::Base.deliveries array.
   config.action_mailer.delivery_method = :test
+  config.action_mailer.perform_deliveries = false
 
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
+
+  config.eager_load = false
+
+  config.assets.compile = true
+  config.assets.digest = false
+  config.log_level = :warn
+  config.assets.precompile += %w( jquery.simulate.js jquery.simulate.ext.js jquery.simulate.drag-n-drop.js)
+
+  # YouTube
+  YOUTUBE_API_KEY = 'YOUTUBE_API_KEY'
+ 
+  GOOGLE_CLIENT_ID = 'GOOGLE_CLIENT_ID'
+  GOOGLE_CLIENT_SECRET = 'GOOGLE_CLIENT_SECRET'
+
+  # Websockets
+  WEBSOCKET_URL = 'WEBSOCKET_URL'
+
+  SYSTEM_ADMIN_ID = 1
 end

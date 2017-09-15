@@ -70,6 +70,18 @@ var Playlist = function(PlaylistApi) {
       return(!img || 0 === img.length) ? 'https://i.ytimg.com/vi/0/default.jpg' : img;
     }
 
+    playlist.indexUrl = function(userPath) {
+      return '/#' +
+             (userPath ? '/users/' + playlist.user_id : '') +
+             '/playlists';
+    };
+
+    playlist.videosUrl = function(userPath) {
+      return '/#' +
+             (userPath ? '/users/' + playlist.user_id : '') +
+             '/playlists/' + playlist.id + '/videos';
+    };
+
     return playlist;
   };
   /**

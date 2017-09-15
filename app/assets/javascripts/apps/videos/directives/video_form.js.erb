@@ -1,7 +1,7 @@
 /**
  * @ngdoc directive
  * @name VideoForm
- * @module VideoApp
+ * @module YTBroadcastApp
  *
  * @description
  * This directive displays the add video form
@@ -22,7 +22,7 @@ var controller = function(
   $scope.showId = $routeParams.show_id;
   $scope.dispatcher = ConnectionHelper.getDispatcher();
   $scope.channel = ConnectionHelper.getChannel('video_player');
-  $scope.currentVideo = $scope.currentVideo || Video.build({show_id: $scope.showId });
+  $scope.currentVideo = $scope.currentVideo || Video.build({parent_id: $scope.showId, parent_type: 'Show'});
   $scope.searchResults = [];
   var searchTimeout;
 
@@ -32,7 +32,8 @@ var controller = function(
   $scope.$watch('currentVideo.search', function(newVal, oldVal) {
     if(newVal == '') {
       // Clear current video if we clear the search
-      $scope.currentVideo = Video.build({show_id: $scope.showId });
+      $scope.currentVideo = Video.build({parent_id: $scope.showId, parent_type: 'Show'});
+      $scope.searchResults = [];
     }
 
     if(newVal && newVal != oldVal) {
@@ -44,13 +45,18 @@ var controller = function(
         // Lookup youtube video
         YoutubeParser.query(newVal).then(function(response) {
           $scope.searchResults = [];
+          $scope.currentVideo = Video.build({
+            parent_id: $scope.showId,
+            parent_type: 'Show',
+            search: $scope.currentVideo.search
+          });
           angular.forEach(response.data, function(result) {
             var yt = YoutubeParser.build(result)
-            var video = Video.setFromYoutubeParser(yt, { show_id: $scope.showId });
+            var video = Video.setFromYoutubeParser(yt, { parent_id: $scope.showId, parent_type: 'Show'});
 
             $scope.searchResults.push(video);
           });
-        });
+        }).catch(Notice.handleerrors);
       }, 250);
     }
   });
@@ -59,9 +65,9 @@ var controller = function(
    * Scope Methods
    */
   $scope.save = function() {
-    $scope.currentVideo.show_id = $scope.showId;
+    $scope.currentVideo.parent_id = $scope.showId;
     $scope.currentVideo.save().then(function() {
-      $scope.currentVideo = Video.build({ show_id: $scope.showId });
+      $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'Show' });
 
       // This is called on the parent controller.
       // Is defined in the scope section below
@@ -71,12 +77,20 @@ var controller = function(
   };
 
   $scope.selectResult = function(video) {
+    // If we're clearing, build a new video object
+    if(!video) {
+      video = Video.build({ parent_id: $scope.showId, parent_type: 'Show' });
+    }
+    // Keep current search value
+    if($scope.currentVideo) {
+      video.search = $scope.currentVideo.search;
+    }
     $scope.currentVideo = video;
   };
 
   $scope.update = function() {
     $scope.currentVideo.save().then(function() {
-      $scope.currentVideo = Video.build({ show_id: $scope.showId });
+      $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'Show' });
 
       // This is called on the parent controller.
       // Is defined in the scope section below
@@ -93,9 +107,24 @@ var controller = function(
       force: true
     });
     Notice.reset();
-    $scope.closeForm();
+    if($scope.hasVideos()) {
+      $scope.closeForm();
+    }
     $scope.searchResults = [];
-    $scope.currentVideo = Video.build({ show_id: $scope.showId });
+    $scope.queryVideos();
+    $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'Show' });
+  };
+
+  $scope.hasVideo = function() {
+    return $scope.currentVideo && $scope.currentVideo.api_video_id;
+  };
+
+  $scope.hasVideos = function() {
+    return $scope.videos && $scope.videos.length > 0;
+  };
+
+  $scope.canCancel = function() {
+    return  $scope.hasVideos() || $scope.hasVideo();
   };
 };
 
@@ -109,6 +138,7 @@ var VideoForm = function() {
     restrict: 'E',
     scope: {
       currentVideo: '=',
+      videos: '=?',
       queryVideos: '&',
       closeForm: '&'
     },
@@ -117,7 +147,7 @@ var VideoForm = function() {
   };
 };
 
-angular.module('VideoApp')
+angular.module('YTBroadcastApp')
        .directive('videoForm', VideoForm);
 }());
 

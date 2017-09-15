@@ -22,7 +22,7 @@ class ShowsController < ApplicationController
       begin
         show = Show.with_permissions_to(:read).find(params[:id])
         format.json do
-          render json: { data: show.as_json }
+          render json: { data: show.as_json(Show.as_json_hash) }
         end
       rescue ActiveRecord::RecordNotFound
         format.json do
@@ -114,6 +114,6 @@ private
   end
 
   def show_params
-    params.require(:show).permit(:title, :air_date, :hosts)
+    params.fetch(:show, {}).permit(:title, :air_date, :hosts)
   end
 end

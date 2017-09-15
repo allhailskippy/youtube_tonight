@@ -76,6 +76,8 @@ class Playlist < ActiveRecord::Base
       video.api_thumbnail_high_url = v[:thumbnail_high_url]
       video.api_duration = v['duration']
       video.api_duration_seconds = v['duration_seconds']
+      video.api_channel_title = v[:channel_title]
+      video.api_channel_id = v[:channel_id]
       video.link = "https://www.youtube.com/v/#{v[:video_id]}"
       video.position = v[:position]
       video.creator_id = user.id

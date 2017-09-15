@@ -16,8 +16,9 @@ development: &development
 # Do not set this db to the same as development or production.
 test:
   <<: *defaults
+  host: localhost
   database: youtube_tonight_test
-  username: root
+  username: paul
 
 production:
   <<: *defaults

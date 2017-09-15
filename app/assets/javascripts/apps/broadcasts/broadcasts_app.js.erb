@@ -14,10 +14,12 @@ var routesConfig = function($routeProvider, $locationProvider) {
   $routeProvider.
   when('/shows/:show_id', {
     controller: 'IndexCtrl',
-    templateUrl: '<%= asset_path("apps/broadcasts/templates/index.html") %>'
-  }).
-  otherwise({
-    redirectTo: '/index'
+    templateUrl: '<%= asset_path("apps/broadcasts/templates/index.html") %>',
+    resolve: {
+      show_data: ['$route', 'Show', function($route, Show) {
+        return Show.find($route.current.params.show_id);
+      }]
+    }
   });
   $locationProvider
     .html5Mode(false)
