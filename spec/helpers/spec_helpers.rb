@@ -20,15 +20,15 @@ module SpecHelpers
     User.stamper = user
   end
 
-  def set_omniauth(user)
+  def set_omniauth(user = nil)
     OmniAuth.config.test_mode = true
 
-    OmniAuth.config.mock_auth[:google] = OmniAuth::AuthHash.new({
-      provider: "google",
+    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new({
+      provider: "google_oauth2",
       uid: "12345678910",
       info: {
-        email: user.email,
-        name: user.name,
+        email: user.try(:email) || 'fake@email.com',
+        name: user.try(:name) || "Fake User"
       }, 
       credentials: {
         token: "abcdefg12345",

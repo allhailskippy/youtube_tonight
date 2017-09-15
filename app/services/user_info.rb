@@ -18,6 +18,7 @@ class UserInfo
       profile_image: @current_user.profile_image,
       role_titles: @current_user.role_symbols,
       is_admin: @current_user.is_admin,
+      requires_auth: @current_user.requires_auth,
       authRules: auth_rules
     }
   end

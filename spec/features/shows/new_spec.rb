@@ -107,6 +107,19 @@ describe 'Admin User: /#/shows/new', js: true, type: :feature do
   end
 end
 
+describe 'Admin User (requires auth): /#/shows/new', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:admin], requires_auth: true) }
+  before do
+    sign_in(current_user)
+    @page = ShowsNewPage.new
+    @page.load
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
+end
+
 describe 'Host User: /#/shows/new', js: true, type: :feature do
   before do
     preload if defined?(preload)
@@ -122,6 +135,19 @@ describe 'Host User: /#/shows/new', js: true, type: :feature do
   end
 
   it_behaves_like "unauthorized"
+end
+
+describe 'Host User (requires auth): /#/shows/new', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:host], requires_auth: true) }
+  before do
+    sign_in(current_user)
+    @page = ShowsNewPage.new
+    @page.load
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
 end
 
 describe 'Not Logged In: /#/shows/new', js: true, type: :feature do

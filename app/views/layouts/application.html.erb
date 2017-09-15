@@ -28,28 +28,37 @@
       <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
           <div class="navbar-header" id="home_nav">
-            <% if user_signed_in? %>
-              <a class="navbar-brand" href="/#/shows">YouTube Tonight</a>
-            <% else %>
-              <%= link_to('YouTube Tonight', new_user_session_path, class: 'navbar-brand')  %>
-            <% end %>
+            <%
+              if user_signed_in?
+                if current_user.requires_auth
+                  path = "/users/#{current_user.id}/requires_auth"
+                else
+                  path = "/#/shows"
+                end
+              else
+                path = new_user_session_path
+              end
+            %>
+            <%= link_to('YouTube Tonight', path, class: 'navbar-brand')  %>
           </div>
           <div id="navbar" class="">
-            <% if permitted_to?(:index, :users) %>
-              <ul class="nav navbar-nav" id="users_nav">
-                <li><a href="/#/users">Users</a></li>
-              </ul>
-            <% end %>
-            <% if permitted_to?(:index, :shows) %>
-              <ul class="nav navbar-nav" id="shows_nav">
-                <li><a href="/#/shows">Shows</a></li>
-              </ul>
-            <% end %>
-            <% playlists = current_user.try(:playlists) %>
-            <% if current_user.present? && permitted_to?(:index, playlists) %>
-              <ul class="nav navbar-nav" id="playlists_nav">
-                <li><a href="/#/playlists">Playlists</a></li>
-              </ul>
+            <% unless current_user.try(:requires_auth) %>
+              <% if permitted_to?(:index, :users) %>
+                <ul class="nav navbar-nav" id="users_nav">
+                  <li><a href="/#/users">Users</a></li>
+                </ul>
+              <% end %>
+              <% if permitted_to?(:index, :shows) %>
+                <ul class="nav navbar-nav" id="shows_nav">
+                  <li><a href="/#/shows">Shows</a></li>
+                </ul>
+              <% end %>
+              <% playlists = current_user.try(:playlists) %>
+              <% if current_user.present? && permitted_to?(:index, playlists) %>
+                <ul class="nav navbar-nav" id="playlists_nav">
+                  <li><a href="/#/playlists">Playlists</a></li>
+                </ul>
+              <% end %>
             <% end %>
             <ul class="nav navbar-nav" id="login_nav">
               <li>

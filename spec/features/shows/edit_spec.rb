@@ -124,6 +124,21 @@ describe 'Admin User: /#/shows/:show_id/edit', js: true, type: :feature do
   end
 end
 
+describe 'Admin User (requires auth): /#/shows/:show_id/edit', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:admin], requires_auth: true) }
+  let(:show) { create(:show_with_videos, users: [current_user]) }
+
+  before do
+    sign_in(current_user)
+    @page = ShowsEditPage.new
+    @page.load(show_id: show.id)
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
+end
+
 describe 'Host User: /#/shows/:show_id/edit', js: true, type: :feature do
   let(:show) { create(:show) }
   let(:preload) { show }
@@ -141,6 +156,21 @@ describe 'Host User: /#/shows/:show_id/edit', js: true, type: :feature do
   end
 
   it_behaves_like "unauthorized"
+end
+
+describe 'Host User (requires auth): /#/shows/:show_id/edit', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:host], requires_auth: true) }
+  let(:show) { create(:show_with_videos, users: [current_user]) }
+
+  before do
+    sign_in(current_user)
+    @page = ShowsEditPage.new
+    @page.load(show_id: show.id)
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
 end
 
 describe 'Not Logged In: /#/shows/:show_id/edit', js: true, type: :feature do

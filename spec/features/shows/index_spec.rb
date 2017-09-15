@@ -92,6 +92,19 @@ describe 'Admin User: /#/shows', js: true, type: :feature do
   end
 end
 
+describe 'Admin User (requires auth): /#/shows', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:admin], requires_auth: true) }
+  before do
+    sign_in(current_user)
+    @page = ShowsIndexPage.new
+    @page.load
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
+end
+
 describe 'Host User: /#/shows', js: true, type: :feature do
   let(:host) { create_user(role_titles: [:host]) }
   let(:show1) { create(:show, users: [host]) }
@@ -163,6 +176,19 @@ describe 'Host User: /#/shows', js: true, type: :feature do
       expect(page.current_url).to end_with("/#/shows/#{show2.id}/videos")
     end
   end
+end
+
+describe 'Host User (requires auth): /#/shows', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:host], requires_auth: true) }
+  before do
+    sign_in(current_user)
+    @page = ShowsIndexPage.new
+    @page.load
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
 end
 
 describe 'Not Logged In: /#/shows', js: true, type: :feature do

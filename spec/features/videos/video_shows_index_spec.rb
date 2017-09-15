@@ -595,6 +595,31 @@ describe 'Admin User: /#/shows/:show_id/videos', js: true, type: :feature do
 
   it_behaves_like "the video show index page"
   it_behaves_like "video shows duration"
+
+  it_behaves_like 'admin menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Shows' }
+    let(:show) { create(:show_with_videos, users: [admin]) }
+    before do
+      @page.load(show_id: show.id)
+      wait_for_angular_requests_to_finish
+    end
+  end
+end
+
+describe 'Admin User (requires auth): /#/shows/:show_id/videos', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:admin], requires_auth: true) }
+  let(:show) { create(:show_with_videos, users: [current_user]) }
+
+  before do
+    sign_in(current_user)
+    @page = VideosShowsIndexPage.new
+    @page.load(show_id: show.id)
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
 end
 
 # Check when accessing a host user
@@ -611,11 +636,44 @@ describe 'Host User: /#/shows/:show_id/videos', js: true, type: :feature do
 
   it_behaves_like "the video show index page"
   it_behaves_like "video shows duration"
+
+  it_behaves_like 'host menu' do
+    let(:menu) { @page.menu }
+    let(:active) { 'Shows' }
+    let(:show) { create(:show_with_videos, users: [host]) }
+    before do
+      @page.load(show_id: show.id)
+      wait_for_angular_requests_to_finish
+    end
+  end
+end
+
+describe 'Host User (requires auth): /#/shows/:show_id/videos', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:host], requires_auth: true) }
+  let(:show) { create(:show_with_videos, users: [current_user]) }
+
+  before do
+    sign_in(current_user)
+    @page = VideosShowsIndexPage.new
+    @page.load(show_id: show.id)
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
 end
 
 # Check when accessing a non-logged in user
 describe 'Not Logged In: /#/shows/:show_id/videos', js: true, type: :feature do
-  it_behaves_like "guest_access" do
-    let(:loader) { VideosShowsIndexPage.new.load(show_id: 1) }
+  before do
+    @page = VideosShowsIndexPage.new
+    @page.load(show_id: 1)
+    wait_for_angular_requests_to_finish
   end
+
+  it_behaves_like 'guest menu' do
+    let(:menu) { @page.menu }
+  end
+
+  it_behaves_like "guest_access"
 end

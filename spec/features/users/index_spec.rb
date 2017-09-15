@@ -204,6 +204,19 @@ describe 'Admin User: /#/users', js: true, type: :feature do
   end
 end
 
+describe 'Admin User (requires auth): /#/users', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:admin], requires_auth: true) }
+  before do
+    sign_in(current_user)
+    @page = UsersIndexPage.new
+    @page.load
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
+end
+
 describe 'Host User: /#/users', js: true, type: :feature do
   before do
     preload if defined?(preload)

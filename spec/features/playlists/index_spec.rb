@@ -107,6 +107,19 @@ describe 'Admin User: /#/playlists/index', js: true, type: :feature do
   end
 end
 
+describe 'Admin User (requires auth): /#/playlists/index', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:admin], requires_auth: true) }
+  before do
+    sign_in(current_user)
+    @page = PlaylistsIndexPage.new
+    @page.load
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
+end
+
 # Check when accessing a different user than the one currently logged in
 describe 'Admin User: /#/playlists/:user_id/index', js: true, type: :feature do
   let(:admin) { create_user(role_titles: [:admin]) }
@@ -138,6 +151,19 @@ describe 'Admin User: /#/playlists/:user_id/index', js: true, type: :feature do
   it 'has the back button' do
     expect(@page.back['href']).to end_with('/#/users')
   end
+end
+
+describe 'Admin User (requires auth): /#/playlists/:user_id/index', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:admin], requires_auth: true) }
+  before do
+    sign_in(current_user)
+    @page = PlaylistsUserIndexPage.new
+    @page.load(user: current_user)
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
 end
 
 describe 'Admin User: /#/playlists pagination', js: true, type: :feature do
@@ -204,6 +230,19 @@ describe 'Host User: /#/playlists', js: true, type: :feature do
       expect{@page.back}.to raise_error(Capybara::ElementNotFound)
     end
   end
+end
+
+describe 'Host User (requires auth): /#/playlists/index', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:host], requires_auth: true) }
+  before do
+    sign_in(current_user)
+    @page = PlaylistsIndexPage.new
+    @page.load
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
 end
 
 describe 'Host User: /#/playlists pagination', js: true, type: :feature do
@@ -275,6 +314,19 @@ describe 'Host User: /#/users/:user_id/playlists', js: true, type: :feature do
       expect{@page.back}.to raise_error(Capybara::ElementNotFound)
     end
   end
+end
+
+describe 'Host User (requires auth): /#/playlists/:user_id/index', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:host], requires_auth: true) }
+  before do
+    sign_in(current_user)
+    @page = PlaylistsUserIndexPage.new
+    @page.load(user: current_user)
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
 end
 
 describe 'Host User: /#/users/:user_id/playlists pagination', js: true, type: :feature do

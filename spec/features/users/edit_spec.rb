@@ -144,6 +144,20 @@ describe 'Admin User: /#/users/:user_id/edit', js: true, type: :feature do
   end
 end
 
+describe 'Admin User (requires auth): /#/users/:user_id/edit', js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:admin], requires_auth: true) }
+  let(:user) { create_user() }
+  before do
+    sign_in(current_user)
+    @page = UsersEditPage.new
+    @page.load(user_id: user.id)
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  it_behaves_like "requires_auth"
+end
+
 describe 'Host User: /#/users/:user_id/edit', js: true, type: :feature do
   let(:host) { create_user(role_titles: [:host]) }
   let(:preload) { host }

@@ -29,9 +29,16 @@
     });
 
     $rootScope.$on('$routeChangeStart', function(scope, next, current) {
+      // Users awaiting authorization get sent to the requires_auth page
+      if($rootScope.currentUser.requires_auth) {
+        scope.preventDefault();
+        $window.location.href = '/users/' + $rootScope.currentUser.id + '/requires_auth';
+      }
+
       // Add front side authorization
       var permission = (next.$$route && next.$$route.permission) || undefined;
       if(angular.isString(permission) && !$rootScope.auth(permission)) {
+        scope.preventDefault();
         $window.location.href = '/#/unauthorized';
       }
 
