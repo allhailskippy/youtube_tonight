@@ -29,7 +29,7 @@ WebsocketRails.setup do |config|
   # Will not be used unless standalone or synchronization mode
   # is enabled.
   if Rails.env == "production"
-    config.redis_options = {:host => 'panga.redistogo.com', :port => '9348', :user => 'redistogo', :password => '82624e10aa9d5c4914967d2b0d892927'}
+    config.redis_options = { url: ENV['REDIS_URL'] }
   else
     config.redis_options = {:host => 'localhost', :port => '6379' }
   end
