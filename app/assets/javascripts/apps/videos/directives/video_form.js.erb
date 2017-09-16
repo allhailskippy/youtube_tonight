@@ -72,6 +72,7 @@ var controller = function(
       // This is called on the parent controller.
       // Is defined in the scope section below
       $scope.closeForm();
+      $scope.searchResults = [];
       $scope.queryVideos();
     }).catch(Notice.handleErrors);
   };
