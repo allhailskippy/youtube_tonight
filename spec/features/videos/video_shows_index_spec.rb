@@ -186,6 +186,35 @@ shared_examples "the video show index page" do
       expect(row.end_at.text).to eq('End At: 30')
     end
 
+    it 'clears search results after adding a video' do
+      stub_search_results()
+
+      @page.add_video.click
+      sleep 1
+
+      @page.video_form.search.set('search text')
+      blur
+      sleep 1
+      wait_for_angular_requests_to_finish
+
+      row = @page.search_results.first
+      row.select_result.click
+
+      row = @page.selected_video
+      row.add_to_queue.click()
+      wait_for_angular_requests_to_finish
+
+      # Verify the video got added
+      expect(@page.rows.length).to eq(4)
+
+      # Go back to the form
+      @page.add_video.click
+      sleep 1
+
+      # Results should be cleared
+      expect( @page.search_results.length).to eq(0)
+    end
+
     it 'cannot add to queue until a video has been selected' do
       stub_search_results()
 
