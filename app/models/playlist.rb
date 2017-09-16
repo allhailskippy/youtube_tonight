@@ -20,9 +20,7 @@ class Playlist < ActiveRecord::Base
 
     # Get the list of playlists from YouTube
     playlists = YoutubeApi.get_playlists(user)
-Rails.logger.warn "*" * 80
-Rails.logger.warn playists.inspect
-Rails.logger.warn "*" * 80
+
     # Clean out any playlists that no longer exist
     new_ids = playlists.values.collect{|p| p[:playlist_id] }
     current_ids = user.playlists.collect(&:api_playlist_id)
