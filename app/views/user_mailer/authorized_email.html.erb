@@ -4,8 +4,31 @@
     <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
   </head>
   <body>
-    <h1>Welcome to YouTube Tonight, <%= @user.name %></h1>
-    <p>You have have been authorized!</p> 
-    <p>One of us. One of us. Gooble gobble. Gooble gobble.</p>
+    <table>
+      <tr>
+        <td>
+          <h1>Welcome to YouTube Tonight, <%= @user.name %></h1>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p>You have have been authorized!</p>
+          <p>One of us. One of us. Gooble gobble. Gooble gobble.</p>
+        </td>
+      </tr>
+      <tr><td>&nbsp;</td></tr>
+      <tr>
+        <td>
+          <p>Once an adminstrator has added you as a host to a show you may start adding videos to it.</p>
+          <p><a href="<%= root_url %>">Sign in here</a> to get started!</a>
+        </td>
+      </tr>
+      <tr><td>&nbsp;</td></tr>
+      <tr>
+        <td>
+          <p>Break a leg!</p>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>
