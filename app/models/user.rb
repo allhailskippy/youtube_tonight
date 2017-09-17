@@ -32,13 +32,14 @@ class User < ActiveRecord::Base
   # Hooks
   #
   after_create :import_playlists
+  after_create :deliver_registered_user_email
   before_validation :update_roles, if: Proc.new{|r| r.change_roles }
   before_update :deliver_authorized_email, if: Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
 
   ##
   # Scopes
   #
-  scope :without_system_admin, -> { where("id != ?", SYSTEM_ADMIN_ID) }
+  scope :without_system_admin, -> { where("users.id != ?", SYSTEM_ADMIN_ID) }
 
   ##
   # Methods
@@ -110,6 +111,10 @@ class User < ActiveRecord::Base
 
   def deliver_authorized_email
     UserMailer.authorized_email(self).deliver_now!
+  end
+
+  def deliver_registered_user_email
+    UserMailer.registered_user(self).deliver_now!
   end
 
   def import_playlists
