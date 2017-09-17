@@ -81,16 +81,24 @@ var VideosIndexCtrl = function(
   };
 
   $scope.editVideo = function(video) {
-    $scope.currentVideo = video;
-    $scope.showForm = true;
+    if($scope.canManage(video)) {
+      $scope.currentVideo = video;
+      $scope.showForm = true;
+    }
+  };
+
+  $scope.canManage = function(video) {
+    return ($scope.currentUser.is_admin || video.creator_id == $scope.currentUser.id);
   };
 
   // Deletes a video from the queue
   $scope.destroy = function(video) {
-    if(confirm("Are you sure you want to delete this video from the queue?\nThis cannot be undone.")) {
-      video.destroy().then(function() {
-        $scope.queryVideos();
-      }).catch();
+    if($scope.canManage(video)) {
+      if(confirm("Are you sure you want to delete this video from the queue?\nThis cannot be undone.")) {
+        video.destroy().then(function() {
+          $scope.queryVideos();
+        }).catch();
+      }
     }
   };
 

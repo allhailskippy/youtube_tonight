@@ -100,7 +100,10 @@
                 play-video="playVideo(video)"
               ></video-show>
             </div>
-            <div class="col-md-3 text-right">
+            <div
+              class="col-md-3 text-right"
+              ng-if="canManage(video)"
+            >
               <a href="javascript:void(0)"
                 class="btn btn-primary glyphicon glyphicon-pencil edit"
                 ng-click="editVideo(video)"
