@@ -55,6 +55,11 @@ var User = function(
         saveData[attr] = user[attr];
       });
 
+      // Don't pass in a blank array for role_titles
+      if(saveData.role_titles && saveData.role_titles.length == 0) {
+        saveData.role_titles = null;
+      }
+
       var params = {
         user: saveData
       };
