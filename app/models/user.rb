@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
   # Hooks
   #
   after_create :import_playlists
-  before_save :update_roles, if: Proc.new{|r| r.change_roles }
+  before_validation :update_roles, if: Proc.new{|r| r.change_roles }
   before_update :deliver_authorized_email, if: Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
 
   ##

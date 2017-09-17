@@ -48,7 +48,7 @@ class UsersEditPage < SitePrism::Page
       element :submit, "button[type='submit']"
     end
 
-    def select_role(role)
+    def click_role(role)
       role_title_sec.select_button.click
       role_title_sec.dropdown.find('span', text: role).click
       find('body').click # Clears the dropdown

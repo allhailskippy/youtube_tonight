@@ -66,7 +66,7 @@ describe 'Admin User: /#/users/:user_id/edit', js: true, type: :feature do
       # Checking roles change works
       @form.name.set('Edited Name 2')
       @form.email.set('fake2@email.com')
-      @form.select_role('Host')
+      @form.click_role('Host')
       @form.actions.submit.click
       wait_for_angular_requests_to_finish
 
@@ -80,10 +80,21 @@ describe 'Admin User: /#/users/:user_id/edit', js: true, type: :feature do
       expect(page.current_url).to end_with("/users")
     end
 
+    it 'should get an error when removing all hosts' do
+      @form.click_role('Admin')
+      @form.actions.submit.click
+      wait_for_angular_requests_to_finish
+
+      errors = @page.errors.collect(&:text)
+      expect(errors).to include("Roles must be selected")
+      # Verify
+      u = User.find(user.id)
+    end
+
     it 'cancels' do
       @form.name.set('Edited Name 3')
       @form.email.set('fake2@email.com')
-      @form.select_role('Host')
+      @form.click_role('Host')
       @form.actions.cancel.click
 
       # Verify no changes have been made
