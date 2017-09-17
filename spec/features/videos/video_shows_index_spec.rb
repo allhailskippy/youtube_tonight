@@ -666,6 +666,37 @@ describe 'Host User: /#/shows/:show_id/videos', js: true, type: :feature do
   it_behaves_like "the video show index page"
   it_behaves_like "video shows duration"
 
+  context 'management' do
+    let(:host2) { create_user(role_titles: [:host]) }
+    let(:show) { create(:show, users: [host, host2]) }
+    let(:video1) { create(:video, parent: show, title: "Right video", creator: host) }
+    let(:video2) do
+      with_user(host2) do
+        create(:video, parent: show, title: "Also right video")
+      end
+    end
+    let(:preload) { show; video1; video2; show.reload }
+
+    before do
+      @page.load(show_id: show.id)
+      wait_for_angular_requests_to_finish
+    end
+
+    it 'can only manage videos that were created by the host' do
+      row = @page.find_row(video1)
+      expect(row.edit['ng-click']).to eq('editVideo(video)')
+      expect(row.edit['disabled']).to be_blank
+      expect(row.delete['ng-click']).to eq('destroy(video)')
+      expect(row.delete['disabled']).to be_blank
+
+      row = @page.find_row(video2)
+      using_wait_time(0) do
+        expect { row.edit }.to raise_error(Capybara::ElementNotFound)
+        expect { row.delete }.to raise_error(Capybara::ElementNotFound)
+      end
+    end
+  end
+
   it_behaves_like 'host menu' do
     let(:menu) { @page.menu }
     let(:active) { 'Shows' }

@@ -31,9 +31,24 @@ authorization do
       if_attribute :user => is {user}
     end
     has_permission_on :videos do
+      to :read
+      if_attribute parent_type: 'Show' do
+        if_attributes parent: { users: contains { user } }
+      end
+
+      if_attribute parent_type: 'Playlist' do
+        if_attribute parent: { user: is { user } }
+      end
+    end
+    has_permission_on :videos do
       to :manage
-#      if_attribute :parent_type => 'Show'
-#      if_attribute :parent => { :user => is {user} }
+      if_attribute parent_type: 'Show' do
+        if_attribute creator: is { user }
+      end
+
+      if_attribute parent_type: 'Playlist' do
+        if_attribute parent: { user: is { user } }
+      end
     end
   end
 
