@@ -31,8 +31,9 @@ class User < ActiveRecord::Base
   ##
   # Hooks
   #
-  after_create :import_playlists
-  after_create :deliver_registered_user_email
+  after_create :deliver_registered_user_email,
+               :import_playlists,
+               :import_videos
   before_validation :update_roles, if: Proc.new{|r| r.change_roles }
   before_update :deliver_authorized_email, if: Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
 
@@ -117,10 +118,6 @@ class User < ActiveRecord::Base
     UserMailer.registered_user(self).deliver_now!
   end
 
-  def import_playlists
-    PlaylistImportWorker.perform_async(id)
-  end
-
   # Gets a current token for the user. Does a
   # token refresh if necessary
   def get_token
@@ -149,5 +146,48 @@ class User < ActiveRecord::Base
       save!
     end
     read_attribute(:auth_hash)
+  end
+
+  def import_playlists
+    update_attributes!(importing_playlists: true)
+
+    # Get the list of playlists from YouTube
+    yt_playlists = YoutubeApi.get_playlists(self)
+
+    # Clean out any playlists that no longer exist
+    new_ids = yt_playlists.values.collect{|p| p[:playlist_id] }
+    current_ids = playlists.collect(&:api_playlist_id)
+    playlists.where(api_playlist_id: (current_ids - new_ids)).destroy_all
+
+    # Create/update existing playlists
+    yt_playlists.each do |list, details|
+      playlist = Playlist
+        .where(user_id: id, api_playlist_id: details[:playlist_id])
+        .first_or_initialize(
+          user_id: id,
+          api_playlist_id: details[:playlist_id],
+        )
+      playlist.api_title = list.to_s.titleize
+      playlist.api_description = details[:description]
+      %w(default medium high standard maxres).each do |size|
+        %w(url width height).each do |type|
+          playlist.send("api_thumbnail_#{size}_#{type}=", details[:thumbnails].try(size.to_sym).try(type.to_sym))
+        end
+      end
+      playlist.creator_id = id
+      playlist.updater_id = id
+
+      playlist.save! if playlist.changed?
+    end
+
+    update_attributes!(importing_playlists: false)
+    playlists.reload
+    playlists
+  end
+
+  def import_videos
+    playlists.each do |playlist|
+      VideoImportWorker.perform_async(playlist.id)
+    end
   end
 end
