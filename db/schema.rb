@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170908003451) do
+ActiveRecord::Schema.define(version: 20170918161530) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(version: 20170908003451) do
     t.string   "api_thumbnail_maxres_url"
     t.integer  "api_thumbnail_maxres_width"
     t.integer  "api_thumbnail_maxres_height"
+    t.boolean  "importing_videos",              default: false
   end
 
   create_table "roles", force: :cascade do |t|

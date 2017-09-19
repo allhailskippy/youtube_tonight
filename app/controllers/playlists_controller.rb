@@ -59,9 +59,9 @@ class PlaylistsController < ApplicationController
           user = params[:user_id].present? ? User.find(params[:user_id]) : current_user
 
           # Permission check
-          permitted_to!(:manage, user)
+          permitted_to!(:import_playlists, user)
 
-          playlists = Playlist.import_all(user)
+          playlists = user.import_playlists
           render json: { data: playlists }
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
@@ -78,7 +78,7 @@ class PlaylistsController < ApplicationController
       format.json do
         begin
           playlist = Playlist.with_permissions_to(:manage).find(params[:id])
-          videos = playlist.import_videos
+          videos = VideoImportWorker.perform_async(playlist.id)
 
           render json: { data: videos }
         rescue Exception => e

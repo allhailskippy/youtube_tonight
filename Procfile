@@ -1,2 +1,3 @@
 web: bundle exec thin start -p $PORT
-worker: bundle exec sidekiq -C config/sidekiq.yml
+sidekiq: bundle exec sidekiq -C config/sidekiq.yml
+websockets: bundle exec rake websocket_rails:start_server

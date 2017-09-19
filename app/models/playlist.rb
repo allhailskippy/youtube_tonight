@@ -15,50 +15,15 @@ class Playlist < ActiveRecord::Base
     {}
   end
 
-  def self.import_all(user = nil)
-    user ||= Authorization.current_user
-
-    # Get the list of playlists from YouTube
-    playlists = YoutubeApi.get_playlists(user)
-
-    # Clean out any playlists that no longer exist
-    new_ids = playlists.values.collect{|p| p[:playlist_id] }
-    current_ids = user.playlists.collect(&:api_playlist_id)
-    user.playlists.where(api_playlist_id: (current_ids - new_ids)).destroy_all
-
-    # Create/update existing playlists
-    playlists.each do |list, details|
-      playlist = Playlist
-        .where(user_id: user.id, api_playlist_id: details[:playlist_id])
-        .first_or_initialize(
-          user_id: user.id,
-          api_playlist_id: details[:playlist_id],
-        )
-      playlist.api_title = list.to_s.titleize
-      playlist.api_description = details[:description]
-      %w(default medium high standard maxres).each do |size|
-        %w(url width height).each do |type|
-          playlist.send("api_thumbnail_#{size}_#{type}=", details[:thumbnails].try(size.to_sym).try(type.to_sym))
-        end
-      end
-      playlist.creator_id = user.id
-      playlist.updater_id = user.id
-
-      playlist.save! if playlist.changed?
-    end
-    playlists
-  end
-
-  def import_videos(user = nil)
-    user ||= Authorization.current_user
-
+  def import_videos
+    update_attributes!(importing_videos: true)
     # Get all videos for the current playlist from YouTube
     yt_videos = YoutubeApi.get_videos_for_playlist(api_playlist_id, user)
 
     # Clear out any videos that no longer exist
     new_ids = yt_videos.collect{|v| v[:video_id]}
     current_ids = videos.collect(&:api_video_id)
-    videos.where(api_video_id: (current_ids - new_ids)).destroy_all
+    videos.where(api_video_id: (current_ids - new_ids)).delete_all
 
     # Create/update existing videos
     yt_videos.each do |v|
@@ -87,7 +52,14 @@ class Playlist < ActiveRecord::Base
     end
 
     videos.reload
-    update_attribute(:video_count, videos.count)
+    update_attributes!(video_count: videos.count, importing_videos: false)
+
+    WebsocketRails[:playlist_events].trigger('updated', { playlist_id: id })
     videos
+  end
+
+  # Used for definining websocket events
+  def self.events
+    [:updated]
   end
 end

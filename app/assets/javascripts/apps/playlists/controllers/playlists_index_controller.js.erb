@@ -8,8 +8,8 @@
   "use strict";
 
 var PlaylistsIndexCtrl = function(
-  $scope, $http,
-  Playlist, Notice, User,
+  $scope, $http, $filter,
+  ConnectionHelper, Playlist, Notice, User,
   current_user_data
   ) {
 
@@ -18,8 +18,26 @@ var PlaylistsIndexCtrl = function(
    */
   $scope.user = User.build(current_user_data.data);
   $scope.user_id = $scope.user.id;
+  $scope.playlists = [];
 
   $scope.importingVideos = {};
+
+  // Setting up websocket connections
+  $scope.channel = ConnectionHelper.getChannel('playlist_events');
+  $scope.dispatcher = ConnectionHelper.getDispatcher();
+
+  /**
+   * Event Handlers
+   */
+  // Preview Events
+  $scope.channel.bind('updated', function(message) {
+    var results = $filter('filter')($scope.playlists, {id: message.playlist_id}, true);
+
+    if(results.length > 0) {
+      $scope.reloadCallback();
+      $scope.$applyAsync();
+    }
+  });
 
   /**
    * Scope methods
@@ -51,11 +69,11 @@ var PlaylistsIndexCtrl = function(
     var urlApi = 'playlists.json?' + $.param(params);
     return $http.get(urlApi).then(function (response) {
       $scope.importing = false;
-      var playlists = jQuery.map(response.data.data, function(playlist) {
+      $scope.playlists = jQuery.map(response.data.data, function(playlist) {
         return Playlist.build(playlist);
       });
       return {
-        'rows': playlists,
+        'rows': $scope.playlists,
         'header': [],
         'pagination': {
           'count': response.data.per_page,
@@ -106,11 +124,12 @@ var PlaylistsIndexCtrl = function(
       Notice.handleErrors;
     });
   };
+
 };
 
 PlaylistsIndexCtrl.$inject = [
-  '$scope', '$http',
-  'Playlist', 'Notice', 'User',
+  '$scope', '$http', '$filter',
+  'ConnectionHelper', 'Playlist', 'Notice', 'User',
   'current_user_data'
 ];
 

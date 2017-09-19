@@ -34,11 +34,14 @@ require 'capybara/rspec'
 require 'capybara/rails'
 require 'capybara/poltergeist'
 require 'sidekiq/testing'
+Sidekiq::Testing.fake!
+
 require 'declarative_authorization/maintenance'
 require 'selenium-webdriver'
 require 'site_prism'
 
 require_relative 'helpers/spec_helpers.rb'
+require_relative 'helpers/google_api_stubs.rb'
 
 # Require libraries
 ['support', 'pages', 'features/shared'].each do |lib|
@@ -107,6 +110,7 @@ RSpec.configure do |config|
 
   config.before(:each) do
     Authorization.current_user = User.find(SYSTEM_ADMIN_ID)
+    Sidekiq::Worker.clear_all
   end
 
   config.around do |example|

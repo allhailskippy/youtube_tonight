@@ -15,8 +15,8 @@ class Video < ActiveRecord::Base
   # Hooks
   #
   before_create :set_position, if: Proc.new{|r| r.position.blank? }
-  after_save :send_video_update_request
-  after_destroy :send_video_update_request
+  after_save :send_video_update_request, if: Proc.new{|r| r.is_show? }
+  after_destroy :send_video_update_request, if: Proc.new{|r| r.is_show? }
 
   ##
   # Methods
@@ -43,5 +43,13 @@ class Video < ActiveRecord::Base
 
   def send_video_update_request
     WebsocketRails[:video_player].trigger(:update_video_list, {:show_id => parent_id})
+  end
+
+  def is_show?
+    parent_type == 'Show'
+  end
+
+  def is_playlist?
+    parent_type == 'Playlist'
   end
 end
