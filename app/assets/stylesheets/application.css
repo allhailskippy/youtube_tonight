@@ -89,6 +89,18 @@ glyphicon.disabled {
   margin-left: 10px;
 }
 
+#logout_nav {
+  background-color: #A00;
+}
+
+#logout_nav a {
+  color: #9D9D9D;
+}
+
+#logout_nav a:hover {
+  color: #FFF;
+}
+
 /* Video index */
 .show-title {
   width: 100%;

@@ -52,8 +52,8 @@ class YoutubeApi
     related_playlists = search_response.items.first.content_details.related_playlists
 
     # Start by collecting the ids of the hard coded playlists
-    hc_list = [:favorites, :likes, :watch_history, :watch_later]
-    ids = hc_list.collect{|p| related_playlists.send(p) }.join(',')
+    hc_list = [:favorites, :likes, :uploads]
+    ids = hc_list.collect{|p| related_playlists.send(p) rescue nil}.uniq.join(',')
 
     # Pull full details about the hard coded lists
     search_response = client.list_playlists('contentDetails,snippet', id: ids)

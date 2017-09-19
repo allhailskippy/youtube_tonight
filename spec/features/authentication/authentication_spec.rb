@@ -57,6 +57,7 @@ describe 'Not Logged In: /users/sign_in', js: true, type: :feature do
   end
 
   it 'logs in with new user' do
+    stub_playlists
     set_omniauth
     expect(page.current_url).to end_with('/users/sign_in')
 
@@ -70,6 +71,7 @@ describe 'Not Logged In: /users/sign_in', js: true, type: :feature do
   it 'sends an email on new log in' do
     admin_user = create_user(role_titles: [:admin], email: 'admin@fakeemail.com')
 
+    stub_playlists
     set_omniauth
     deliveries = ActionMailer::Base.deliveries
     delivery_count = deliveries.count
@@ -89,6 +91,22 @@ describe 'Not Logged In: /users/sign_in', js: true, type: :feature do
     expect(delivery.subject).to eq("New user registration at YouTube Tonight")
     expect(delivery.body).to include("<h1>#{new_user.name} <#{new_user.email}> has registered at YouTube tonight</h1>")
     expect(delivery.body).to include("<a href=\"http://example.com/#/users\">Go here</a> to authorize.")
+  end
+
+  it 'creates playlists on new log in' do
+    admin_user = create_user(role_titles: [:admin], email: 'admin@fakeemail.com')
+
+    stub_videos
+    set_omniauth
+
+    # Queues up the video import requests
+    expect {
+      @page.sign_in.click
+      wait_for_angular_requests_to_finish
+    }.to change(VideoImportWorker.jobs, :size).by(5)
+
+    # Executes the video import requests
+    VideoImportWorker.drain
   end
 
   it 'logs in with existing user' do

@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   model_stamper
 
-  attr_accessor :role_titles, :change_roles
+  attr_accessor :role_titles, :change_roles, :skip_playlist_import
 
   ##
   # Authentication
@@ -31,8 +31,8 @@ class User < ActiveRecord::Base
   ##
   # Hooks
   #
-  after_create :deliver_registered_user_email,
-               :import_playlists
+  after_create :deliver_registered_user_email
+  after_create :import_playlists, unless: Proc.new{|r| r.skip_playlist_import }
   before_validation :update_roles, if: Proc.new{|r| r.change_roles }
   before_update :deliver_authorized_email, if: Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
 
@@ -157,7 +157,6 @@ class User < ActiveRecord::Base
     new_ids = yt_playlists.values.collect{|p| p[:playlist_id] }
     current_ids = playlists.collect(&:api_playlist_id)
     playlists.where(api_playlist_id: (current_ids - new_ids)).destroy_all
-
     # Create/update existing playlists
     yt_playlists.each do |list, details|
       playlist = Playlist
@@ -166,7 +165,7 @@ class User < ActiveRecord::Base
           user_id: id,
           api_playlist_id: details[:playlist_id],
         )
-      playlist.api_title = list.to_s.titleize
+      playlist.api_title = details[:title]
       playlist.api_description = details[:description]
       %w(default medium high standard maxres).each do |size|
         %w(url width height).each do |type|
@@ -179,12 +178,12 @@ class User < ActiveRecord::Base
       playlist.save! if playlist.changed?
     end
 
+    playlists.reload
     playlists.each do |playlist|
       VideoImportWorker.perform_async(playlist.id)
     end
 
     update_attributes!(importing_playlists: false)
-    playlists.reload
     playlists
   end
 end
