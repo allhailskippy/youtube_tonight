@@ -32,7 +32,7 @@ class YoutubeApi
     end
 
     if search_results.present?
-      self.get_duration(search_results.keys.join(",")).each do |video_id, duration|
+      self.get_duration(search_results.keys.join(","), user).each do |video_id, duration|
         search_results[video_id].merge!(duration)
       end
     end
@@ -124,7 +124,7 @@ class YoutubeApi
           # Get the video id
           video_id = video.resource_id.video_id
 
-          # Build a list of video ids for bulk getting their duration
+          # Build a list of video ids to bulk lookup duration
           video_ids << video_id
 
           # Thumbnails
@@ -145,15 +145,15 @@ class YoutubeApi
           }
         end
 
-        self.get_duration(video_ids.join(',')).each do |video_id, duration|
+        self.get_duration(video_ids.join(','), user).each do |video_id, duration|
           videos[video_id].merge!(duration)
         end
 
         next_page_token = search_response.next_page_token
         break if next_page_token.blank?
       end
-    rescue
-      #TODO: Deal with this if necessary later
+    rescue Exception => e
+      NewRelic::Agent.notice_error(e)
     end
 
     # Return videos if there are any

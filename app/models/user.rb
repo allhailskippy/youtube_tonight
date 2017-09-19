@@ -32,8 +32,7 @@ class User < ActiveRecord::Base
   # Hooks
   #
   after_create :deliver_registered_user_email,
-               :import_playlists,
-               :import_videos
+               :import_playlists
   before_validation :update_roles, if: Proc.new{|r| r.change_roles }
   before_update :deliver_authorized_email, if: Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
 
@@ -180,14 +179,12 @@ class User < ActiveRecord::Base
       playlist.save! if playlist.changed?
     end
 
-    update_attributes!(importing_playlists: false)
-    playlists.reload
-    playlists
-  end
-
-  def import_videos
     playlists.each do |playlist|
       VideoImportWorker.perform_async(playlist.id)
     end
+
+    update_attributes!(importing_playlists: false)
+    playlists.reload
+    playlists
   end
 end

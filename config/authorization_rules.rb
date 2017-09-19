@@ -17,7 +17,7 @@ authorization do
     includes :guest
 
     has_permission_on :users, :to => [:update, :requires_auth]
-    has_permission_on :users, to: :show do
+    has_permission_on :users, to: [:show, :import_playlists] do
       if_attribute id: is { user.id }
     end
     has_permission_on :shows do
@@ -58,6 +58,7 @@ authorization do
 
     has_permission_on :youtube_parser, :to => :read
     has_permission_on :broadcasts, :to => :read
+    has_permission_on :users, to: :import_playlists
 
     %w(users shows playlists videos).each do |controller|
       has_permission_on controller.to_sym, to: :manage

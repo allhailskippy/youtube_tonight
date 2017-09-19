@@ -78,7 +78,7 @@ class PlaylistsController < ApplicationController
       format.json do
         begin
           playlist = Playlist.with_permissions_to(:manage).find(params[:id])
-          videos = playlist.import_videos
+          videos = VideoImportWorker.perform_async(playlist.id)
 
           render json: { data: videos }
         rescue Exception => e

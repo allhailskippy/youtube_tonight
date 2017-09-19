@@ -77,7 +77,7 @@
                   title="Re-import Videos"
                   type="button"
                   class="refresh-videos btn btn-success glyphicon glyphicon-refresh"
-                  ng-class="{disabled: importingVideos[playlist.id]}"
+                  ng-class="{disabled: (playlist.importing_videos  || importing)}"
                   ng-click="reimportVideos(playlist)"
                 ></button>
                 <a href-func="playlist.videosUrl(routeData.userPath)"

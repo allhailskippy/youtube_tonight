@@ -23,7 +23,7 @@ class Playlist < ActiveRecord::Base
     # Clear out any videos that no longer exist
     new_ids = yt_videos.collect{|v| v[:video_id]}
     current_ids = videos.collect(&:api_video_id)
-    videos.where(api_video_id: (current_ids - new_ids)).destroy_all
+    videos.where(api_video_id: (current_ids - new_ids)).delete_all
 
     # Create/update existing videos
     yt_videos.each do |v|
@@ -53,6 +53,13 @@ class Playlist < ActiveRecord::Base
 
     videos.reload
     update_attributes!(video_count: videos.count, importing_videos: false)
+
+    WebsocketRails[:playlist_events].trigger('updated', { playlist_id: id })
     videos
+  end
+
+  # Used for definining websocket events
+  def self.events
+    [:updated]
   end
 end
