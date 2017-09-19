@@ -44,9 +44,48 @@ shared_examples "the index page" do
     expect(@page.find_row(playlist2)).to be_nil
   end
 
+  it 'reimports all playlists' do
+    stub_videos
+
+    # Queues up the video import requests
+    expect {
+      @page.reimport_playlists.click
+      wait_for_angular_requests_to_finish
+    }.to change(VideoImportWorker.jobs, :size).by(5)
+
+    current_user.playlists.reload
+
+    expected = ["def5678", "ghi91011", "jkl121314", "plr1", "plr2"]
+    expect(current_user.playlists.collect(&:api_playlist_id)).to eq(expected)
+
+    # Executes the video import requests
+    VideoImportWorker.drain
+
+    # Videos should be the ones from the stub
+    expected = ["a123", "a124", "b234", "c123ghi91011", "c123jkl121314", "c123plr1", "c123plr2"]
+    expect(current_user.playlists.collect{|p| p.videos.collect(&:api_video_id) }.flatten).to eq(expected)
+  end
+
   describe 'actions' do
-    it 'reimports video' do
-      skip "TODO: With TID-8"
+    it 'reimports videos for playlist' do
+      stub_videos_for_playlist(playlist1.api_playlist_id)
+
+      row = @page.find_row(playlist1)
+      expect(row.sec_actions.refresh_videos['disabled']).to be_blank
+
+      expect {
+        row.sec_actions.refresh_videos.click
+        wait_for_angular_requests_to_finish
+      }.to change(VideoImportWorker.jobs, :size).by(1)
+
+      expect {
+        # Workder should remove the existing 5 videos and
+        # replace it with 1 video. Therefore change of -4
+        VideoImportWorker.drain
+      }.to change(playlist1.videos, :count).by(-4)
+
+      row = @page.find_row(playlist1)
+      expect(row.sec_actions.refresh_videos['disabled']).to be_blank
     end
 
     describe 'videos' do

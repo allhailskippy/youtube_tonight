@@ -154,6 +154,7 @@ class YoutubeApi
       end
     rescue Exception => e
       NewRelic::Agent.notice_error(e)
+      raise
     end
 
     # Return videos if there are any

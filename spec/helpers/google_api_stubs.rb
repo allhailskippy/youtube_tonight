@@ -336,69 +336,73 @@ def stub_videos
 
   # Videos for the rest of the playslist
   ['ghi91011', 'jkl121314', 'plr1', 'plr2'].each do |pid|
-    body = %{
-      {
-        "kind": "youtube#playlistItemListResponse",
-        "pageInfo": {
-          "totalResults": 1,
-          "resultsPerPage": 5
-        },
-        "items": [
-          {
-            "kind": "youtube#playlistItem",
-            "id": "c123#{pid}",
-            "snippet": {
-              "publishedAt": "2015-04-15T12:32:43.000Z",
-              "channelId": "abc1234",
-              "title": "Test Video 1 playlist #{pid}",
-              "description": "Video description 1 playlist #{pid}",
-              "thumbnails": {
-                "default": { "url": "https://i.ytimg.com/vi/IE9oSfHVVyo/default.jpg", "width": 120, "height": 90 },
-                "medium": { "url": "https://i.ytimg.com/vi/IE9oSfHVVyo/mqdefault.jpg", "width": 320, "height": 180 },
-                "high": { "url": "https://i.ytimg.com/vi/IE9oSfHVVyo/hqdefault.jpg", "width": 480, "height": 360 },
-                "standard": { "url": "https://i.ytimg.com/vi/IE9oSfHVVyo/sddefault.jpg", "width": 640, "height": 480 },
-                "maxres": { "url": "https://i.ytimg.com/vi/IE9oSfHVVyo/maxresdefault.jpg", "width": 1280, "height": 720 }
-              },
-              "channelTitle": "Paul Mason",
-              "playlistId": "#{pid}",
-              "position": 0,
-              "resourceId": {
-                "kind": "youtube#video",
-                "videoId": "c123#{pid}"
-              }
-            }
-          }
-        ]
-      }
-    }
-    stub_request(:get, "https://www.googleapis.com/youtube/v3/playlistItems?maxResults=50&part=snippet&playlistId=#{pid}").
-                to_return(status: 200, body: body, headers: { "content-type": "application/json; charset=UTF-8" })
-
-    # Duration lookups
-    body = %{
-      {
-        "kind": "youtube#videoListResponse",
-        "pageInfo": {
-          "totalResults": 1,
-          "resultsPerPage": 5
-        },
-        "items": [
-          {
-            "kind": "youtube#video",
-            "id": "c123#{pid}",
-            "contentDetails": {
-              "duration": "PT1M3S",
-              "dimension": "2d",
-              "definition": "hd",
-              "caption": "false",
-              "licensedContent": false,
-              "projection": "rectangular"
-            }
-          }
-        ]
-      }
-    }
-    stub_request(:get, "https://www.googleapis.com/youtube/v3/videos?id=c123#{pid}&part=contentDetails").
-                to_return(status: 200, body: body, headers: { "content-type": "application/json; charset=UTF-8" })
+    stub_videos_for_playlist(pid)
   end
+end
+
+def stub_videos_for_playlist(pid)
+  body = %{
+    {
+      "kind": "youtube#playlistItemListResponse",
+      "pageInfo": {
+        "totalResults": 1,
+        "resultsPerPage": 5
+      },
+      "items": [
+        {
+          "kind": "youtube#playlistItem",
+          "id": "c123#{pid}",
+          "snippet": {
+            "publishedAt": "2015-04-15T12:32:43.000Z",
+            "channelId": "abc1234",
+            "title": "Test Video 1 playlist #{pid}",
+            "description": "Video description 1 playlist #{pid}",
+            "thumbnails": {
+              "default": { "url": "https://i.ytimg.com/vi/IE9oSfHVVyo/default.jpg", "width": 120, "height": 90 },
+              "medium": { "url": "https://i.ytimg.com/vi/IE9oSfHVVyo/mqdefault.jpg", "width": 320, "height": 180 },
+              "high": { "url": "https://i.ytimg.com/vi/IE9oSfHVVyo/hqdefault.jpg", "width": 480, "height": 360 },
+              "standard": { "url": "https://i.ytimg.com/vi/IE9oSfHVVyo/sddefault.jpg", "width": 640, "height": 480 },
+              "maxres": { "url": "https://i.ytimg.com/vi/IE9oSfHVVyo/maxresdefault.jpg", "width": 1280, "height": 720 }
+            },
+            "channelTitle": "Paul Mason",
+            "playlistId": "#{pid}",
+            "position": 0,
+            "resourceId": {
+              "kind": "youtube#video",
+              "videoId": "c123#{pid}"
+            }
+          }
+        }
+      ]
+    }
+  }
+  stub_request(:get, "https://www.googleapis.com/youtube/v3/playlistItems?maxResults=50&part=snippet&playlistId=#{pid}").
+              to_return(status: 200, body: body, headers: { "content-type": "application/json; charset=UTF-8" })
+
+  # Duration lookups
+  body = %{
+    {
+      "kind": "youtube#videoListResponse",
+      "pageInfo": {
+        "totalResults": 1,
+        "resultsPerPage": 5
+      },
+      "items": [
+        {
+          "kind": "youtube#video",
+          "id": "c123#{pid}",
+          "contentDetails": {
+            "duration": "PT1M3S",
+            "dimension": "2d",
+            "definition": "hd",
+            "caption": "false",
+            "licensedContent": false,
+            "projection": "rectangular"
+          }
+        }
+      ]
+    }
+  }
+  stub_request(:get, "https://www.googleapis.com/youtube/v3/videos?id=c123#{pid}&part=contentDetails").
+              to_return(status: 200, body: body, headers: { "content-type": "application/json; charset=UTF-8" })
 end
