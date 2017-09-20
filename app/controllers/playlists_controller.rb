@@ -26,15 +26,15 @@ class PlaylistsController < ApplicationController
   # GET /playlists.json
   def index
     respond_to do |format|
-      format.html
       format.json do
         params[:q] ||= {}
         params[:q][:user_id_eq] = current_user.id if params[:q][:user_id_eq].blank?
         params[:q][:s] ||= 'id desc'
-        params[:per_page] ||= 10
-        params[:page] ||= 1
-        # Prevent page from being 0 or lower
-        params[:page] = params[:page].to_i < 1 ? 1 : params[:page]
+        params[:per_page] ||= '10'
+        params[:page] ||= '1'
+        # Prevent pagination from being 0 or lower
+        params[:page] = params[:page].to_i < 1 ? '1' : params[:page]
+        params[:per_page] = params[:per_page].to_i < 1 ? '1' : params[:per_page]
 
         search = Playlist.with_permissions_to(:read).search(params[:q])
         playlists = search.result.paginate(:page => params[:page], :per_page => params[:per_page])

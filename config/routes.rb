@@ -4,7 +4,7 @@ Youtubetonight::Application.routes.draw do
   devise_for :users, :controllers => { :omniauth_callbacks => "callbacks" }
   resources :shows
   resources :videos
-  resources :playlists
+  resources :playlists, only: [:show, :index, :create, :update], constraints: { format: /json/ }
   resources :users do
     member do
       get :requires_auth, :as => 'requires_auth'
