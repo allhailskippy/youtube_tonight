@@ -2,9 +2,9 @@ require 'sidekiq/web'
 
 Youtubetonight::Application.routes.draw do
   devise_for :users, :controllers => { :omniauth_callbacks => "callbacks" }
-  resources :shows
+  resources :shows, only: [:index, :show, :create, :update, :destroy], constraints: { format: /json/ }
   resources :videos
-  resources :playlists, only: [:show, :index, :create, :update], constraints: { format: /json/ }
+  resources :playlists, only: [:index, :show, :create, :update], constraints: { format: /json/ }
   resources :users do
     member do
       get :requires_auth, :as => 'requires_auth'

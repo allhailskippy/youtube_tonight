@@ -8,8 +8,8 @@ class UserMailer < ActionMailer::Base
 
   def registered_user(user)
     @user = user
-    @emails = User.joins(:roles).where(roles: { title: 'admin' }).select(:email).without_system_admin.collect(&:email)
-    @emails = [User.find(SYSTEM_ADMIN_ID)] if @emails.blank?
+    @emails = User.joins(:roles).where(roles: { title: 'admin' }).select(:email).without_system_admin.collect(&:email) rescue nil
+    @emails = [User.find(SYSTEM_ADMIN_ID).email] if @emails.blank?
     mail(to: @emails.join(','), subject: "New user registration at YouTube Tonight")
   end
 end

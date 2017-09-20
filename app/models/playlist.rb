@@ -1,20 +1,17 @@
 class Playlist < ActiveRecord::Base
   model_stamper
 
-  ##
-  # Relationships
-  #
+  # == Relationships ========================================================
   belongs_to :user
   has_many :videos, dependent: :destroy, as: :parent
 
-  ##
-  # Methods
-  #
-  # Here for consistency
-  def self.as_json_hash
-    {}
+  # == Class Methods ========================================================
+  # Used for definining websocket events
+  def self.events
+    [:updated]
   end
 
+  # == Instance Methods =====================================================
   def import_videos
     update_attributes!(importing_videos: true)
     # Get all videos for the current playlist from YouTube
@@ -56,10 +53,5 @@ class Playlist < ActiveRecord::Base
 
     WebsocketRails[:playlist_events].trigger('updated', { playlist_id: id })
     videos
-  end
-
-  # Used for definining websocket events
-  def self.events
-    [:updated]
   end
 end

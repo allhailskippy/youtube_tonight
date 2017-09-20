@@ -13,7 +13,7 @@ class PlaylistsController < ApplicationController
           params[:page] = params[:page].to_i < 1 ? '1' : params[:page]
           params[:per_page] = params[:per_page].to_i < 1 ? '1' : params[:per_page]
 
-          search = Playlist.with_permissions_to(:read).search(params[:q])
+          search = Playlist.with_permissions_to(:index).search(params[:q])
           playlists = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
 
           render json: {
@@ -22,7 +22,7 @@ class PlaylistsController < ApplicationController
             total: playlists.total_entries,
             total_pages: playlists.total_pages,
             offset: playlists.offset,
-            data: playlists.as_json(Playlist.as_json_hash)
+            data: playlists
           }
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
@@ -40,11 +40,10 @@ class PlaylistsController < ApplicationController
         begin
           playlist = Playlist.find(params[:id])
 
-          # Permission check
           # Used to differentiate between not found and not authorized
-          permitted_to!(:read, playlist)
+          permitted_to!(:show, playlist)
 
-          render json: { data: playlist.as_json(Playlist.as_json_hash) }
+          render json: { data: playlist }
         rescue ActiveRecord::RecordNotFound
           render json: { errors: 'Not Found' },
                  status: :not_found

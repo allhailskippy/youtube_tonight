@@ -16,8 +16,8 @@ authorization do
   role :host do
     includes :guest
 
-    has_permission_on :users, :to => [:update, :requires_auth]
-    has_permission_on :users, to: [:show, :import_playlists] do
+    has_permission_on :users, :to => [:show, :requires_auth]
+    has_permission_on :users, to: [:update, :import_playlists] do
       if_attribute id: is { user.id }
     end
     has_permission_on :shows do

@@ -15,6 +15,8 @@ class User < ActiveRecord::Base
   #
   has_many :roles, dependent: :destroy
   has_many :playlists, dependent: :destroy
+  has_many :show_users, dependent: :destroy
+  has_many :shows, through: :show_users
 
   ##
   # Validation

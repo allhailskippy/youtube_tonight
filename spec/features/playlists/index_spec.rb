@@ -55,8 +55,10 @@ shared_examples "the index page" do
 
     current_user.playlists.reload
 
-    expected = ["def5678", "ghi91011", "jkl121314", "plr1", "plr2"]
-    expect(current_user.playlists.collect(&:api_playlist_id)).to eq(expected)
+    expect(current_user.playlists.length).to eq(5)
+    ["def5678", "ghi91011", "jkl121314", "plr1", "plr2"].each do |list|
+      expect(current_user.playlists.collect(&:api_playlist_id)).to include(list)
+    end
 
     # Executes the video import requests
     VideoImportWorker.drain
