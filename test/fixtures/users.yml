@@ -5,10 +5,12 @@ admin_user:
   requires_auth: false
   expires_at: 9999999999
   provider: 'google_oauth2'
+  profile_image: 'http://localhost/admin.gif'
 host_user:
   id: 2
-  name: Host
+  name: Host User
   email: host@example.com
   requires_auth: false
   expires_at: 9999999999
   provider: 'google_oauth2'
+  profile_image: 'http://localhost/host.gif'

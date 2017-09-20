@@ -3,6 +3,7 @@ require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 require 'declarative_authorization/maintenance'
 require 'sidekiq/testing'
+require 'mocha/test_unit'
 
 ['helpers'].each do |lib|
   Dir["#{File.dirname(__FILE__)}/#{lib}/**/*.rb"].each {|f| require f}
