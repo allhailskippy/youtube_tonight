@@ -3,3 +3,12 @@ admin_user:
   name: Admin User
   email: admin@example.com
   requires_auth: false
+  expires_at: 9999999999
+  provider: 'google_oauth2'
+host_user:
+  id: 2
+  name: Host
+  email: host@example.com
+  requires_auth: false
+  expires_at: 9999999999
+  provider: 'google_oauth2'
