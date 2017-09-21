@@ -11,9 +11,9 @@ Youtubetonight::Application.routes.draw do
   resources :videos, except: [:new, :edit], constraints: { format: /json/ }
   resources :playlists, only: [:index, :show, :create, :update], constraints: { format: /json/ }
 
-  get :current_user, :to => 'current_user#index', :as => :current_user
+  get :current_user, :to => 'current_user#index', :as => :current_user, constraints: { format: /json/ }
   get 'broadcasts' => 'broadcasts#index'
-  get 'youtube_parser' => 'youtube_parser#index'
+  get 'youtube_parser' => 'youtube_parser#index', constraints: { format: /json/ }
   get 'app' => 'app#index'
   root :to => 'app#index'
 
