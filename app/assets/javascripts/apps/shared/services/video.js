@@ -54,7 +54,16 @@ var Video = function(
         player_id: 'all'
       });
 
-      return VideoApi.delete({id: video.id}).$promise;
+      var params = {
+        id: video.id
+      };
+      if(video.parent_type == 'Show') {
+        params.show_id = video.parent_id;
+      } else if(video.parent_type == 'Playlist') {
+        params.playlist_id = video.parent_id;
+      }
+
+      return VideoApi.delete(params).$promise;
     };
 
     video.durationStr = function() {
@@ -80,9 +89,9 @@ var Video = function(
         video: saveData,
       };
       if(video.parent_type == 'Show') {
-        jQuery.merge(params, { show_id: video.parent_id });
+        params.show_id = video.parent_id;
       } else if(video.parent_type == 'Playlist') {
-        jQuery.merge(params, { playlist_id: video.parent_id });
+        params.playlist_id = video.parent_id;
       }
 
       // Different calls for new vs existing

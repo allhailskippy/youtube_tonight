@@ -1,6 +1,7 @@
-class VideosController < ApplicationController
-  before_filter :set_class_variables
+class ParentException < StandardError
+end
 
+class VideosController < ApplicationController
   # GET /videos.json
   def index
     respond_to do |format|
@@ -26,6 +27,9 @@ class VideosController < ApplicationController
             offset: videos.offset,
             data: videos
           }
+        rescue ParentException
+          render json: { errors: ['Expected Show or Playlist to be provided'] },
+                 status: :expectation_failed
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
           render json: { errors: [e.to_s] },
@@ -46,6 +50,9 @@ class VideosController < ApplicationController
           permitted_to!(:show, video)
 
           render json: { data: video}
+        rescue ParentException
+          render json: { errors: ['Expected Show or Playlist to be provided'] },
+                 status: :expectation_failed
         rescue ActiveRecord::RecordNotFound
           render json: { errors: ['Not Found'] },
                  status: :not_found
@@ -69,9 +76,15 @@ class VideosController < ApplicationController
           video.save!
 
           render json: { data: video }
+        rescue ParentException
+          render json: { errors: ['Expected Show or Playlist to be provided'] },
+                 status: :expectation_failed
         rescue ActiveRecord::RecordInvalid
           render json: { errors: video.errors, full_errors: video.errors.full_messages },
                  status: :unprocessable_entity
+        rescue ActiveRecord::RecordNotFound
+          render json: { errors: ['Not Found'] },
+                 status: :not_found
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
           render json: { errors: [e.to_s] },
@@ -92,6 +105,9 @@ class VideosController < ApplicationController
           video.update_attributes!(video_params)
 
           render json: { data: video }
+        rescue ParentException
+          render json: { errors: ['Expected Show or Playlist to be provided'] },
+                 status: :expectation_failed
         rescue ActiveRecord::RecordNotFound
           render json: { errors: ['Not Found'] },
                  status: :not_found
@@ -117,6 +133,9 @@ class VideosController < ApplicationController
           video.destroy
 
           render json: { data: {} }
+        rescue ParentException
+          render json: { errors: ['Expected Show or Playlist to be provided'] },
+                 status: :expectation_failed
         rescue ActiveRecord::RecordNotFound
           render json: { errors: ['Not Found'] },
                  status: :not_found
@@ -131,23 +150,14 @@ class VideosController < ApplicationController
 
 private
   def scoped
-    if @parent
-      @parent.videos
-    else
-      Video.with_permissions_to(:read).all
-    end
-  end
-
-  # Class Variables
-  def set_class_variables
-    params[:q] ||= {}
-
-    @parent = nil
-    if params[:show_id].present?
-      @parent = Show.with_permissions_to(:read).find(params[:show_id])
+    parent = if params[:show_id].present?
+      Show.with_permissions_to(:read).find(params[:show_id])
     elsif params[:playlist_id].present?
-      @parent = Playlist.with_permissions_to(:read).find(params[:playlist_id])
+      Playlist.with_permissions_to(:read).find(params[:playlist_id])
+    else
+      raise ParentException
     end
+    parent.videos
   end
 
   def video_params
