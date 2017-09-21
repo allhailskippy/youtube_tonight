@@ -1,9 +1,8 @@
 source 'https://rubygems.org'
+source 'http://gems.github.com'
 ruby "2.3.5"
 
-group :production do
-  gem 'thin'
-end
+gem 'puma'
 
 gem 'rails_12factor'
 gem 'rails', '5.0.0'
@@ -22,7 +21,7 @@ gem 'iso8601'
 gem 'delayed_job_active_record'
 gem 'eventmachine', '1.0.9.1'
 gem 'newrelic_rpm'
-gem 'sendgrid-ruby', '~> 5.0', github: 'allhailskippy/sendgrid-ruby', branch: 'rails-5'
+gem 'sendgrid-ruby', '~> 5.0', git: 'https://github.com/allhailskippy/sendgrid-ruby.git', branch: 'rails-5'
 gem 'sidekiq'
 gem 'sidekiq-failures'
 gem 'ruby_parser'
@@ -43,7 +42,7 @@ gem 'ng-rails-csrf'
 gem 'devise'
 gem 'authoreyes'
 gem 'omniauth-google-oauth2'
-gem 'userstamp', :git => 'https://github.com/kimkong/userstamp.git'
+gem 'userstamp', git: 'https://github.com/kimkong/userstamp.git'
 
 # APIs
 gem 'google-api-client', '0.11'
@@ -61,7 +60,7 @@ group :test do
   gem 'capybara'
   gem 'selenium-webdriver'
   gem 'poltergeist'
-  gem 'phantomjs', :require => 'phantomjs/poltergeist'
+  gem 'phantomjs', require: 'phantomjs/poltergeist'
   gem 'simplecov', require: false
   gem 'simplecov-rcov', require: false
   gem 'database_cleaner'
