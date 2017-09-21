@@ -47,13 +47,17 @@ protected
         sign_out(current_user)
         redirect_to new_user_session_path
       else
-        authenticate_user!
-        Authorization.current_user = current_user
+        begin
+          authenticate_user!
+          Authorization.current_user = current_user
 
-        # Remove auth_token now that user has been authenticated
-        if params[:auth_token].present?
-          current_user.auth_token = nil
-          current_user.save
+          # Remove auth_token now that user has been authenticated
+          if params[:auth_token].present?
+            current_user.auth_token = nil
+            current_user.save
+          end
+        rescue
+          redirect_to new_user_session_path
         end
       end
     end

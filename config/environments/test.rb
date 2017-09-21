@@ -43,6 +43,9 @@ Youtubetonight::Application.configure do
   config.log_level = :warn
   config.assets.precompile += %w( jquery.simulate.js jquery.simulate.ext.js jquery.simulate.drag-n-drop.js)
 
+
+  config.active_support.test_order = :sorted
+
   # YouTube
   YOUTUBE_API_KEY = 'YOUTUBE_API_KEY'
  

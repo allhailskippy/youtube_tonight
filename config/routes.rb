@@ -2,18 +2,18 @@ require 'sidekiq/web'
 
 Youtubetonight::Application.routes.draw do
   devise_for :users, :controllers => { :omniauth_callbacks => "callbacks" }
-  resources :shows
-  resources :videos
-  resources :playlists
-  resources :users do
+  resources :users, only: [:index, :show, :update, :destroy] , constraints: { format: /json/ } do
     member do
       get :requires_auth, :as => 'requires_auth'
     end
   end
-  get :current_user, :to => 'current_user#index', :as => :current_user
+  resources :shows, except: [:new, :edit], constraints: { format: /json/ }
+  resources :videos, except: [:new, :edit], constraints: { format: /json/ }
+  resources :playlists, only: [:index, :show, :create, :update], constraints: { format: /json/ }
 
+  get :current_user, :to => 'current_user#index', :as => :current_user, constraints: { format: /json/ }
   get 'broadcasts' => 'broadcasts#index'
-  get 'youtube_parser' => 'youtube_parser#index'
+  get 'youtube_parser' => 'youtube_parser#index', constraints: { format: /json/ }
   get 'app' => 'app#index'
   root :to => 'app#index'
 

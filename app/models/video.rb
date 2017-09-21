@@ -1,31 +1,18 @@
 class Video < ActiveRecord::Base
-  ##
-  # Validations
-  #
+  # == Relationships ========================================================
+  belongs_to :parent, polymorphic: true
+
+  # == Validations ==========================================================
   validates :title, :presence => true
   validates :link, :presence => true, :url => true
   validate :validate_start_end_time
 
-  ##
-  # Relationships
-  #
-  belongs_to :parent, polymorphic: true
-
-  ##
-  # Hooks
-  #
+  # == Callbacks ============================================================
   before_create :set_position, if: Proc.new{|r| r.position.blank? }
   after_save :send_video_update_request, if: Proc.new{|r| r.is_show? }
   after_destroy :send_video_update_request, if: Proc.new{|r| r.is_show? }
 
-  ##
-  # Methods
-  #
-  # Here for consistency
-  def self.as_json_hash
-    {}
-  end
-
+  # == Instance Methods =====================================================
   def set_position
     p = parent.videos.maximum(:position) + 1 rescue 0
     write_attribute(:position, p)

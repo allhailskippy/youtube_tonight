@@ -1,24 +1,22 @@
 class User < ActiveRecord::Base
   model_stamper
 
+  # == Attributes ===========================================================
   attr_accessor :role_titles, :change_roles, :skip_playlist_import
 
-  ##
-  # Authentication
-  #
-  # Include default devise modules. Others available are:
-  devise :database_authenticatable, :trackable,
-    :omniauthable, { omniauth_providers: [:google_oauth2] }
+  # == Extensions ===========================================================
+  devise :database_authenticatable,
+         :trackable,
+         :omniauthable,
+         { omniauth_providers: [:google_oauth2] }
 
-  ##
-  # Relationships
-  #
+  # == Relationships ========================================================
   has_many :roles, dependent: :destroy
   has_many :playlists, dependent: :destroy
+  has_many :show_users, dependent: :destroy
+  has_many :shows, through: :show_users
 
-  ##
-  # Validation
-  #
+  # == Validations ==========================================================
   validates :name, presence: true
   validates :email, presence: true
   validates :role_titles,
@@ -28,22 +26,16 @@ class User < ActiveRecord::Base
     on: :update,
     if: Proc.new{|r| !r.requires_auth }
 
-  ##
-  # Hooks
-  #
+  # == Scopes ===============================================================
+  scope :without_system_admin, -> { where("users.id != ?", SYSTEM_ADMIN_ID) }
+
+  # == Callbacks ============================================================
   after_create :deliver_registered_user_email
   after_create :import_playlists, unless: Proc.new{|r| r.skip_playlist_import }
   before_validation :update_roles, if: Proc.new{|r| r.change_roles }
   before_update :deliver_authorized_email, if: Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
 
-  ##
-  # Scopes
-  #
-  scope :without_system_admin, -> { where("users.id != ?", SYSTEM_ADMIN_ID) }
-
-  ##
-  # Methods
-  #
+  # == Class Methods ========================================================
   # Stores user info on successful sign in from google
   def self.from_omniauth(auth)
     user = where(provider: auth.provider, email: auth.info.email).first_or_initialize do |u|
@@ -60,31 +52,22 @@ class User < ActiveRecord::Base
     user
   end
 
-  # To determine if our token has expired
-  def token_expired?(new_time = nil)
-    expired = Time.at(expires_at) < Time.now rescue true
-    if expired
-      # Try to get a new token
-      get_refresh_token
-      expired = Time.at(read_attribute(:expires_at)) < Time.now rescue true
-    end
-    expired
-  end
-
-  # Used for finding out what roles a user has (declarative authorization)
+  # == Instance Methods =====================================================
   def role_symbols
     (roles || []).map {|r| r.title.to_sym}
   end
 
-  # Here for consistency
-  def self.as_json_hash
-    {
-      include: :roles,
-      methods: [:role_titles, :is_admin]
-    }
+  def role_titles
+    @role_titles || role_symbols
   end
 
-  # Deal with roles on update
+  def as_json(options = {})
+    super({
+      include: :roles,
+      methods: [:role_titles, :is_admin]
+    }.merge(options))
+  end
+
   def update_roles
     # Wipe out any existing roles
     roles.destroy_all
@@ -103,12 +86,6 @@ class User < ActiveRecord::Base
     roles.any?{|r| r.title == "admin"}
   end
 
-  # Only the reader is the same
-  # as role_symbols
-  def role_titles
-    @role_titles || role_symbols
-  end
-
   def deliver_authorized_email
     UserMailer.authorized_email(self).deliver_now!
   end
@@ -117,11 +94,18 @@ class User < ActiveRecord::Base
     UserMailer.registered_user(self).deliver_now!
   end
 
-  # Gets a current token for the user. Does a
-  # token refresh if necessary
   def get_token
     token = token_expired? ? get_refresh_token : auth_hash
     token
+  end
+
+  def token_expired?(new_time = nil)
+    expired = Time.at(expires_at) < Time.now rescue true
+    if expired
+      get_refresh_token
+      expired = Time.at(read_attribute(:expires_at)) < Time.now rescue true
+    end
+    expired
   end
 
   def get_refresh_token

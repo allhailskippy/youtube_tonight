@@ -21,7 +21,7 @@ describe 'Admin User: /#/users', js: true, type: :feature do
   end
 
   it 'gets the index' do
-    expect(@page.user_rows.length).to eq(4)
+    expect(@page.user_rows.length).to eq(5)
 
     @page.user_rows.each do |ur|
       user = User.find(ur.user_id.text.to_i)
