@@ -1,4 +1,10 @@
 class UsersController < ApplicationController
+  # GET /users/:id/requires_auth
+  def requires_auth
+    @user = User.find(params[:id])
+    redirect_to root_path unless @user.requires_auth
+  end
+
   # GET /users.json
   def index
     respond_to do |format|

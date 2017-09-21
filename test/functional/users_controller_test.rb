@@ -7,6 +7,29 @@ class UsersControllerTest < ActionController::TestCase
     assert_routing('/users/1.json', controller: 'users', action: 'show', id: '1', format: 'json')
     assert_routing({ method: 'put', path: '/users/1.json'}, { controller: 'users', action: 'update', id: '1', format: 'json'})
     assert_routing({ method: 'delete', path: '/users/1.json'}, { controller: 'users', action: 'destroy', id: '1', format: 'json'})
+    assert_routing('/users/1/requires_auth', controller: 'users', action: 'requires_auth', id: '1')
+  end
+
+  ##
+  # Requires Auth
+  ##
+  test 'Admin: should show the requires auth page' do
+    admin = create_user(role_titles: [:admin], requires_auth: true)
+    login_as(admin)
+
+    get :requires_auth, id: admin.id.to_s
+
+    assert_response :success
+    assert_template :requires_auth
+  end
+
+  test 'Admin: should not show auth page when requires_auth is false' do
+    admin = create_user(role_titles: [:admin], requires_auth: false)
+    login_as(admin)
+
+    get :requires_auth, id: admin.id.to_s
+
+    assert_redirected_to '/'
   end
 
   ##
