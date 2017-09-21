@@ -26,7 +26,7 @@ class PlaylistsController < ApplicationController
           }
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
-          render json: { errors: e.to_s },
+          render json: { errors: [e.to_s] },
                  status: :unprocessable_entity
         end
       end
@@ -45,14 +45,14 @@ class PlaylistsController < ApplicationController
 
           render json: { data: playlist }
         rescue ActiveRecord::RecordNotFound
-          render json: { errors: 'Not Found' },
+          render json: { errors: ['Not Found'] },
                  status: :not_found
         rescue Authorization::NotAuthorized, Authorization::AttributeAuthorizationError
-          render json: { errors: 'Unauthorized' },
+          render json: { errors: ['Unauthorized'] },
                  status: :unauthorized
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
-          render json: { errors: e.to_s },
+          render json: { errors: [e.to_s] },
                  status: :unprocessable_entity
         end
       end
@@ -72,11 +72,11 @@ class PlaylistsController < ApplicationController
           playlists = user.import_playlists
           render json: { data: playlists }
         rescue Authorization::NotAuthorized, Authorization::AttributeAuthorizationError
-          render json: { errors: 'Unauthorized' },
+          render json: { errors: ['Unauthorized'] },
                  status: :unauthorized
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
-          render json: { errors: e.to_s.titleize },
+          render json: { errors: [e.to_s.titleize] },
                  status: :unprocessable_entity
         end
       end
@@ -97,14 +97,14 @@ class PlaylistsController < ApplicationController
 
           render json: { data: videos }
         rescue ActiveRecord::RecordNotFound
-          render json: { errors: 'Not Found' },
+          render json: { errors: ['Not Found'] },
                  status: :not_found
         rescue Authorization::NotAuthorized, Authorization::AttributeAuthorizationError
-          render json: { errors: 'Unauthorized' },
+          render json: { errors: ['Unauthorized'] },
                  status: :unauthorized
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
-          render json: { errors: e.to_s.titleize },
+          render json: { errors: [e.to_s.titleize] },
                  status: :unprocessable_entity
         end
       end

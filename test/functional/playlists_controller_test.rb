@@ -89,7 +89,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
-    assert_equal "Random Exception", results["errors"]
+    assert_equal ["Random Exception"], results["errors"]
   end
 
   test 'Host: should get index without any params' do
@@ -188,7 +188,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
-    assert_equal "Random Exception", results["errors"]
+    assert_equal ["Random Exception"], results["errors"]
   end
 
   test 'Guest: index should get redirected to login' do
@@ -237,7 +237,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     results = JSON.parse(response.body)
     assert_not_empty results
 
-    assert_equal "Not Found", results["errors"]
+    assert_equal ["Not Found"], results["errors"]
   end
 
   test 'Admin: show should handle an exception' do
@@ -249,7 +249,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
-    assert_equal "Random Exception", results["errors"]
+    assert_equal ["Random Exception"], results["errors"]
   end
 
   test 'Host: should get show for own playlist' do
@@ -278,7 +278,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     results = JSON.parse(response.body)
     assert_not_empty results
 
-    assert_equal "Unauthorized", results["errors"]
+    assert_equal ["Unauthorized"], results["errors"]
   end
 
   test 'Host: should not find nonexistant playlist' do
@@ -290,7 +290,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     results = JSON.parse(response.body)
     assert_not_empty results
 
-    assert_equal "Not Found", results["errors"]
+    assert_equal ["Not Found"], results["errors"]
   end
 
   test 'Host: show should handle an exception' do
@@ -302,7 +302,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
-    assert_equal "Random Exception", results["errors"]
+    assert_equal ["Random Exception"], results["errors"]
   end
 
   test 'Guest: show should get redirected to login' do
@@ -353,7 +353,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
-    assert_equal "Random Exception", results["errors"]
+    assert_equal ["Random Exception"], results["errors"]
   end
 
   test 'Host: should create playlist for itself' do
@@ -387,7 +387,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
-    assert_equal "Random Exception", results["errors"]
+    assert_equal ["Random Exception"], results["errors"]
   end
 
   test 'Guest: create should get redirected to login' do
@@ -440,7 +440,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     results = JSON.parse(response.body)
     assert_not_empty results
 
-    assert_equal "Not Found", results["errors"]
+    assert_equal ["Not Found"], results["errors"]
   end
 
   test 'Admin: update should handle exception' do
@@ -453,7 +453,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
-    assert_equal "Random Exception", results["errors"]
+    assert_equal ["Random Exception"], results["errors"]
   end
 
   test 'Host: should update playlist for itself' do
@@ -481,7 +481,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     assert_response :unauthorized
 
     results = JSON.parse(response.body)
-    assert_equal "Unauthorized", results["errors"]
+    assert_equal ["Unauthorized"], results["errors"]
   end
 
   test 'Host: update should handle playlist not found' do
@@ -493,7 +493,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     results = JSON.parse(response.body)
     assert_not_empty results
 
-    assert_equal "Not Found", results["errors"]
+    assert_equal ["Not Found"], results["errors"]
   end
 
   test 'Host: update should handle exception' do
@@ -506,7 +506,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
-    assert_equal "Random Exception", results["errors"]
+    assert_equal ["Random Exception"], results["errors"]
   end
 
   test 'Guest: update should get redirected to login' do

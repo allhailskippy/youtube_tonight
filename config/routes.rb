@@ -5,11 +5,7 @@ Youtubetonight::Application.routes.draw do
   resources :shows, only: [:index, :show, :create, :update, :destroy], constraints: { format: /json/ }
   resources :videos
   resources :playlists, only: [:index, :show, :create, :update], constraints: { format: /json/ }
-  resources :users do
-    member do
-      get :requires_auth, :as => 'requires_auth'
-    end
-  end
+  resources :users, only: [:index, :show, :update, :destroy] , constraints: { format: /json/ }
   get :current_user, :to => 'current_user#index', :as => :current_user
 
   get 'broadcasts' => 'broadcasts#index'
