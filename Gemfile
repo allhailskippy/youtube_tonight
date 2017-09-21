@@ -1,12 +1,12 @@
 source 'https://rubygems.org'
-ruby "2.2.3"
+ruby "2.3.5"
 
 group :production do
   gem 'thin'
 end
 
 gem 'rails_12factor'
-gem 'rails', '4.2.9'
+gem 'rails', '5.0.0'
 gem 'test-unit'
 gem 'bundler', '>= 1.8.4'
 
@@ -22,7 +22,7 @@ gem 'iso8601'
 gem 'delayed_job_active_record'
 gem 'eventmachine', '1.0.9.1'
 gem 'newrelic_rpm'
-gem 'sendgrid-ruby'
+gem 'sendgrid-ruby', '~> 5.0', github: 'allhailskippy/sendgrid-ruby', branch: 'rails-5'
 gem 'sidekiq'
 gem 'sidekiq-failures'
 gem 'ruby_parser'
@@ -30,8 +30,6 @@ gem 'ruby_parser'
 # Javascript gems
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-gem 'faye-websocket', '0.7.5'
-gem 'websocket-rails', :git => 'https://github.com/websocket-rails/websocket-rails.git', :branch => 'master'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-bootstrap'
@@ -43,7 +41,7 @@ gem 'ng-rails-csrf'
 
 # Permission Gems
 gem 'devise'
-gem 'declarative_authorization', :git => 'https://github.com/stffn/declarative_authorization.git'
+gem 'authoreyes'
 gem 'omniauth-google-oauth2'
 gem 'userstamp', :git => 'https://github.com/kimkong/userstamp.git'
 
@@ -56,7 +54,6 @@ gem 'uglifier'
 
 group :test do
   gem 'mocha'
-  gem 'rspec-rails'
   gem 'rspec-retry'
   gem 'webmock'
   gem 'mock_redis'
@@ -69,6 +66,7 @@ group :test do
   gem 'simplecov-rcov', require: false
   gem 'database_cleaner'
   gem 'site_prism'
+  gem 'rails-controller-testing'
 end
 
 group :development, :test do
