@@ -1,4 +1,6 @@
-class ShowPolicy < ApplicationPolicy
+class CurrentUserPolicy < ApplicationPolicy
+  only_attrs :index?
+
   def index?
     true
   end

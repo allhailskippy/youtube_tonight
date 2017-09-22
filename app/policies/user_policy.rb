@@ -1,14 +1,23 @@
 class UserPolicy < ApplicationPolicy
+  add_attrs :requires_auth?, :import_playlists?
+  exclude_attrs :new?, :edit?
+
   def manage?
     has_role?(:admin)
   end
 
+  def index?
+    if has_role?(:host)
+      false
+    end || read?
+  end
+
   def show?
-    has_role?(:host) or manage?
+    has_role?(:host) || manage?
   end
 
   def update?
-    user.id == record.id or manage?
+    manage? || user.id == record.id
   end
 
   def requires_auth?

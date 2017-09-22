@@ -21,6 +21,8 @@ class UsersController < ApplicationController
           params[:page] = params[:page].to_i < 1 ? '1' : params[:page]
           params[:per_page] = params[:per_page].to_i < 1 ? '1' : params[:per_page]
 
+          authorize(:user, :index?)
+
           search = policy_scope(User).search(params[:q])
           users = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
 
@@ -32,6 +34,9 @@ class UsersController < ApplicationController
             offset: users.offset,
             data: users
           }
+        rescue Pundit::NotAuthorizedError
+          render json: { errors: ['Unauthorized'] },
+                 status: :unauthorized
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
           render json: { errors: [e.to_s] },
@@ -53,6 +58,9 @@ class UsersController < ApplicationController
         rescue ActiveRecord::RecordNotFound
           render json: { errors: ['Not Found'] },
                  status: :not_found
+        rescue Pundit::NotAuthorizedError
+          render json: { errors: ['Unauthorized'] },
+                 status: :unauthorized
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
           render json: { errors: [e.to_s] },
@@ -68,7 +76,7 @@ class UsersController < ApplicationController
       format.json do
         begin
           user = User.find(params[:id])
-          authorize?(user, :update?)
+          authorize(user, :update?)
           user.update_attributes!(user_params)
 
           # Gets rid of user/hosts cache values
@@ -81,6 +89,9 @@ class UsersController < ApplicationController
         rescue ActiveRecord::RecordInvalid
           render json: { errors: user.errors, full_errors: user.errors.full_messages },
                  status: :unprocessable_entity
+        rescue Pundit::NotAuthorizedError
+          render json: { errors: ['Unauthorized'] },
+                 status: :unauthorized
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
           render json: { errors: [e.to_s.titleize] },
@@ -103,6 +114,9 @@ class UsersController < ApplicationController
         rescue ActiveRecord::RecordNotFound
           render json: { errors: ['Not Found'] },
                  status: :not_found
+        rescue Pundit::NotAuthorizedError
+          render json: { errors: ['Unauthorized'] },
+                 status: :unauthorized
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
           render json: { :errors => [e.to_s] },

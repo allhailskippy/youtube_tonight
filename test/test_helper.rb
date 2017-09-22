@@ -1,7 +1,6 @@
 ENV["RAILS_ENV"] = "test"
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
-require 'declarative_authorization/maintenance'
 require 'sidekiq/testing'
 require 'mocha/mini_test'
 
@@ -13,16 +12,12 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Add more helper methods to be used by all tests here...
-  include Authorization::TestHelper
   include Devise::Test::ControllerHelpers
   include FactoryGirl::Syntax::Methods
   include Permissions
 
   def create_user(options = {})
-    u = without_access_control do
-      create(:user, options)
-    end
-    User.find(u.id)
+    create(:user, options)
   end
 
   def setup

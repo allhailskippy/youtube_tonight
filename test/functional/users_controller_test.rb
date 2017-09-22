@@ -42,8 +42,8 @@ class UsersControllerTest < ActionController::TestCase
     admin = create_user(role_titles: [:admin])
     login_as(admin)
 
-    u1 = without_access_control { create(:user) }
-    u2 = without_access_control { create(:user) }
+    u1 = create(:user)
+    u2 = create(:user)
 
     get :index, format: :json
     assert_response :success
@@ -69,7 +69,7 @@ class UsersControllerTest < ActionController::TestCase
     admin = create_user(role_titles: [:admin])
     login_as(admin)
 
-    users = without_access_control { 10.times.map { create(:user) } }
+    users = 10.times.map { create(:user) }
 
     get :index, format: :json, q: { s: 'id asc'}, per_page: '3', page: '2'
     assert_response :success
@@ -98,7 +98,7 @@ class UsersControllerTest < ActionController::TestCase
   test 'Admin: cannot set page < 1' do
     admin = login_as_admin
 
-    p1 = without_access_control { create(:user) }
+    p1 = create(:user)
 
     get :index, format: :json, per_page: '-1', page: '-2'
     assert_response :success
@@ -119,11 +119,16 @@ class UsersControllerTest < ActionController::TestCase
     assert_equal ["Random Exception"], results["errors"]
   end
 
-  test 'Host : index should get redirected to login' do
+  test 'Host : cannot access index' do
     login_as_host
 
+    user = create(:user)
+
     get :index, format: :json
-    assert_redirected_to  '/users/sign_in'
+    assert_response :unauthorized
+
+    results = JSON.parse(response.body)
+    assert_equal ["Unauthorized"], results["errors"]
   end
 
   test 'Guest: index should get redirected to login' do
@@ -137,7 +142,7 @@ class UsersControllerTest < ActionController::TestCase
   test 'Admin: should get own user' do
     admin = login_as_admin
 
-    u1 = without_access_control { create(:user) }
+    u1 = create(:user)
 
     get :show, id: u1.id.to_s, format: :json
     assert_response :success
@@ -152,7 +157,7 @@ class UsersControllerTest < ActionController::TestCase
     host = create_user(role_titles: [:host])
     admin = login_as_admin
 
-    u = without_access_control { create(:user) }
+    u = create(:user)
 
     get :show, id: u.id.to_s, format: :json
     assert_response :success
@@ -203,7 +208,7 @@ class UsersControllerTest < ActionController::TestCase
     user = create_user(role_titles: [:host])
     host = login_as_host
 
-    u = without_access_control { create(:user, role_titles: [:admin]) }
+    u = create(:user, role_titles: [:admin])
 
     get :show, id: u.id.to_s, format: :json
     assert_response :success
@@ -394,9 +399,13 @@ class UsersControllerTest < ActionController::TestCase
 
   test 'Host: cannot destroy users' do
     login_as_host
+    user = create(:user)
 
-    delete :destroy, id: 'whatever', user: {}, format: :json
-    assert_redirected_to  '/users/sign_in'
+    delete :destroy, id: user.id.to_s, user: {}, format: :json
+    assert_response :unauthorized
+
+    results = JSON.parse(response.body)
+    assert_equal ["Unauthorized"], results["errors"]
   end
 
   test 'Guest: destroy should get redirected to login' do

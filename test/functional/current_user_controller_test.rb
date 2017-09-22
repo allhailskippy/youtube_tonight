@@ -27,19 +27,18 @@ class CurrentUserControllerTest < ActionController::TestCase
     assert_equal data["is_admin"], true
     assert_equal data["requires_auth"], false
     expected = {
-      "authorizationRules": ["index", "show"], 
-      "callbacks": ["google_oauth2", "failure"], 
-      "currentUser": ["index"], 
-      "users": ["edit", "requires_auth", "import_playlists", "create", "read", "update", "delete", "index", "show"], 
-      "deviseSessions": ["create", "read", "update", "delete", "index", "show"],
-      "app": ["index"], 
-      "youtubeParser": ["index", "show"], 
-      "broadcasts": ["index", "show"], 
-      "shows": ["create", "read", "update", "delete", "index", "show"], 
-      "playlists": ["create", "read", "update", "delete", "index", "show"], 
-      "videos": ["create", "read", "update", "delete", "index", "show"]
-    } 
-    assert_equal data["authRules"], expected.with_indifferent_access
+      "callback": ["google_oauth2", "failure"],
+      "current_user": ["index"],
+      "user": ["index", "show", "create", "update", "destroy", "read", "manage", "requires_auth", "import_playlists"],
+      "devise_session": ["index", "show", "create", "update", "destroy", "read", "manage"],
+      "app": ["index"],
+      "youtube_parser": ["index"],
+      "broadcast": ["index"],
+      "show": ["index", "show", "create", "update", "destroy", "read", "manage"],
+      "playlist": ["index", "show", "create", "update", "destroy", "read", "manage"],
+      "video": ["index", "show", "create", "update", "destroy", "read", "manage"]
+    }
+    assert_equal expected.with_indifferent_access, data["authRules"]
   end
 
   test 'Host: should get index as json' do
@@ -60,19 +59,18 @@ class CurrentUserControllerTest < ActionController::TestCase
     assert_equal data["is_admin"], false
     assert_equal data["requires_auth"], false
     expected = {
-      "authorizationRules": ["index", "show"], 
-      "callbacks": ["google_oauth2", "failure"], 
-      "currentUser": ["index"], 
-      "users": ["edit", "requires_auth", "show", "import_playlists"], 
-      "deviseSessions": ["create", "read", "update", "delete", "index", "show"],
-      "app": ["index"], 
-      "shows": ["index", "show"], 
-      "youtubeParser": ["index", "show"], 
-      "broadcasts": ["index", "show"], 
-      "playlists": ["create", "read", "update", "delete", "index", "show"], 
-      "videos": ["index", "show", "create", "read", "update", "delete"]
-    } 
-    assert_equal data["authRules"], expected.with_indifferent_access
+      "callback": ["google_oauth2", "failure"],
+      "current_user": ["index"],
+      "user": ["show", "requires_auth"],
+      "devise_session": ["index", "show", "create", "update", "destroy", "read", "manage"],
+      "app": ["index"],
+      "youtube_parser": ["index"],
+      "broadcast": ["index"],
+      "show": ["index"],
+      "playlist": ["index"],
+      "video": ["index","create"]
+    }
+    assert_equal expected.with_indifferent_access, data["authRules"]
   end
 
   test 'Guest: should get index as json' do

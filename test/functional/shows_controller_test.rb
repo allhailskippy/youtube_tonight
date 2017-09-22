@@ -17,9 +17,9 @@ class ShowsControllerTest < ActionController::TestCase
     host = create_user(role_titles: [:host])
     admin = login_as_admin
 
-    s1 = without_access_control { create(:show, users: [admin]) }
-    s2 = without_access_control { create(:show, users: [admin, host]) }
-    s3 = without_access_control { create(:show, users: [host]) }
+    s1 = create(:show, users: [admin])
+    s2 = create(:show, users: [admin, host])
+    s3 = create(:show, users: [host])
 
     get :index, format: :json
     assert_response :success
@@ -43,7 +43,7 @@ class ShowsControllerTest < ActionController::TestCase
   end
 
   test 'Admin: index should handle an exception' do
-    Show.stubs(:includes).raises(Exception.new("Random Exception"))
+    Show::ActiveRecord_Relation.any_instance.stubs(:includes).raises(Exception.new("Random Exception"))
     login_as_admin
 
     get :index, format: :json
@@ -57,9 +57,9 @@ class ShowsControllerTest < ActionController::TestCase
     user = create_user(role_titles: [:host])
     host = login_as_host
 
-    s1 = without_access_control { create(:show, users: [host]) }
-    s2 = without_access_control { create(:show, users: [user, host]) }
-    s3 = without_access_control { create(:show, users: [user]) }
+    s1 = create(:show, users: [host])
+    s2 = create(:show, users: [user, host])
+    s3 = create(:show, users: [user])
 
     get :index, format: :json
     assert_response :success
@@ -81,7 +81,7 @@ class ShowsControllerTest < ActionController::TestCase
   end
 
   test 'Host: index should handle an exception' do
-    Show.stubs(:includes).raises(Exception.new("Random Exception"))
+    Show::ActiveRecord_Relation.any_instance.stubs(:includes).raises(Exception.new("Random Exception"))
     login_as_host
 
     get :index, format: :json
@@ -102,7 +102,7 @@ class ShowsControllerTest < ActionController::TestCase
   test 'Admin: should get show for own show' do
     admin = login_as_admin
 
-    s1 = without_access_control { create(:show, users: [admin]) }
+    s1 = create(:show, users: [admin])
 
     get :show, id: s1.id.to_s, format: :json
     assert_response :success
@@ -117,7 +117,7 @@ class ShowsControllerTest < ActionController::TestCase
     host = create_user(role_titles: [:host])
     admin = login_as_admin
 
-    s1 = without_access_control { create(:show, users: [host]) }
+    s1 = create(:show, users: [host])
 
     get :show, id: s1.id.to_s, format: :json
     assert_response :success
@@ -154,7 +154,7 @@ class ShowsControllerTest < ActionController::TestCase
   test 'Host: should get show for own show' do
     host = login_as_host
 
-    p1 = without_access_control { create(:show, users: [host]) }
+    p1 = create(:show, users: [host])
 
     get :show, id: p1.id.to_s, format: :json
     assert_response :success
@@ -169,7 +169,7 @@ class ShowsControllerTest < ActionController::TestCase
     user = create_user(role_titles: [:host])
     host = login_as_host
 
-    p1 = without_access_control { create(:show, users: [user]) }
+    p1 = create(:show, users: [user])
 
     get :show, id: p1.id.to_s, format: :json
     assert_response :unauthorized
@@ -276,7 +276,7 @@ class ShowsControllerTest < ActionController::TestCase
   end
 
   test 'Admin: create should handle exception' do
-    Show.stubs(:all).raises(Exception.new("Random Exception"))
+    Show.stubs(:new).raises(Exception.new("Random Exception"))
     login_as_admin
 
     post :create, show: {}, format: :json
@@ -290,7 +290,12 @@ class ShowsControllerTest < ActionController::TestCase
     login_as_host
 
     post :create, show: {}, format: :json
-    assert_redirected_to  '/users/sign_in'
+    assert_response :unauthorized
+
+    results = JSON.parse(response.body)
+    assert_not_empty results
+
+    assert_equal ["Unauthorized"], results["errors"]
   end
 
   test 'Guest: create should get redirected to login' do
@@ -349,11 +354,17 @@ class ShowsControllerTest < ActionController::TestCase
     assert_equal ["Random Exception"], results["errors"]
   end
 
-  test 'Host: cannot update shows' do
+  test 'Host: cannot update show' do
     login_as_host
+    show = create(:show)
 
-    put :update, id: 'whatever', show: {}, format: :json
-    assert_redirected_to  '/users/sign_in'
+    put :update, id: show.id.to_s, show: {}, format: :json
+    assert_response :unauthorized
+
+    results = JSON.parse(response.body)
+    assert_not_empty results
+
+    assert_equal ["Unauthorized"], results["errors"]
   end
 
   test 'Guest: update should get redirected to login' do
@@ -410,9 +421,15 @@ class ShowsControllerTest < ActionController::TestCase
 
   test 'Host: cannot destroy shows' do
     login_as_host
+    show = create(:show)
 
-    delete :destroy, id: 'whatever', show: {}, format: :json
-    assert_redirected_to  '/users/sign_in'
+    delete :destroy, id: show.id.to_s, show: {}, format: :json
+    assert_response :unauthorized
+
+    results = JSON.parse(response.body)
+    assert_not_empty results
+
+    assert_equal ["Unauthorized"], results["errors"]
   end
 
   test 'Guest: destroy should get redirected to login' do

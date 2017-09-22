@@ -35,7 +35,7 @@ end
 shared_examples "the video show index page" do
   context 'index page actions' do
     let(:show) { create(:show, users: [current_user]) }
-    let(:video1) { create(:video, parent: show, start_time: 10, end_time: 15) }
+    let(:video1) { with_user(current_user) { create(:video, parent: show, start_time: 10, end_time: 15) } }
     let(:video2) { create(:video, parent: show) }
     let(:video3) { create(:video, parent: show) }
     let(:preload) { show; video1; video2; video3; show.reload }
@@ -113,7 +113,7 @@ shared_examples "the video show index page" do
 
   context 'add new video' do
     let(:show) { create(:show, users: [current_user]) }
-    let(:video1) { create(:video, parent: show, start_time: 10, end_time: 15) }
+    let(:video1) { with_user(current_user) { create(:video, parent: show, start_time: 10, end_time: 15) } }
     let(:video2) { create(:video, parent: show) }
     let(:video3) { create(:video, parent: show) }
     let(:preload) { show; video1; video2; video3; show.reload }
@@ -403,7 +403,7 @@ shared_examples "the video show index page" do
 
   context 'edit video' do
     let(:show) { create(:show, users: [current_user]) }
-    let(:video1) { create(:video, parent: show, title: 'Video Title', start_time: 10, end_time: 15) }
+    let(:video1) { with_user(current_user) { create(:video, parent: show, title: 'Video Title', start_time: 10, end_time: 15) } }
     let(:preload) { show; video1 }
 
     before do
@@ -416,7 +416,6 @@ shared_examples "the video show index page" do
       expect(row.edit['ng-click']).to eq('editVideo(video)')
       row.edit.click()
       sleep 1
-
 
       expect(@page.video_form).to_not be_nil
       row = @page.selected_video
@@ -669,7 +668,7 @@ describe 'Host User: /#/shows/:show_id/videos', js: true, type: :feature do
   context 'management' do
     let(:host2) { create_user(role_titles: [:host]) }
     let(:show) { create(:show, users: [host, host2]) }
-    let(:video1) { create(:video, parent: show, title: "Right video", creator: host) }
+    let(:video1) { with_user(host) { create(:video, parent: show, title: "Right video") } }
     let(:video2) do
       with_user(host2) do
         create(:video, parent: show, title: "Also right video")

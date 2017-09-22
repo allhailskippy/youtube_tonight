@@ -1,8 +1,16 @@
 class PlaylistPolicy < ApplicationPolicy
+  exclude_attrs :new?, :edit?
+
   def manage?
     if has_role?(:host)
       record.user == user
     end or has_role?(:admin)
+  end
+
+  def index?
+    if has_role?(:host)
+      record.is_a?(Symbol) || read?
+    end or read?
   end
 
   class Scope < Scope

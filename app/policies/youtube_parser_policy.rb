@@ -1,5 +1,7 @@
 class YoutubeParserPolicy < ApplicationPolicy
-  def read?
+  only_attrs :index?
+
+  def index?
     has_role?(:host, :admin)
   end
 end

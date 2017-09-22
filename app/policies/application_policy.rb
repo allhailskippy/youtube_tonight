@@ -6,45 +6,75 @@ class ApplicationPolicy
     @record = record
   end
 
-  def index?
-    read?
+  # Default hierarchy
+  def index?; read?; end
+  def show?; read?; end
+  def create?; manage?; end
+  def new?; create?; end
+  def update?; manage?; end
+  def edit?; update?; end
+  def destroy?; manage?; end
+  def read?; manage?; end
+  def manage?; false; end
+
+  ##
+  # Methods for managing what attrs are applied to each policy
+  #
+  # This will replace all the defaults
+  # class NewPolicy < ApplicationPolicy
+  #   only_attrs :index?, :custom?
+  # end
+  #
+  # This will add some custom methods to the list of defaults
+  # class NewPolicy < ApplicationPolicy
+  #   add_attrs :custom?, :custom2?
+  # end
+  #
+  # This will exclude one or more attrs from the defaults
+  # class NewPolicy < ApplicationPolicy
+  #   exclude_attribute :index?
+  # end
+  #
+  # All of these methods are available singular or plural
+  # although each takes the same format for params, so you can send
+  # multiple values to a singular method
+  @@attrs = [
+    :index?, :show?, :create?, :new?, :update?,
+    :edit?, :destroy?, :read?, :manage?
+  ]
+  class << self
+    # Reads the attrs minus any exclusions
+    def attrs
+      @attrs ||= @@attrs
+      @attrs - (@exclude_attrs || [])
+    end
+
+    # Use this when you want to fully replace the defaults
+    def only_attrs(*t)
+      @attrs = t
+    end
+    alias_method :only_attribute, :only_attrs
+
+    # Will append multiple attrs
+    def add_attrs(*t)
+      @attrs ||= @@attrs
+      @attrs += t
+    end
+    alias_method :add_attribute, :add_attrs
+
+    # Used to exclude attrs from default
+    def exclude_attrs(*t)
+      @exclude_attrs = *t
+    end
+    alias_method :exclude_attribute, :exclude_attrs
+  end
+  def attrs
+    self.class.attrs
   end
 
-  def show?
-    read?
-    #scope.where(id: record.id).exists?
-  end
-
-  def create?
-    manage?
-  end
-
-  def new?
-    create?
-  end
-
-  def update?
-    manage?
-  end
-
-  def edit?
-    update?
-  end
-
-  def destroy?
-    manage?
-  end
-
-  def read?
-    manage?
-  end
-
-  def manage?
-    false
-  end
-
-  def has_role?(role)
-    user.try(:has_role, role)
+  # Helper methods
+  def has_role?(*role)
+    user.try(:has_role, *role)
   end
   alias_method :has_roles?, :has_role?
 
@@ -60,8 +90,8 @@ class ApplicationPolicy
       @scope = scope
     end
 
-    def has_role?(role)
-      user.try(:has_role, role)
+    def has_role?(*role)
+      user.try(:has_role, *role)
     end
     alias_method :has_roles?, :has_role?
 

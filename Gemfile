@@ -42,7 +42,7 @@ gem 'ng-rails-csrf'
 gem 'devise'
 gem 'pundit'
 gem 'omniauth-google-oauth2'
-gem 'userstamp', git: 'https://github.com/kimkong/userstamp.git'
+gem 'userstamp', git: 'https://github.com/allhailskippy/userstamp.git', branch: 'rails-5'
 
 # APIs
 gem 'google-api-client', '0.11'
@@ -53,6 +53,7 @@ gem 'uglifier'
 
 group :test do
   gem 'mocha'
+  gem 'rspec-rails'
   gem 'rspec-retry'
   gem 'webmock'
   gem 'mock_redis'

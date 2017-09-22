@@ -109,9 +109,17 @@ module SpecHelpers
   end
 
   def create_user(options = {})
-    u = without_access_control do
+    u = with_user(users(:admin_user)) do
       create(:user, options)
     end
     User.find(u.id)
+  end
+
+  def create_admin_user(options = {})
+    create_user({role_titles: [:admin]}.merge(options))
+  end
+
+  def create_host_user(options = {})
+    create_user({role_titles: [:host]}.merge(options))
   end
 end

@@ -103,7 +103,9 @@ class VideosController < ApplicationController
       format.json do
         begin
           video = scoped.find(params[:id])
+          video.assign_attributes(video_params)
           authorize(video, :update?)
+          video.save!
 
           render json: { data: video }
         rescue ParentException

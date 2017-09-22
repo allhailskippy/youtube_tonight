@@ -4,6 +4,7 @@ class ShowsController < ApplicationController
     respond_to do |format|
       format.json do
         begin
+          policy_scope(Show).includes(:videos).all
           shows = policy_scope(Show).includes(:videos).all
           render json: { data: shows }
         rescue Exception => e

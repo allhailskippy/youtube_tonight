@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
   ]
 
   # Declarative Authorization in Models
-  before_filter :set_current_user
+  before_action :set_current_user
 
   # Userstamp Gem
   include Userstamp

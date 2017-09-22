@@ -83,7 +83,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     show = create(:show)
 
-    videos = without_access_control { 10.times.map { create(:video, parent: show) } }
+    videos = 10.times.map { create(:video, parent: show) }
 
     get :index, show_id: show.id.to_s, format: :json, q: { s: 'id asc'}, per_page: '3', page: '2'
     assert_response :success
@@ -113,7 +113,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     playlist = create(:playlist)
 
-    videos = without_access_control { 10.times.map { create(:video, parent: playlist) } }
+    videos = 10.times.map { create(:video, parent: playlist) }
 
     get :index, playlist_id: playlist.id.to_s, format: :json, q: { s: 'id asc'}, per_page: '3', page: '2'
     assert_response :success
@@ -164,7 +164,7 @@ class VideosControllerTest < ActionController::TestCase
   end
 
   test 'Admin: index should handle an exception with show_id' do
-    Video.stubs(:with_permissions_to).raises(Exception.new("Random Exception"))
+    Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:search).raises(Exception.new("Random Exception"))
     login_as_admin
     show = create(:show)
 
@@ -176,7 +176,7 @@ class VideosControllerTest < ActionController::TestCase
   end
 
   test 'Admin: index should handle an exception with playlist_id' do
-    Video.stubs(:with_permissions_to).raises(Exception.new("Random Exception"))
+    Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:search).raises(Exception.new("Random Exception"))
     login_as_admin
     playlist = create(:playlist)
 
@@ -354,7 +354,7 @@ class VideosControllerTest < ActionController::TestCase
   end
 
   test 'Host: index should handle an exception with show_id' do
-    Video.stubs(:with_permissions_to).raises(Exception.new("Random Exception"))
+    Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:search).raises(Exception.new("Random Exception"))
     host = login_as_host
     show = create(:show, users: [host])
 
@@ -366,7 +366,7 @@ class VideosControllerTest < ActionController::TestCase
   end
 
   test 'Host: index should handle an exception with playlist_id' do
-    Video.stubs(:with_permissions_to).raises(Exception.new("Random Exception"))
+    Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:search).raises(Exception.new("Random Exception"))
     host = login_as_host
     playlist = create(:playlist, user: host)
 

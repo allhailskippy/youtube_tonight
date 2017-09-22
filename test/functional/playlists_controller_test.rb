@@ -16,9 +16,9 @@ class PlaylistsControllerTest < ActionController::TestCase
     host = create_user(role_titles: [:host])
     admin = login_as_admin
 
-    p1 = without_access_control { create(:playlist, user: admin) }
-    p2 = without_access_control { create(:playlist, user: admin) }
-    p3 = without_access_control { create(:playlist, user: host) }
+    p1 = create(:playlist, user: admin)
+    p2 = create(:playlist, user: admin)
+    p3 = create(:playlist, user: host)
 
     get :index, format: :json
     assert_response :success
@@ -42,7 +42,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     host = create_user(role_titles: [:host])
     admin = login_as_admin
 
-    playlists = without_access_control { 10.times.map { create(:playlist, user: host) } }
+    playlists = 10.times.map { create(:playlist, user: host) }
 
     get :index, format: :json, q: { user_id_eq: host.id.to_s, s: 'id asc'}, per_page: '3', page: '2'
     assert_response :success
@@ -71,7 +71,7 @@ class PlaylistsControllerTest < ActionController::TestCase
   test 'Admin: cannot set page < 1' do
     admin = login_as_admin
 
-    p1 = without_access_control { create(:playlist, user: admin) }
+    p1 = create(:playlist, user: admin)
 
     get :index, format: :json, per_page: '-1', page: '-2'
     assert_response :success
@@ -97,10 +97,10 @@ class PlaylistsControllerTest < ActionController::TestCase
     host2 = create_user(role_titles: [:host])
     host = login_as_host
 
-    p1 = without_access_control { create(:playlist, user: host) }
-    p2 = without_access_control { create(:playlist, user: host) }
-    p3 = without_access_control { create(:playlist, user: admin) }
-    p4 = without_access_control { create(:playlist, user: host2) }
+    p1 = create(:playlist, user: host)
+    p2 = create(:playlist, user: host)
+    p3 = create(:playlist, user: admin)
+    p4 = create(:playlist, user: host2)
 
     get :index, format: :json
     assert_response :success
@@ -123,7 +123,7 @@ class PlaylistsControllerTest < ActionController::TestCase
   test "Host: cannot see other users playlists" do
     host2 = create_user(role_titles: [:host])
     host = login_as_host
-    playlists = without_access_control { 10.times.map { create(:playlist, user: host2) } }
+    playlists = 10.times.map { create(:playlist, user: host2) }
 
     get :index, format: :json, q: { user_id_eq: host2.id.to_s }
     assert_response :success
@@ -141,7 +141,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     host2 = create_user(role_titles: [:host])
     host = login_as_host
 
-    playlists = without_access_control { 10.times.map { create(:playlist, user: host) } }
+    playlists = 10.times.map { create(:playlist, user: host) }
 
     get :index, format: :json, q: { user_id_eq: host.id.to_s, s: 'id asc'}, per_page: '3', page: '2'
     assert_response :success
@@ -170,7 +170,7 @@ class PlaylistsControllerTest < ActionController::TestCase
   test 'Host: cannot set page < 1' do
     host = login_as_host
 
-    p1 = without_access_control { create(:playlist, user: host) }
+    p1 = create(:playlist, user: host)
 
     get :index, format: :json, per_page: '-1', page: '-2'
     assert_response :success
@@ -202,7 +202,7 @@ class PlaylistsControllerTest < ActionController::TestCase
   test 'Admin: should get show for own playlist' do
     admin = login_as_admin
 
-    p1 = without_access_control { create(:playlist, user: admin) }
+    p1 = create(:playlist, user: admin)
 
     get :show, id: p1.id.to_s, format: :json
     assert_response :success
@@ -217,7 +217,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     host = create_user(role_titles: [:host])
     admin = login_as_admin
 
-    p1 = without_access_control { create(:playlist, user: host) }
+    p1 = create(:playlist, user: host)
 
     get :show, id: p1.id.to_s, format: :json
     assert_response :success
@@ -255,7 +255,7 @@ class PlaylistsControllerTest < ActionController::TestCase
   test 'Host: should get show for own playlist' do
     host = login_as_host
 
-    p1 = without_access_control { create(:playlist, user: host) }
+    p1 = create(:playlist, user: host)
 
     get :show, id: p1.id.to_s, format: :json
     assert_response :success
@@ -270,7 +270,7 @@ class PlaylistsControllerTest < ActionController::TestCase
     user = create_user(role_titles: [:host])
     host = login_as_host
 
-    p1 = without_access_control { create(:playlist, user: user) }
+    p1 = create(:playlist, user: user)
 
     get :show, id: p1.id.to_s, format: :json
     assert_response :unauthorized
