@@ -61,8 +61,6 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     arel (7.1.4)
-    authoreyes (0.2.4)
-      rails (~> 5.0)
     bcrypt (3.1.11)
     builder (3.2.3)
     byebug (9.1.0)
@@ -209,6 +207,8 @@ GEM
     power_assert (1.1.0)
     public_suffix (3.0.0)
     puma (3.10.0)
+    pundit (1.1.0)
+      activesupport (>= 3.0.0)
     rack (2.0.3)
     rack-protection (2.0.0)
       rack
@@ -361,7 +361,6 @@ PLATFORMS
 
 DEPENDENCIES
   acts_as_versioned
-  authoreyes
   bundler (>= 1.8.4)
   byebug
   capybara
@@ -387,6 +386,7 @@ DEPENDENCIES
   phantomjs
   poltergeist
   puma
+  pundit
   rails (= 5.0.0)
   rails-assets-angular!
   rails-assets-bootstrap!

@@ -38,8 +38,9 @@
       // Add front side authorization
       var permission = (next.$$route && next.$$route.permission) || undefined;
       if(angular.isString(permission) && !$rootScope.auth(permission)) {
-        scope.preventDefault();
-        $window.location.href = '/#/unauthorized';
+// TODO: Re-implement this with Pundit
+//        scope.preventDefault();
+//        $window.location.href = '/#/unauthorized';
       }
 
       // Add custom data from routes

@@ -1,4 +1,7 @@
 class ApplicationController < ActionController::Base
+  # Permissions
+  include Pundit
+  protect_from_forgery
 
   def after_sign_in_path_for(user)
     if user.requires_auth
@@ -25,9 +28,6 @@ class ApplicationController < ActionController::Base
   # Userstamp Gem
   include Userstamp
 
-  # Permissions
-#  filter_access_to :all
-
   # Rails
   protect_from_forgery
 
@@ -35,7 +35,7 @@ protected
 
   # Allow current user in models
   def set_current_user
-    Authorization.current_user = nil # Need to do this to stop devise from using a previous user
+    Authorization.current_user = nil
 
     # Skip authentication if controller/action is in the exclude list
     unless SKIP_DEVISE_AUTHENTICATION.include?({:controller => params[:controller].to_sym, :action => params[:action].to_sym})

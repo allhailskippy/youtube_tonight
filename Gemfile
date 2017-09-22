@@ -40,7 +40,7 @@ gem 'ng-rails-csrf'
 
 # Permission Gems
 gem 'devise'
-gem 'authoreyes'
+gem 'pundit'
 gem 'omniauth-google-oauth2'
 gem 'userstamp', git: 'https://github.com/kimkong/userstamp.git'
 

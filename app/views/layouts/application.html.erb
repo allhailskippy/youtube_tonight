@@ -43,18 +43,18 @@
           </div>
           <div id="navbar" class="">
             <% unless current_user.try(:requires_auth) %>
-              <% if permitted_to?(:index, :users) %>
+              <% if policy(:user).index? %>
                 <ul class="nav navbar-nav" id="users_nav">
                   <li><a href="/#/users">Users</a></li>
                 </ul>
               <% end %>
-              <% if permitted_to?(:index, :shows) %>
+              <% if policy(:show).index? %>
                 <ul class="nav navbar-nav" id="shows_nav">
                   <li><a href="/#/shows">Shows</a></li>
                 </ul>
               <% end %>
               <% playlists = current_user.try(:playlists) %>
-              <% if current_user.present? && permitted_to?(:index, playlists) %>
+              <% if current_user.present? && policy(:playlist).index? %>
                 <ul class="nav navbar-nav" id="playlists_nav">
                   <li><a href="/#/playlists">Playlists</a></li>
                 </ul>

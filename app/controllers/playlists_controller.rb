@@ -13,7 +13,7 @@ class PlaylistsController < ApplicationController
           params[:page] = params[:page].to_i < 1 ? '1' : params[:page]
           params[:per_page] = params[:per_page].to_i < 1 ? '1' : params[:per_page]
 
-          search = Playlist.with_permissions_to(:index).search(params[:q])
+          search = policy_scope(Playlist).search(params[:q])
           playlists = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
 
           render json: {
@@ -41,13 +41,13 @@ class PlaylistsController < ApplicationController
           playlist = Playlist.find(params[:id])
 
           # Used to differentiate between not found and not authorized
-          permitted_to!(:show, playlist)
+          authorize(playlist, :show?)
 
           render json: { data: playlist }
         rescue ActiveRecord::RecordNotFound
           render json: { errors: ['Not Found'] },
                  status: :not_found
-        rescue Authorization::NotAuthorized, Authorization::AttributeAuthorizationError
+        rescue Pundit::NotAuthorizedError
           render json: { errors: ['Unauthorized'] },
                  status: :unauthorized
         rescue Exception => e
@@ -67,11 +67,11 @@ class PlaylistsController < ApplicationController
           user = params[:user_id].present? ? User.find(params[:user_id]) : current_user
 
           # Permission check
-          permitted_to!(:import_playlists, user)
+          authorize(user, :import_playlists?)
 
           playlists = user.import_playlists
           render json: { data: playlists }
-        rescue Authorization::NotAuthorized, Authorization::AttributeAuthorizationError
+        rescue Pundit::NotAuthorizedError
           render json: { errors: ['Unauthorized'] },
                  status: :unauthorized
         rescue Exception => e
@@ -91,7 +91,7 @@ class PlaylistsController < ApplicationController
           playlist = Playlist.find(params[:id])
 
           # Used to differentiate between not found and not authorized
-          permitted_to!(:manage, playlist)
+          authorize(playlist, :manage?)
 
           videos = VideoImportWorker.perform_async(playlist.id)
 
@@ -99,7 +99,7 @@ class PlaylistsController < ApplicationController
         rescue ActiveRecord::RecordNotFound
           render json: { errors: ['Not Found'] },
                  status: :not_found
-        rescue Authorization::NotAuthorized, Authorization::AttributeAuthorizationError
+        rescue Pundit::NotAuthorizedError
           render json: { errors: ['Unauthorized'] },
                  status: :unauthorized
         rescue Exception => e

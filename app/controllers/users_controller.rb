@@ -2,6 +2,8 @@ class UsersController < ApplicationController
   # GET /users/:id/requires_auth
   def requires_auth
     @user = User.find(params[:id])
+    authorize(@user, :requires_auth?)
+
     redirect_to root_path unless @user.requires_auth
   end
 
@@ -19,7 +21,7 @@ class UsersController < ApplicationController
           params[:page] = params[:page].to_i < 1 ? '1' : params[:page]
           params[:per_page] = params[:per_page].to_i < 1 ? '1' : params[:per_page]
 
-          search = User.without_system_admin.with_permissions_to(:index).search(params[:q])
+          search = policy_scope(User).search(params[:q])
           users = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
 
           render json: {
@@ -45,9 +47,7 @@ class UsersController < ApplicationController
       format.json do
         begin
           user = User.find(params[:id])
-
-          # Used to differentiate between not found and not authorized
-          permitted_to!(:show, user)
+          authorize(user, :show?)
 
           render json: { data: user }
         rescue ActiveRecord::RecordNotFound
@@ -68,8 +68,7 @@ class UsersController < ApplicationController
       format.json do
         begin
           user = User.find(params[:id])
-
-          permitted_to!(:update, user)
+          authorize?(user, :update?)
           user.update_attributes!(user_params)
 
           # Gets rid of user/hosts cache values
@@ -97,7 +96,7 @@ class UsersController < ApplicationController
       format.json do
         begin
           user = User.find(params[:id])
-          permitted_to!(:delete, user)
+          authorize(user, :destroy?)
           user.destroy
 
           render json: { data: {} }

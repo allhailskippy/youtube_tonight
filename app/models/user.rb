@@ -61,6 +61,14 @@ class User < ActiveRecord::Base
     @role_titles || role_symbols
   end
 
+  # Accepts one or more roles
+  # has_role(:admin)
+  # has_role(:admin, :host)
+  def has_role(*roles)
+    (role_titles & roles.map(&:to_sym)).present?
+  end
+  alias_method :has_roles, :has_role
+
   def as_json(options = {})
     super({
       include: :roles,

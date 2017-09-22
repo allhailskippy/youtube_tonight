@@ -16,7 +16,7 @@ class VideosController < ApplicationController
           params[:page] = params[:page].to_i < 1 ? '1' : params[:page]
           params[:per_page] = params[:per_page].to_i < 1 ? '1' : params[:per_page]
 
-          search = scoped.with_permissions_to(:index).search(params[:q])
+          search = scoped.search(params[:q])
           videos = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
 
           render json: {
@@ -45,9 +45,7 @@ class VideosController < ApplicationController
       format.json do
         begin
           video = scoped.find(params[:id])
-
-          # Used to differentiate between not found and not authorized
-          permitted_to!(:show, video)
+          authorize(video, :show?)
 
           render json: { data: video}
         rescue ParentException
@@ -55,6 +53,9 @@ class VideosController < ApplicationController
                  status: :expectation_failed
         rescue ActiveRecord::RecordNotFound
           render json: { errors: ['Not Found'] },
+                 status: :not_found
+        rescue Pundit::NotAuthorizedError
+          render json: { errors: ['Unauthorized'] },
                  status: :not_found
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
@@ -71,8 +72,7 @@ class VideosController < ApplicationController
       format.json do
         begin
           video = scoped.build(video_params)
-
-          permitted_to!(:create, video)
+          authorize(video, :create?)
           video.save!
 
           render json: { data: video }
@@ -84,6 +84,9 @@ class VideosController < ApplicationController
                  status: :unprocessable_entity
         rescue ActiveRecord::RecordNotFound
           render json: { errors: ['Not Found'] },
+                 status: :not_found
+        rescue Pundit::NotAuthorizedError
+          render json: { errors: ['Unauthorized'] },
                  status: :not_found
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
@@ -100,9 +103,7 @@ class VideosController < ApplicationController
       format.json do
         begin
           video = scoped.find(params[:id])
-
-          permitted_to!(:update, video)
-          video.update_attributes!(video_params)
+          authorize(video, :update?)
 
           render json: { data: video }
         rescue ParentException
@@ -114,6 +115,9 @@ class VideosController < ApplicationController
         rescue ActiveRecord::RecordInvalid
           render json: { errors: video.errors, full_errors: video.errors.full_messages },
                  status: :unprocessable_entity
+        rescue Pundit::NotAuthorizedError
+          render json: { errors: ['Unauthorized'] },
+                 status: :not_found
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
           render json: { errors: [e.to_s.titleize] },
@@ -129,7 +133,7 @@ class VideosController < ApplicationController
       format.json do
         begin
           video = scoped.find(params[:id])
-          permitted_to!(:delete, video)
+          authorize(video, :destroy?)
           video.destroy
 
           render json: { data: {} }
@@ -138,6 +142,9 @@ class VideosController < ApplicationController
                  status: :expectation_failed
         rescue ActiveRecord::RecordNotFound
           render json: { errors: ['Not Found'] },
+                 status: :not_found
+        rescue Pundit::NotAuthorizedError
+          render json: { errors: ['Unauthorized'] },
                  status: :not_found
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
@@ -151,9 +158,9 @@ class VideosController < ApplicationController
 private
   def scoped
     parent = if params[:show_id].present?
-      Show.with_permissions_to(:read).find(params[:show_id])
+      policy_scope(Show).find(params[:show_id])
     elsif params[:playlist_id].present?
-      Playlist.with_permissions_to(:read).find(params[:playlist_id])
+      policy_scope(Playlist).find(params[:playlist_id])
     else
       raise ParentException
     end
