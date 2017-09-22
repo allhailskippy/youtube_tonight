@@ -26,14 +26,15 @@ var VideosIndexCtrl = function(
   $scope.videos = [];
   $scope.currentVideoOrder = [];
 
-  $scope.dispatcher = ConnectionHelper.getDispatcher();
-  $scope.channel = ConnectionHelper.getChannel('video_player');
-
-  // Use new dispatcher because we're unbinding a method later
-  $scope.previewDispatch = ConnectionHelper.newDispatcher();
-  $scope.previewChannel = ConnectionHelper.newChannel('video_player', $scope.previewDispatch);
-
-  $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.showId);
+// TODO: Re-implement this with action cable
+//  $scope.dispatcher = ConnectionHelper.getDispatcher();
+//  $scope.channel = ConnectionHelper.getChannel('video_player');
+//
+//  // Use new dispatcher because we're unbinding a method later
+//  $scope.previewDispatch = ConnectionHelper.newDispatcher();
+//  $scope.previewChannel = ConnectionHelper.newChannel('video_player', $scope.previewDispatch);
+//
+//  $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.showId);
 
   $scope.broadcastId = 'broadcast-' + $scope.showId;
   $scope.previewBroadcastId = $scope.broadcastId + Math.floor(Math.random() * 1000000);
@@ -42,9 +43,9 @@ var VideosIndexCtrl = function(
   $scope.senderIds = {}
   $scope.state = {};
   $scope.broadcastState = {};
-
-  // Initialize registered player check
-  ConnectionHelper.registeredPlayerCheck($scope.dispatcher, $scope.channel);
+// TODO: Re-implement this with action cable
+//  // Initialize registered player check
+//  ConnectionHelper.registeredPlayerCheck($scope.dispatcher, $scope.channel);
 
   /**
    * Watched variables
@@ -59,10 +60,11 @@ var VideosIndexCtrl = function(
           paused: false,
           video: null
         }
-        $scope.dispatcher.trigger('video_player.stop', {
-          video: $scope.state.video,
-          player_id: $scope.previewBroadcastId
-        });
+// TODO: Re-implement this with action cable
+//        $scope.dispatcher.trigger('video_player.stop', {
+//          video: $scope.state.video,
+//          player_id: $scope.previewBroadcastId
+//        });
       }
     }
   });
@@ -161,78 +163,79 @@ var VideosIndexCtrl = function(
     }
   };
 
-  /**
-   * Event Handlers
-   */
-  // Preview Events
-  $scope.channel.bind('playing', function(message) {
-    if(message.player_id == $scope.previewPlayerId) {
-      $scope.showPreview = true;
-      $scope.$applyAsync();
-    }
-    if(message.player_id == $scope.previewBroadcastId) {
-      $scope.state = message.state;
-    }
-  });
-
-  $scope.channel.bind('stop', function(message) {
-    if(message.player_id == $scope.previewPlayerId) {
-      $scope.showPreview = false;
-      $scope.$applyAsync();
-    };
-  });
-
-  $scope.channel.bind('stopped', function(message) {
-    if(message.player_id == $scope.previewPlayerId) {
-      $scope.showPreview = false;
-      $scope.$applyAsync();
-    };
-    if(message.player_id == $scope.previewBroadcastId) {
-      $scope.state = message.state;
-    }
-  });
-
-  //Broadcast init
-  // Look up state of the associated player
-  $scope.dispatcher.trigger('video_player.get_current_state', {
-    player_id: $scope.broadcastId
-  });
-
-  // Handle response from requested state
-  $scope.previewChannel.bind('current_state', function(message) {
-    if(message.player_id == $scope.broadcastId) {
-      $scope.broadcastState = message;
-
-      if(message.playing) {
-        $scope.dispatcher.trigger('video_player.play', {
-          player_id: $scope.previewBroadcastId,
-          video: message.video
-        });
-      }
-      $scope.previewChannel.unbind('current_state');
-    }
-  });
-
-  $scope.previewChannel.bind('playing', function(message) {
-    if($scope.broadcastState.paused) {
-      $scope.dispatcher.trigger('video_player.pause', {
-        player_id: $scope.previewBroadcastId
-      });
-    }
-    if($scope.broadcastState.current_time) {
-      $scope.dispatcher.trigger('video_player.set_time', {
-        player_id: $scope.previewBroadcastId,
-        time: $scope.broadcastState.current_time
-      });
-    }
-
-    // Don't need to listen to this anymore
-    $scope.previewChannel.unbind('playing');
-  });
-
-  $scope.broadcastReady = function() {
-    return ConnectionHelper.broadcastReady($scope.broadcastId);
-  };
+// TODO: Re-implement this with action cable
+//  /**
+//   * Event Handlers
+//   */
+//  // Preview Events
+//  $scope.channel.bind('playing', function(message) {
+//    if(message.player_id == $scope.previewPlayerId) {
+//      $scope.showPreview = true;
+//      $scope.$applyAsync();
+//    }
+//    if(message.player_id == $scope.previewBroadcastId) {
+//      $scope.state = message.state;
+//    }
+//  });
+//
+//  $scope.channel.bind('stop', function(message) {
+//    if(message.player_id == $scope.previewPlayerId) {
+//      $scope.showPreview = false;
+//      $scope.$applyAsync();
+//    };
+//  });
+//
+//  $scope.channel.bind('stopped', function(message) {
+//    if(message.player_id == $scope.previewPlayerId) {
+//      $scope.showPreview = false;
+//      $scope.$applyAsync();
+//    };
+//    if(message.player_id == $scope.previewBroadcastId) {
+//      $scope.state = message.state;
+//    }
+//  });
+//
+//  //Broadcast init
+//  // Look up state of the associated player
+//  $scope.dispatcher.trigger('video_player.get_current_state', {
+//    player_id: $scope.broadcastId
+//  });
+//
+//  // Handle response from requested state
+//  $scope.previewChannel.bind('current_state', function(message) {
+//    if(message.player_id == $scope.broadcastId) {
+//      $scope.broadcastState = message;
+//
+//      if(message.playing) {
+//        $scope.dispatcher.trigger('video_player.play', {
+//          player_id: $scope.previewBroadcastId,
+//          video: message.video
+//        });
+//      }
+//      $scope.previewChannel.unbind('current_state');
+//    }
+//  });
+//
+//  $scope.previewChannel.bind('playing', function(message) {
+//    if($scope.broadcastState.paused) {
+//      $scope.dispatcher.trigger('video_player.pause', {
+//        player_id: $scope.previewBroadcastId
+//      });
+//    }
+//    if($scope.broadcastState.current_time) {
+//      $scope.dispatcher.trigger('video_player.set_time', {
+//        player_id: $scope.previewBroadcastId,
+//        time: $scope.broadcastState.current_time
+//      });
+//    }
+//
+//    // Don't need to listen to this anymore
+//    $scope.previewChannel.unbind('playing');
+//  });
+//
+//  $scope.broadcastReady = function() {
+//    return ConnectionHelper.broadcastReady($scope.broadcastId);
+//  };
 
   // Broadcast events
   $scope.playVideo = function(video) {
@@ -255,22 +258,24 @@ var VideosIndexCtrl = function(
         video: null
       }
       angular.forEach($scope.broadcastIds, function(broadcastId) {
-        $scope.dispatcher.trigger('video_player.stop', {
-          video: video,
-          player_id: broadcastId,
-          sender_id: 'video-' + video.id
-        });
+// TODO: Re-implement this with action cable
+//        $scope.dispatcher.trigger('video_player.stop', {
+//          video: video,
+//          player_id: broadcastId,
+//          sender_id: 'video-' + video.id
+//        });
       });
     }
   };
 
-  // Other Events
-  // Video list changed, need to update
-  $scope.channel.bind('update_video_list', function(message) {
-    if(message.show_id == $scope.showId) {
-      $scope.queryVideos();
-    }
-  });
+// TODO: Re-implement this with action cable
+//  // Other Events
+//  // Video list changed, need to update
+//  $scope.channel.bind('update_video_list', function(message) {
+//    if(message.show_id == $scope.showId) {
+//      $scope.queryVideos();
+//    }
+//  });
 };
 
 VideosIndexCtrl.$inject = [

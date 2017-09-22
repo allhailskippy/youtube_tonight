@@ -16,11 +16,13 @@ var VideosPlaylistIndexCtrl = function(
   /**
    * Setup
    */
-  $scope.dispatcher = ConnectionHelper.getDispatcher();
-  $scope.channel = ConnectionHelper.getChannel('video_player');
-
+// TODO: re-implement this with action cable
+//  $scope.dispatcher = ConnectionHelper.getDispatcher();
+//  $scope.channel = ConnectionHelper.getChannel('video_player');
+//
   $scope.playlist_id = $routeParams.playlist_id;
-  $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.playlist_id);
+// TODO: re-implement this with action cable
+//  $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.playlist_id);
 
   $scope.playlist = Playlist.build(playlist_data.data);
   $scope.playlist_url = '/#/playlists/' + $scope.playlist.user_id + '/index';
@@ -30,10 +32,10 @@ var VideosPlaylistIndexCtrl = function(
     $scope.user = User.build(response.data);
     $scope.$applyAsync();
   });
-
-  // Use new dispatcher because we're unbinding a method later
-  $scope.previewDispatch = ConnectionHelper.newDispatcher();
-  $scope.previewChannel = ConnectionHelper.newChannel('video_player', $scope.previewDispatch);
+// TODO: re-implement this with action cable
+//  // Use new dispatcher because we're unbinding a method later
+//  $scope.previewDispatch = ConnectionHelper.newDispatcher();
+//  $scope.previewChannel = ConnectionHelper.newChannel('video_player', $scope.previewDispatch);
 
   /**
    * Scope methods
@@ -105,30 +107,31 @@ var VideosPlaylistIndexCtrl = function(
     });
   };
 
-  /**
-   * Event Handlers
-   */
-  // Preview Events
-  $scope.channel.bind('playing', function(message) {
-    if(message.player_id == $scope.previewPlayerId) {
-      $scope.showPreview = true;
-      $scope.$applyAsync();
-    }
-  });
-
-  $scope.channel.bind('stop', function(message) {
-    if(message.player_id == $scope.previewPlayerId) {
-      $scope.showPreview = false;
-      $scope.$applyAsync();
-    };
-  });
-
-  $scope.channel.bind('stopped', function(message) {
-    if(message.player_id == $scope.previewPlayerId) {
-      $scope.showPreview = false;
-      $scope.$applyAsync();
-    };
-  });
+// TODO: re-implement this with action cable
+//  /**
+//   * Event Handlers
+//   */
+//  // Preview Events
+//  $scope.channel.bind('playing', function(message) {
+//    if(message.player_id == $scope.previewPlayerId) {
+//      $scope.showPreview = true;
+//      $scope.$applyAsync();
+//    }
+//  });
+//
+//  $scope.channel.bind('stop', function(message) {
+//    if(message.player_id == $scope.previewPlayerId) {
+//      $scope.showPreview = false;
+//      $scope.$applyAsync();
+//    };
+//  });
+//
+//  $scope.channel.bind('stopped', function(message) {
+//    if(message.player_id == $scope.previewPlayerId) {
+//      $scope.showPreview = false;
+//      $scope.$applyAsync();
+//    };
+//  });
 };
 
 VideosPlaylistIndexCtrl.$inject = [

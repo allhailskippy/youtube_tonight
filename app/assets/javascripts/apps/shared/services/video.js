@@ -48,11 +48,12 @@ var Video = function(
      */
     // Delete video
     video.destroy = function() {
-      var dispatcher = ConnectionHelper.getDispatcher();
-      dispatcher.trigger('video_player.stop', {
-        video: video,
-        player_id: 'all'
-      });
+// TODO: re-implement this in action cable
+//      var dispatcher = ConnectionHelper.getDispatcher();
+//      dispatcher.trigger('video_player.stop', {
+//        video: video,
+//        player_id: 'all'
+//      });
 
       var params = {
         id: video.id

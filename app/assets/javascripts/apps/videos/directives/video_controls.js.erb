@@ -20,8 +20,9 @@ var controller = function(
   /**
    * Setup
    */
-  $scope.dispatcher = ConnectionHelper.getDispatcher();
-  $scope.channel = ConnectionHelper.getChannel('video_player');
+// TODO: re-implement this with action cable
+//  $scope.dispatcher = ConnectionHelper.getDispatcher();
+//  $scope.channel = ConnectionHelper.getChannel('video_player');
 
   // Allow option to control many players.
   // The first one will be reflected in the
@@ -73,9 +74,10 @@ var controller = function(
   $scope.pause = function() {
     if($scope.enablePause()) {
       angular.forEach($scope.playerIds, function(playerId) {
-        $scope.dispatcher.trigger('video_player.pause', {
-          player_id: playerId
-        });
+// TODO: re-implement this with action cable
+//        $scope.dispatcher.trigger('video_player.pause', {
+//          player_id: playerId
+//        });
       });
     }
   };
@@ -83,9 +85,10 @@ var controller = function(
   $scope.play = function() {
     if($scope.state.video) {
       angular.forEach($scope.playerIds, function(playerId) {
-        $scope.dispatcher.trigger('video_player.unpause', {
-          player_id: playerId
-        });
+// TODO: re-implement this with action cable
+//        $scope.dispatcher.trigger('video_player.unpause', {
+//          player_id: playerId
+//        });
       });
     }
   };
@@ -101,9 +104,10 @@ var controller = function(
   $scope.stop = function() {
     if($scope.enableStop()) {
       angular.forEach($scope.playerIds, function(playerId) {
-        $scope.dispatcher.trigger('video_player.stop', {
-          player_id: playerId,
-        });
+// TODO: re-implement this with action cable
+//        $scope.dispatcher.trigger('video_player.stop', {
+//          player_id: playerId,
+//        });
       });
     }
   };
@@ -120,9 +124,10 @@ var controller = function(
     if($scope.state.playing) {
       angular.forEach($scope.playerIds, function(playerId) {
         var trigger = 'video_player.' + (mute ? 'mute' : 'unmute');
-        $scope.dispatcher.trigger(trigger, {
-          player_id: playerId
-        });
+// TODO: re-implement this with action cable
+//         $scope.dispatcher.trigger(trigger, {
+//           player_id: playerId
+//         });
       });
       $scope.$applyAsync();
     }
@@ -137,79 +142,81 @@ var controller = function(
     $scope.state.current_time = t;
 
     angular.forEach($scope.playerIds, function(playerId) {
-      $scope.dispatcher.trigger('video_player.set_time', {
-        video: $scope.state.video,
-        player_id: playerId,
-        time: t
-      });
+// TODO: re-implement this with action cable
+//      $scope.dispatcher.trigger('video_player.set_time', {
+//        video: $scope.state.video,
+//        player_id: playerId,
+//        time: t
+//      });
     });
   };
 
-  /**
-   * Event Handlers
-   */
-  $scope.channel.bind('playing', function(message) {
-    if(message.player_id == $scope.playerIds[0]) {
-      $scope.state.playing = true;
-      $scope.state.video = message.video;
-      $scope.$applyAsync();
-    }
-  });
-
-  $scope.channel.bind('paused', function(message) {
-    if(message.player_id == $scope.playerIds[0]) {
-      $scope.state.paused = true;
-      $scope.$applyAsync();
-    }
-  });
-
-  $scope.channel.bind('unpaused', function(message) {
-    if(message.player_id == $scope.playerIds[0]) {
-      $scope.state.paused = false;
-      $scope.$applyAsync();
-    }
-  });
-
-  $scope.channel.bind('stopped', function(message) {
-    if(message.player_id == $scope.playerIds[0]) {
-      // Reset controls state
-      $scope.state = {
-        playing: false,
-        paused: false,
-        video: null,
-        duration: 0,
-        current_time: 0,
-      }
-      $scope.$applyAsync();
-    }
-  });
-
-  // Look up state of the associated player
-  $scope.stateInterval = $interval(function() {
-    $scope.dispatcher.trigger('video_player.get_current_state', {
-      player_id: $scope.playerIds[0],
-      sender_id: $scope.senderId
-    });
-  }, 200);
-
-  // Handle response from requested state
-  $scope.channel.bind('current_state', function(message) {
-    if(message.player_id == $scope.playerIds[0] &&
-      message.sender_id == $scope.senderId) {
-
-      $scope.state.playing = message.playing;
-      $scope.state.paused = message.paused;
-      $scope.state.video = message.video;
-      $scope.state.mute = message.mute;
-
-      if(!$scope.sliding) {
-        $scope.state.duration = message.duration;
-        $scope.state.current_time = message.current_time;
-      }
-
-      $scope.$applyAsync();
-    }
-  });
+// TODO: re-implement this with action cable
+//  /**
+//   * Event Handlers
+//   */
+//  $scope.channel.bind('playing', function(message) {
+//    if(message.player_id == $scope.playerIds[0]) {
+//      $scope.state.playing = true;
+//      $scope.state.video = message.video;
+//      $scope.$applyAsync();
+//    }
+//  });
+//
+//  $scope.channel.bind('paused', function(message) {
+//    if(message.player_id == $scope.playerIds[0]) {
+//      $scope.state.paused = true;
+//      $scope.$applyAsync();
+//    }
+//  });
+//
+//  $scope.channel.bind('unpaused', function(message) {
+//    if(message.player_id == $scope.playerIds[0]) {
+//      $scope.state.paused = false;
+//      $scope.$applyAsync();
+//    }
+//  });
+//
+//  $scope.channel.bind('stopped', function(message) {
+//    if(message.player_id == $scope.playerIds[0]) {
+//      // Reset controls state
+//      $scope.state = {
+//        playing: false,
+//        paused: false,
+//        video: null,
+//        duration: 0,
+//        current_time: 0,
+//      }
+//      $scope.$applyAsync();
+//    }
+//  });
+//
+//  // Look up state of the associated player
+//  $scope.stateInterval = $interval(function() {
+//    $scope.dispatcher.trigger('video_player.get_current_state', {
+//      player_id: $scope.playerIds[0],
+//      sender_id: $scope.senderId
+//    });
+//  }, 200);
+//
+//  // Handle response from requested state
+//  $scope.channel.bind('current_state', function(message) {
+//    if(message.player_id == $scope.playerIds[0] &&
+//      message.sender_id == $scope.senderId) {
+//
+//      $scope.state.playing = message.playing;
+//      $scope.state.paused = message.paused;
+//      $scope.state.video = message.video;
+//      $scope.state.mute = message.mute;
+//
+//      if(!$scope.sliding) {
+//        $scope.state.duration = message.duration;
+//        $scope.state.current_time = message.current_time;
+//      }
+//
+//      $scope.$applyAsync();
+//    }
+//  });
 };
 
 controller.$inject = [

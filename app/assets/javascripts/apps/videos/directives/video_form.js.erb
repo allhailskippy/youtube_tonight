@@ -20,8 +20,8 @@ var controller = function(
    * Setup
    */
   $scope.showId = $routeParams.show_id;
-  $scope.dispatcher = ConnectionHelper.getDispatcher();
-  $scope.channel = ConnectionHelper.getChannel('video_player');
+//  $scope.dispatcher = ConnectionHelper.getDispatcher();
+//  $scope.channel = ConnectionHelper.getChannel('video_player');
   $scope.currentVideo = $scope.currentVideo || Video.build({parent_id: $scope.showId, parent_type: 'Show'});
   $scope.searchResults = [];
   var searchTimeout;
@@ -102,11 +102,12 @@ var controller = function(
   };
 
   $scope.cancel = function() {
-    $scope.dispatcher.trigger('video_player.stop', {
-      video: $scope.currentVideo,
-      player_id: 'preview',
-      force: true
-    });
+// TODO: re-implement this with action cable
+//    $scope.dispatcher.trigger('video_player.stop', {
+//      video: $scope.currentVideo,
+//      player_id: 'preview',
+//      force: true
+//    });
     Notice.reset();
     if($scope.hasVideos()) {
       $scope.closeForm();

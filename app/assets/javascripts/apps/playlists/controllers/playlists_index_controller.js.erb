@@ -22,22 +22,23 @@ var PlaylistsIndexCtrl = function(
 
   $scope.importingVideos = {};
 
-  // Setting up websocket connections
-  $scope.channel = ConnectionHelper.getChannel('playlist_events');
-  $scope.dispatcher = ConnectionHelper.getDispatcher();
-
-  /**
-   * Event Handlers
-   */
-  // Preview Events
-  $scope.channel.bind('updated', function(message) {
-    var results = $filter('filter')($scope.playlists, {id: message.playlist_id}, true);
-
-    if(results.length > 0) {
-      $scope.reloadCallback();
-      $scope.$applyAsync();
-    }
-  });
+// TODO: Re-implment this with action cable
+//  // Setting up websocket connections
+//  $scope.channel = ConnectionHelper.getChannel('playlist_events');
+//  $scope.dispatcher = ConnectionHelper.getDispatcher();
+//
+//  /**
+//   * Event Handlers
+//   */
+//  // Preview Events
+//  $scope.channel.bind('updated', function(message) {
+//    var results = $filter('filter')($scope.playlists, {id: message.playlist_id}, true);
+//
+//    if(results.length > 0) {
+//      $scope.reloadCallback();
+//      $scope.$applyAsync();
+//    }
+//  });
 
   /**
    * Scope methods

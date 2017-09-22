@@ -19,9 +19,10 @@ var controller = function(
   /**
    * Setup
    */
-  $scope.dispatcher = ConnectionHelper.getDispatcher();
-  $scope.channel = ConnectionHelper.getChannel('video_player');
-  $scope.playerId = ConnectionHelper.getPlayerId('preview-' + $scope.video.parent_id);
+// TODO: re-implement this with action cable
+//  $scope.dispatcher = ConnectionHelper.getDispatcher();
+//  $scope.channel = ConnectionHelper.getChannel('video_player');
+//  $scope.playerId = ConnectionHelper.getPlayerId('preview-' + $scope.video.parent_id);
   $scope.senderId = $scope.senderId || 'video-' + $scope.video.id + '-' + Math.floor(Math.random() * 1000000);
   $scope.playing = false;
   $scope.previewRequested = false;
@@ -33,87 +34,88 @@ var controller = function(
   /**
    * Watched variables
    */
-  // Watch for changes to the registered players
-  $scope.$watch(function() {
-    return ConnectionHelper.registeredPlayers
-  }, function(players) {
-    ConnectionHelper.registeredPlayers;
-
-    // Check to see if all our broadcasts have been killed
-    if(players[$scope.broadcastId] == 0) {
-      $scope.currentlyPlaying = false;
-    }
-  });
-
-  /**
-   * Scope Methods
-   */
-  $scope.broadcastReady = function() {
-    return ConnectionHelper.broadcastReady($scope.broadcastId);
-  };
-
-  $scope.play = function() {
-    if(!$scope.previewRequested) {
-      $scope.previewRequested = true;
-      $scope.dispatcher.trigger('video_player.play', {
-        video: $scope.video,
-        player_id: $scope.playerId,
-        sender_id: $scope.senderId
-      });
-    }
-  };
-
-  $scope.stop = function() {
-    $scope.dispatcher.trigger('video_player.stop', {
-      player_id: $scope.playerId,
-      sender_id: $scope.senderId
-    });
-  };
-
-  $scope.startSlide = function(t) {
-    $scope.sliding = true;
-  };
-
-  $scope.endSlide = function(t) {
-    $scope.dispatcher.trigger('video_player.set_time', {
-      video: $scope.video,
-      player_id: $scope.playerId,
-      sender_id: $scope.senderId,
-      time: t
-    });
-  };
-
-  $scope.isCurrentlyPlaying = function() {
-    if($scope.state && $scope.state.video) {
-      return $scope.state.video.id == $scope.video.id;
-    } else {
-      return false;
-    }
-  }
-
-  /**
-   * Event Handlers
-   */
-  $scope.channel.bind('playing', function(message) {
-    if(message.player_id == $scope.playerId) {
-      $scope.previewRequested = false;
-      if(message.sender_id == $scope.senderId) {
-        $scope.playing = true;
-        $scope.$applyAsync();
-      } else {
-        $scope.playing = false;
-        $scope.$applyAsync();
-      }
-    }
-  });
-
-  $scope.channel.bind('stopped', function(message) {
-    if(message.sender_id == $scope.senderId) {
-      $scope.previewRequested = false;
-      $scope.playing = false;
-      $scope.$applyAsync();
-    }
-  });
+// TODO: re-implement this with action cable
+//  // Watch for changes to the registered players
+//  $scope.$watch(function() {
+//    return ConnectionHelper.registeredPlayers
+//  }, function(players) {
+//    ConnectionHelper.registeredPlayers;
+//
+//    // Check to see if all our broadcasts have been killed
+//    if(players[$scope.broadcastId] == 0) {
+//      $scope.currentlyPlaying = false;
+//    }
+//  });
+//
+//  /**
+//   * Scope Methods
+//   */
+//  $scope.broadcastReady = function() {
+//    return ConnectionHelper.broadcastReady($scope.broadcastId);
+//  };
+//
+//  $scope.play = function() {
+//    if(!$scope.previewRequested) {
+//      $scope.previewRequested = true;
+//      $scope.dispatcher.trigger('video_player.play', {
+//        video: $scope.video,
+//        player_id: $scope.playerId,
+//        sender_id: $scope.senderId
+//      });
+//    }
+//  };
+//
+//  $scope.stop = function() {
+//    $scope.dispatcher.trigger('video_player.stop', {
+//      player_id: $scope.playerId,
+//      sender_id: $scope.senderId
+//    });
+//  };
+//
+//  $scope.startSlide = function(t) {
+//    $scope.sliding = true;
+//  };
+//
+//  $scope.endSlide = function(t) {
+//    $scope.dispatcher.trigger('video_player.set_time', {
+//      video: $scope.video,
+//      player_id: $scope.playerId,
+//      sender_id: $scope.senderId,
+//      time: t
+//    });
+//  };
+//
+//  $scope.isCurrentlyPlaying = function() {
+//    if($scope.state && $scope.state.video) {
+//      return $scope.state.video.id == $scope.video.id;
+//    } else {
+//      return false;
+//    }
+//  }
+//
+//  /**
+//   * Event Handlers
+//   */
+//  $scope.channel.bind('playing', function(message) {
+//    if(message.player_id == $scope.playerId) {
+//      $scope.previewRequested = false;
+//      if(message.sender_id == $scope.senderId) {
+//        $scope.playing = true;
+//        $scope.$applyAsync();
+//      } else {
+//        $scope.playing = false;
+//        $scope.$applyAsync();
+//      }
+//    }
+//  });
+//
+//  $scope.channel.bind('stopped', function(message) {
+//    if(message.sender_id == $scope.senderId) {
+//      $scope.previewRequested = false;
+//      $scope.playing = false;
+//      $scope.$applyAsync();
+//    }
+//  });
 };
 
 controller.$inject = [
