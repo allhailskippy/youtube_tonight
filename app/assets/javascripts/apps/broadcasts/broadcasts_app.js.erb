@@ -27,6 +27,14 @@ var routesConfig = function($routeProvider, $locationProvider) {
 };
 routesConfig.$inject = ['$routeProvider', '$locationProvider'];
 
-angular.module('BroadcastsApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf'])
-       .config(routesConfig);
+
+// Setup actin cable config
+var runFunc = function(ActionCableConfig, ApplicationConstants) {
+   ActionCableConfig.wsUri = ApplicationConstants.WEBSOCKET_URL;
+}
+runFunc.$inject = ['ActionCableConfig', 'ApplicationConstants'];
+
+angular.module('BroadcastsApp', ['shared', 'ngRoute', 'ngResource', 'ng-rails-csrf', 'ngActionCable'])
+       .config(routesConfig)
+       .run(runFunc)
 })();

@@ -13,7 +13,10 @@
    *   - `currentUser`
    *   - `auth`
    */
-  var runFunc = function($rootScope, $http, $routeParams, $location, $window, CurrentUser, UserInfo, Auth, User) {
+  var runFunc = function(
+    $rootScope, $http, $routeParams, $location, $window,
+    CurrentUser, UserInfo, Auth, User, ActionCableConfig, ApplicationConstants
+  ) {
     $rootScope.$location = $location;
     $rootScope.$routeParams = $routeParams;
 
@@ -59,8 +62,13 @@
         });
         angular.element(document.querySelector(menuId)).addClass('active');
       }
+
+       ActionCableConfig.wsUri = ApplicationConstants.WEBSOCKET_URL;
     });
   };
-  runFunc.$inject = ['$rootScope', '$http', '$routeParams', '$location', '$window', 'CurrentUser', 'UserInfo', 'Auth', 'User'];
+  runFunc.$inject = [
+    '$rootScope', '$http', '$routeParams', '$location', '$window',
+    'CurrentUser', 'UserInfo', 'Auth', 'User', 'ActionCableConfig', 'ApplicationConstants'
+  ];
   angular.module('YTBroadcastApp').run(runFunc);
 })();
