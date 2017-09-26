@@ -19,6 +19,7 @@ var controller = function(
   /**
    * Setup
    */
+  $scope.connectionHelper = ConnectionHelper;
   $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', 'video_player');
   $scope.senderId = null;
   $scope.video = null;
@@ -265,12 +266,14 @@ var VideoPreview = function(
             }
             break;
         }
-      });
+      }); // end subsribe
 
       $window.onunload = function() {
-        $scope.consumer.send({
-          player_id: $scope.playerId
-        }, 'unregistered');
+        if($scope.connectionHelper.wrangler.connected) {
+          $scope.consumer.send({
+            player_id: $scope.playerId
+          }, 'unregistered');
+        }
       };
 
       $scope.getCurrentState = function(message) {

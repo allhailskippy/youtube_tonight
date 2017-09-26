@@ -23,6 +23,10 @@ var ConnectionHelper = function(
   self.playerIds = {};
   self.registeredPlayers = {};
 
+  self.wrangler = function() {
+    return ActionCableSocketWrangler;
+  };
+
   self.broadcastReady = function(broadcastId) {
     return self.registeredPlayers[broadcastId] > 0;
   };
@@ -56,13 +60,8 @@ var ConnectionHelper = function(
           break;
       }
     });
-
-    $scope.$watch(function() {
-      return ActionCableSocketWrangler.connected
-    }, function(newVal, oldVal) {
-      if(newVal == true) {
-        consumer.send({}, 'registered_check');
-      }
+    consumer.onConfirmSubscription(function() {
+      consumer.send({}, 'registered_check');
     });
   }
 };
