@@ -51,13 +51,15 @@ Rails.application.configure do
 
   config.active_support.test_order = :sorted
 
+  config.action_cable.allowed_request_origins = ['http://127.0.0.1:12345']
+
   # YouTube
   YOUTUBE_API_KEY = 'YOUTUBE_API_KEY'
   GOOGLE_CLIENT_ID = 'GOOGLE_CLIENT_ID'
   GOOGLE_CLIENT_SECRET = 'GOOGLE_CLIENT_SECRET'
 
   # Websockets
-  WEBSOCKET_URL = 'WEBSOCKET_URL'
+  WEBSOCKET_URL = 'ws://127.0.0.1:12345/websocket'
 
   SYSTEM_ADMIN_ID = 1
 end

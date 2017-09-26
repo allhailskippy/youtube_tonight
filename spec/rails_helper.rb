@@ -82,6 +82,7 @@ else
   end
   Capybara.javascript_driver = :poltergeist
 end
+Capybara.server = :puma
 Capybara.server_port = 12345
 
 WebMock.disable_net_connect!(allow_localhost: true)
