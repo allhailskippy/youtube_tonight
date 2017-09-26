@@ -64,8 +64,8 @@ shared_examples "the index page" do
     VideoImportWorker.drain
 
     # Videos should be the ones from the stub
-    expected = ["a123", "a124", "b234", "c123ghi91011", "c123jkl121314", "c123plr1", "c123plr2"]
-    expect(current_user.playlists.collect{|p| p.videos.collect(&:api_video_id) }.flatten).to eq(expected)
+    expected = ["a123", "a124", "b234", "c123ghi91011", "c123jkl121314", "c123plr1", "c123plr2"].sort
+    expect(current_user.playlists.collect{|p| p.videos.collect(&:api_video_id) }.sort.flatten).to eq(expected)
   end
 
   describe 'actions' do
@@ -94,6 +94,7 @@ shared_examples "the index page" do
       it 'goes for playlist1' do
         row = @page.find_row(playlist1)
         row.sec_actions.videos.click()
+        wait_for_angular_requests_to_finish
         if userPath
           expect(page.current_url).to end_with("/#/users/#{playlist1.user_id}/playlists/#{playlist1.id}/videos")
         else
@@ -104,6 +105,7 @@ shared_examples "the index page" do
       it 'goes for playlist2' do
         row = @page.find_row(playlist2)
         row.sec_actions.videos.click()
+        wait_for_angular_requests_to_finish
         if userPath
           expect(page.current_url).to end_with("/#/users/#{playlist2.user_id}/playlists/#{playlist2.id}/videos")
         else

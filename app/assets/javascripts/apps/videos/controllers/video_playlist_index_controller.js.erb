@@ -16,13 +16,9 @@ var VideosPlaylistIndexCtrl = function(
   /**
    * Setup
    */
-// TODO: re-implement this with action cable
-//  $scope.dispatcher = ConnectionHelper.getDispatcher();
-//  $scope.channel = ConnectionHelper.getChannel('video_player');
-//
+  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', 'video_player');
   $scope.playlist_id = $routeParams.playlist_id;
-// TODO: re-implement this with action cable
-//  $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.playlist_id);
+  $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.playlist_id);
 
   $scope.playlist = Playlist.build(playlist_data.data);
   $scope.playlist_url = '/#/playlists/' + $scope.playlist.user_id + '/index';
@@ -32,10 +28,6 @@ var VideosPlaylistIndexCtrl = function(
     $scope.user = User.build(response.data);
     $scope.$applyAsync();
   });
-// TODO: re-implement this with action cable
-//  // Use new dispatcher because we're unbinding a method later
-//  $scope.previewDispatch = ConnectionHelper.newDispatcher();
-//  $scope.previewChannel = ConnectionHelper.newChannel('video_player', $scope.previewDispatch);
 
   /**
    * Scope methods
@@ -107,31 +99,33 @@ var VideosPlaylistIndexCtrl = function(
     });
   };
 
-// TODO: re-implement this with action cable
-//  /**
-//   * Event Handlers
-//   */
-//  // Preview Events
-//  $scope.channel.bind('playing', function(message) {
-//    if(message.player_id == $scope.previewPlayerId) {
-//      $scope.showPreview = true;
-//      $scope.$applyAsync();
-//    }
-//  });
-//
-//  $scope.channel.bind('stop', function(message) {
-//    if(message.player_id == $scope.previewPlayerId) {
-//      $scope.showPreview = false;
-//      $scope.$applyAsync();
-//    };
-//  });
-//
-//  $scope.channel.bind('stopped', function(message) {
-//    if(message.player_id == $scope.previewPlayerId) {
-//      $scope.showPreview = false;
-//      $scope.$applyAsync();
-//    };
-//  });
+  /**
+   * Event Handlers
+   */
+  // Preview Events
+  $scope.consumer.subscribe(function(response) {
+    var message = response.message;
+    switch(response.action) {
+      case 'playing':
+        if(message.player_id == $scope.previewPlayerId) {
+          $scope.showPreview = true;
+          $scope.$applyAsync();
+        }
+        break;
+      case 'stop':
+        if(message.player_id == $scope.previewPlayerId) {
+          $scope.showPreview = false;
+          $scope.$applyAsync();
+        };
+        break;
+      case 'stopped':
+        if(message.player_id == $scope.previewPlayerId) {
+          $scope.showPreview = false;
+          $scope.$applyAsync();
+        };
+        break;
+    }
+  });
 };
 
 VideosPlaylistIndexCtrl.$inject = [

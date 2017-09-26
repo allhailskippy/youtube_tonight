@@ -29,7 +29,7 @@ def stub_search_results(amount = 1)
     "duration_seconds": 73.0
   }]
   response = response_options[0, amount]
-  allow(YoutubeApi).to receive(:get_video_info).and_return(response)
+  YoutubeApi.stubs(:get_video_info).returns(response)
 end
 
 shared_examples "the video show index page" do

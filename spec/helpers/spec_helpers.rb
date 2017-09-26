@@ -18,6 +18,7 @@ module SpecHelpers
   def set_authorization(user)
     Authorization.current_user = user
     User.stamper = user
+    ActionDispatch::Cookies::CookieJar.any_instance.stubs(:signed).returns({"user.id": user.id, "user.expires_at": Time.now + 9999})
   end
 
   def set_omniauth(user = nil)

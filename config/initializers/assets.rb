@@ -13,3 +13,4 @@ if Rails.env.test?
 end
 Rails.application.config.assets.precompile += %w( tablesort.css dashboard.css bootstrap-slider.css )
 Rails.application.config.assets.precompile += %w( broadcast_application.js moment.js modernizr.js bootstrap-slider.js )
+Rails.application.config.assets.precompile += %w( angular-actioncable.js angular-websocket.js )
