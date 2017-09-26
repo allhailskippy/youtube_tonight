@@ -37,7 +37,6 @@ var Auth = function() {
       }
       var privilege = permission.split('.')[0];
       var attribute = permission.split('.')[1];
-
       var permitted = false;
       var rules = self.currentUser.authRules;
       if (!rules || !rules[privilege]) {

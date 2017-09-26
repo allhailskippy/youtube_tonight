@@ -19,4 +19,3 @@
 //= require leaflet
 //= require holderjs
 //= require apps/apps.js
-//= require websocket_rails/main

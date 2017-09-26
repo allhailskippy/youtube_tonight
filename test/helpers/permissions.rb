@@ -8,13 +8,11 @@ module Permissions
   end
 
   def login_as(user)
-    without_access_control do
-      Authorization.current_user = user
-      User.stamper = user
+    Authorization.current_user = user
+    User.stamper = user
 
-      sign_in(user)
-      user
-    end
+    sign_in(user)
+    user
   end
 
   def current_user
@@ -23,8 +21,6 @@ module Permissions
 
   # Logout
   def logout_user
-    without_access_control do
-      sign_out Authorization.current_user
-    end
+    sign_out Authorization.current_user
   end
 end

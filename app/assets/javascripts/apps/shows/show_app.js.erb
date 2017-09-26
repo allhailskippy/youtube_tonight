@@ -15,19 +15,19 @@ var routesConfig = function($routeProvider) {
   when('/shows', {
     controller: 'ShowsIndexCtrl',
     templateUrl: '<%= asset_path("apps/shows/templates/index.html") %>',
-    permission: 'shows.index',
+    permission: 'show.index',
     menu: 'shows'
   }).
   when('/shows/new', {
     controller: 'ShowsFormCtrl',
     templateUrl: '<%= asset_path("apps/shows/templates/form.html") %>',
-    permission: 'shows.create',
+    permission: 'show.create',
     menu: 'shows'
   }).
   when('/shows/:show_id/edit', {
     controller: 'ShowsFormCtrl',
     templateUrl: '<%= asset_path("apps/shows/templates/form.html") %>',
-    permission: 'shows.update',
+    permission: 'show.update',
     menu: 'shows'
   });
 };

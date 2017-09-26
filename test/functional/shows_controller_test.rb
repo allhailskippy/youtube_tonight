@@ -17,11 +17,11 @@ class ShowsControllerTest < ActionController::TestCase
     host = create_user(role_titles: [:host])
     admin = login_as_admin
 
-    s1 = without_access_control { create(:show, users: [admin]) }
-    s2 = without_access_control { create(:show, users: [admin, host]) }
-    s3 = without_access_control { create(:show, users: [host]) }
+    s1 = create(:show, users: [admin])
+    s2 = create(:show, users: [admin, host])
+    s3 = create(:show, users: [host])
 
-    get :index, format: :json
+    get :index, params: { format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -43,10 +43,10 @@ class ShowsControllerTest < ActionController::TestCase
   end
 
   test 'Admin: index should handle an exception' do
-    Show.stubs(:includes).raises(Exception.new("Random Exception"))
+    Show::ActiveRecord_Relation.any_instance.stubs(:includes).raises(Exception.new("Random Exception"))
     login_as_admin
 
-    get :index, format: :json
+    get :index, params: { format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -57,11 +57,11 @@ class ShowsControllerTest < ActionController::TestCase
     user = create_user(role_titles: [:host])
     host = login_as_host
 
-    s1 = without_access_control { create(:show, users: [host]) }
-    s2 = without_access_control { create(:show, users: [user, host]) }
-    s3 = without_access_control { create(:show, users: [user]) }
+    s1 = create(:show, users: [host])
+    s2 = create(:show, users: [user, host])
+    s3 = create(:show, users: [user])
 
-    get :index, format: :json
+    get :index, params: { format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -81,10 +81,10 @@ class ShowsControllerTest < ActionController::TestCase
   end
 
   test 'Host: index should handle an exception' do
-    Show.stubs(:includes).raises(Exception.new("Random Exception"))
+    Show::ActiveRecord_Relation.any_instance.stubs(:includes).raises(Exception.new("Random Exception"))
     login_as_host
 
-    get :index, format: :json
+    get :index, params: { format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -92,7 +92,7 @@ class ShowsControllerTest < ActionController::TestCase
   end
 
   test 'Guest: index should get redirected to login' do
-    get :index, format: :json
+    get :index, params: { format: :json }
     assert_redirected_to  '/users/sign_in'
   end
 
@@ -102,9 +102,9 @@ class ShowsControllerTest < ActionController::TestCase
   test 'Admin: should get show for own show' do
     admin = login_as_admin
 
-    s1 = without_access_control { create(:show, users: [admin]) }
+    s1 = create(:show, users: [admin])
 
-    get :show, id: s1.id.to_s, format: :json
+    get :show, params: { id: s1.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -117,9 +117,9 @@ class ShowsControllerTest < ActionController::TestCase
     host = create_user(role_titles: [:host])
     admin = login_as_admin
 
-    s1 = without_access_control { create(:show, users: [host]) }
+    s1 = create(:show, users: [host])
 
-    get :show, id: s1.id.to_s, format: :json
+    get :show, params: { id: s1.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -131,7 +131,7 @@ class ShowsControllerTest < ActionController::TestCase
   test 'Admin: should not find nonexistant show' do
     login_as_admin
 
-    get :show, id: 'nope', format: :json
+    get :show, params: { id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -144,7 +144,7 @@ class ShowsControllerTest < ActionController::TestCase
     Show.stubs(:find).raises(Exception.new("Random Exception"))
     admin = login_as_admin
 
-    get :show, id: 'whatever', format: :json
+    get :show, params: { id: 'whatever', format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -154,9 +154,9 @@ class ShowsControllerTest < ActionController::TestCase
   test 'Host: should get show for own show' do
     host = login_as_host
 
-    p1 = without_access_control { create(:show, users: [host]) }
+    p1 = create(:show, users: [host])
 
-    get :show, id: p1.id.to_s, format: :json
+    get :show, params: { id: p1.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -169,9 +169,9 @@ class ShowsControllerTest < ActionController::TestCase
     user = create_user(role_titles: [:host])
     host = login_as_host
 
-    p1 = without_access_control { create(:show, users: [user]) }
+    p1 = create(:show, users: [user])
 
-    get :show, id: p1.id.to_s, format: :json
+    get :show, params: { id: p1.id.to_s, format: :json }
     assert_response :unauthorized
 
     results = JSON.parse(response.body)
@@ -183,7 +183,7 @@ class ShowsControllerTest < ActionController::TestCase
   test 'Host: should not find nonexistant show' do
     login_as_host
 
-    get :show, id: 'nope', format: :json
+    get :show, params: { id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -196,7 +196,7 @@ class ShowsControllerTest < ActionController::TestCase
     Show.stubs(:find).raises(Exception.new("Random Exception"))
     host = login_as_host
 
-    get :show, id: 'whatever', format: :json
+    get :show, params: { id: 'whatever', format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -204,7 +204,7 @@ class ShowsControllerTest < ActionController::TestCase
   end
 
   test 'Guest: show should get redirected to login' do
-    get :index, format: :json
+    get :show, params: { id: 'whatever', format: :json }
     assert_redirected_to  '/users/sign_in'
   end
 
@@ -221,7 +221,7 @@ class ShowsControllerTest < ActionController::TestCase
       hosts: [admin.id, user.id].join(',')
     }
 
-    post :create, show: show_params, format: :json
+    post :create, params: { show: show_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -241,7 +241,7 @@ class ShowsControllerTest < ActionController::TestCase
       hosts: user.id.to_s
     }
 
-    post :create, show: show_params, format: :json
+    post :create, params: { show: show_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -254,7 +254,7 @@ class ShowsControllerTest < ActionController::TestCase
   test 'Admin: should fail validation' do
     admin = login_as_admin
 
-    post :create, show: {}, format: :json
+    post :create, params: { show: {}, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -276,10 +276,10 @@ class ShowsControllerTest < ActionController::TestCase
   end
 
   test 'Admin: create should handle exception' do
-    Show.stubs(:all).raises(Exception.new("Random Exception"))
+    Show.stubs(:new).raises(Exception.new("Random Exception"))
     login_as_admin
 
-    post :create, show: {}, format: :json
+    post :create, params: { show: {}, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -289,12 +289,17 @@ class ShowsControllerTest < ActionController::TestCase
   test 'Host: cannot create shows' do
     login_as_host
 
-    post :create, show: {}, format: :json
-    assert_redirected_to  '/users/sign_in'
+    post :create, params: { show: {}, format: :json }
+    assert_response :unauthorized
+
+    results = JSON.parse(response.body)
+    assert_not_empty results
+
+    assert_equal ["Unauthorized"], results["errors"]
   end
 
   test 'Guest: create should get redirected to login' do
-    post :create, show: {}, format: :json
+    post :create, params: { show: {}, format: :json }
     assert_redirected_to  '/users/sign_in'
   end
 
@@ -311,7 +316,7 @@ class ShowsControllerTest < ActionController::TestCase
       air_date: Date.tomorrow.to_s(:db),
       hosts: user.id.to_s
     }
-    put :update, id: show.id.to_s, show: show_params, format: :json
+    put :update, params: { id: show.id.to_s, show: show_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -328,7 +333,7 @@ class ShowsControllerTest < ActionController::TestCase
   test 'Admin: update should handle show not found' do
     login_as_admin
 
-    put :update, id: 'nope', format: :json
+    put :update, params: { id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -342,24 +347,30 @@ class ShowsControllerTest < ActionController::TestCase
 
     Show.stubs(:find).raises(Exception.new("Random Exception"))
 
-    put :update, id: 'whatever', format: :json
+    put :update, params: { id: 'whatever', format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
     assert_equal ["Random Exception"], results["errors"]
   end
 
-  test 'Host: cannot update shows' do
+  test 'Host: cannot update show' do
     login_as_host
+    show = create(:show)
 
-    put :update, id: 'whatever', show: {}, format: :json
-    assert_redirected_to  '/users/sign_in'
+    put :update, params: { id: show.id.to_s, show: {}, format: :json }
+    assert_response :unauthorized
+
+    results = JSON.parse(response.body)
+    assert_not_empty results
+
+    assert_equal ["Unauthorized"], results["errors"]
   end
 
   test 'Guest: update should get redirected to login' do
     show = create(:show)
 
-    put :update, id: show.id.to_s, format: :json
+    put :update, params: { id: show.id.to_s, format: :json }
     assert_redirected_to  '/users/sign_in'
   end
 
@@ -371,7 +382,7 @@ class ShowsControllerTest < ActionController::TestCase
 
     show = create(:show)
 
-    delete :destroy, id: show.id.to_s, format: :json
+    delete :destroy, params: { id: show.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -387,7 +398,7 @@ class ShowsControllerTest < ActionController::TestCase
   test 'Admin: destroy should handle show not found' do
     login_as_admin
 
-    delete :destroy, id: 'nope', format: :json
+    delete :destroy, params: { id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -401,7 +412,7 @@ class ShowsControllerTest < ActionController::TestCase
 
     Show.stubs(:find).raises(Exception.new("Random Exception"))
 
-    delete :destroy, id: 'whatever', format: :json
+    delete :destroy, params: { id: 'whatever', format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -410,15 +421,21 @@ class ShowsControllerTest < ActionController::TestCase
 
   test 'Host: cannot destroy shows' do
     login_as_host
+    show = create(:show)
 
-    delete :destroy, id: 'whatever', show: {}, format: :json
-    assert_redirected_to  '/users/sign_in'
+    delete :destroy, params: { id: show.id.to_s, show: {}, format: :json }
+    assert_response :unauthorized
+
+    results = JSON.parse(response.body)
+    assert_not_empty results
+
+    assert_equal ["Unauthorized"], results["errors"]
   end
 
   test 'Guest: destroy should get redirected to login' do
     show = create(:show)
 
-    delete :destroy, id: show.id.to_s, format: :json
+    delete :destroy, params: { id: show.id.to_s, format: :json }
     assert_redirected_to  '/users/sign_in'
   end
 end

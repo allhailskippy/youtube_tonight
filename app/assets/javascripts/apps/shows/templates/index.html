@@ -5,7 +5,7 @@
       type="button"
       class="btn btn-primary create-show"
       ng-click="addNew()"
-      ng-if="auth('shows.create')"
+      ng-if="auth('show.create')"
     >Create Show</button>
   </div>
   <div class="col-md-9 col-md-offset-3 main">
@@ -32,7 +32,7 @@
               class="btn btn-primary glyphicon glyphicon-edit edit"
               aria-hidden="true"
               ng-click="edit(show)"
-              ng-if="auth('shows.update')"
+              ng-if="auth('show.update')"
             ></span>
             <a
               href-func="show.videoUrl()"

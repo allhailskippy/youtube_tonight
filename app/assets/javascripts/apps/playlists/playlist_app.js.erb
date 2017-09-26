@@ -14,7 +14,7 @@ var routesConfig = function($routeProvider) {
   when('/users/:user_id/playlists', {
     controller: 'PlaylistsIndexCtrl',
     templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>',
-    permission: 'playlists.index',
+    permission: 'playlist.index',
     menu: 'playlists',
     data: {
       userPath: true
@@ -28,7 +28,7 @@ var routesConfig = function($routeProvider) {
   when('/playlists', {
     controller: 'PlaylistsIndexCtrl',
     templateUrl: '<%= asset_path("apps/playlists/templates/index.html") %>',
-    permission: 'playlists.index',
+    permission: 'playlist.index',
     menu: 'playlists',
     data: {
       userPath: false

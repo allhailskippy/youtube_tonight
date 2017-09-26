@@ -16,7 +16,7 @@ class VideosControllerTest < ActionController::TestCase
   test 'Admin: should not get index without show or playlist' do
     login_as_admin
 
-    get :index, format: :json
+    get :index, params: { format: :json }
     assert_response :expectation_failed
 
     results = JSON.parse(response.body)
@@ -29,7 +29,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     show = create(:show_with_videos, video_count: 3)
 
-    get :index, show_id: show.id.to_s, format: :json
+    get :index, params: { show_id: show.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -56,7 +56,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     playlist = create(:playlist_with_videos, videocount: 3)
 
-    get :index, playlist_id: playlist.id.to_s, format: :json
+    get :index, params: { playlist_id: playlist.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -83,9 +83,9 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     show = create(:show)
 
-    videos = without_access_control { 10.times.map { create(:video, parent: show) } }
+    videos = 10.times.map { create(:video, parent: show) }
 
-    get :index, show_id: show.id.to_s, format: :json, q: { s: 'id asc'}, per_page: '3', page: '2'
+    get :index, params: { show_id: show.id.to_s, format: :json, q: { s: 'id asc'}, per_page: '3', page: '2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -113,9 +113,9 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     playlist = create(:playlist)
 
-    videos = without_access_control { 10.times.map { create(:video, parent: playlist) } }
+    videos = 10.times.map { create(:video, parent: playlist) }
 
-    get :index, playlist_id: playlist.id.to_s, format: :json, q: { s: 'id asc'}, per_page: '3', page: '2'
+    get :index, params: { playlist_id: playlist.id.to_s, format: :json, q: { s: 'id asc'}, per_page: '3', page: '2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -143,7 +143,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     show = create(:show, users: [admin])
 
-    get :index, show_id: show.id.to_s, format: :json, per_page: '-1', page: '-2'
+    get :index, params: { show_id: show.id.to_s, format: :json, per_page: '-1', page: '-2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -155,7 +155,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     playlist = create(:playlist, user: admin)
 
-    get :index, playlist_id: playlist.id.to_s, format: :json, per_page: '-1', page: '-2'
+    get :index, params: { playlist_id: playlist.id.to_s, format: :json, per_page: '-1', page: '-2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -164,11 +164,11 @@ class VideosControllerTest < ActionController::TestCase
   end
 
   test 'Admin: index should handle an exception with show_id' do
-    Video.stubs(:with_permissions_to).raises(Exception.new("Random Exception"))
+    Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:search).raises(Exception.new("Random Exception"))
     login_as_admin
     show = create(:show)
 
-    get :index, show_id: show.id.to_s, format: :json
+    get :index, params: { show_id: show.id.to_s, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -176,11 +176,11 @@ class VideosControllerTest < ActionController::TestCase
   end
 
   test 'Admin: index should handle an exception with playlist_id' do
-    Video.stubs(:with_permissions_to).raises(Exception.new("Random Exception"))
+    Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:search).raises(Exception.new("Random Exception"))
     login_as_admin
     playlist = create(:playlist)
 
-    get :index, playlist_id: playlist.id.to_s, format: :json
+    get :index, params: { playlist_id: playlist.id.to_s, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -190,7 +190,7 @@ class VideosControllerTest < ActionController::TestCase
   test 'Host: should not get index without show or playlist' do
     login_as_host
 
-    get :index, format: :json
+    get :index, params: { format: :json }
     assert_response :expectation_failed
 
     results = JSON.parse(response.body)
@@ -207,7 +207,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     show = create(:show_with_videos, video_count: 3, users: [host])
 
-    get :index, show_id: show.id.to_s, format: :json
+    get :index, params: { show_id: show.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -238,7 +238,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     playlist = create(:playlist_with_videos, videocount: 3, user: host)
 
-    get :index, playlist_id: playlist.id.to_s, format: :json
+    get :index, params: { playlist_id: playlist.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -271,7 +271,7 @@ class VideosControllerTest < ActionController::TestCase
 
     videos = 10.times.map { create(:video, parent: show) }
 
-    get :index, show_id: show.id.to_s, format: :json, q: { s: 'id asc'}, per_page: '3', page: '2'
+    get :index, params: { show_id: show.id.to_s, format: :json, q: { s: 'id asc'}, per_page: '3', page: '2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -305,7 +305,7 @@ class VideosControllerTest < ActionController::TestCase
 
     videos = 10.times.map { create(:video, parent: playlist) }
 
-    get :index, playlist_id: playlist.id.to_s, format: :json, q: { s: 'id asc'}, per_page: '3', page: '2'
+    get :index, params: { playlist_id: playlist.id.to_s, format: :json, q: { s: 'id asc'}, per_page: '3', page: '2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -333,7 +333,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     show = create(:show, users: [host])
 
-    get :index, show_id: show.id.to_s, format: :json, per_page: '-1', page: '-2'
+    get :index, params: { show_id: show.id.to_s, format: :json, per_page: '-1', page: '-2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -345,7 +345,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     playlist = create(:playlist, user: host)
 
-    get :index, playlist_id: playlist.id.to_s, format: :json, per_page: '-1', page: '-2'
+    get :index, params: { playlist_id: playlist.id.to_s, format: :json, per_page: '-1', page: '-2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -354,11 +354,11 @@ class VideosControllerTest < ActionController::TestCase
   end
 
   test 'Host: index should handle an exception with show_id' do
-    Video.stubs(:with_permissions_to).raises(Exception.new("Random Exception"))
+    Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:search).raises(Exception.new("Random Exception"))
     host = login_as_host
     show = create(:show, users: [host])
 
-    get :index, show_id: show.id.to_s, format: :json
+    get :index, params: { show_id: show.id.to_s, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -366,11 +366,11 @@ class VideosControllerTest < ActionController::TestCase
   end
 
   test 'Host: index should handle an exception with playlist_id' do
-    Video.stubs(:with_permissions_to).raises(Exception.new("Random Exception"))
+    Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:search).raises(Exception.new("Random Exception"))
     host = login_as_host
     playlist = create(:playlist, user: host)
 
-    get :index, playlist_id: playlist.id.to_s, format: :json
+    get :index, params: { playlist_id: playlist.id.to_s, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -378,7 +378,7 @@ class VideosControllerTest < ActionController::TestCase
   end
 
   test 'Guest: index should get redirected to login' do
-    get :index, format: :json
+    get :index, params: { format: :json }
     assert_redirected_to  '/users/sign_in'
   end
 
@@ -389,7 +389,7 @@ class VideosControllerTest < ActionController::TestCase
     login_as_admin
     video = create(:video)
 
-    get :show, id: video.id.to_s, format: :json
+    get :show, params: { id: video.id.to_s, format: :json }
     assert_response :expectation_failed
 
     results = JSON.parse(response.body)
@@ -404,7 +404,7 @@ class VideosControllerTest < ActionController::TestCase
 
     video = create(:video, parent: show)
 
-    get :show, show_id: show.id.to_s, id: video.id.to_s, format: :json
+    get :show, params: { show_id: show.id.to_s, id: video.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -419,7 +419,7 @@ class VideosControllerTest < ActionController::TestCase
 
     video = create(:video, parent: playlist)
 
-    get :show, playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json
+    get :show, params: { playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -435,7 +435,7 @@ class VideosControllerTest < ActionController::TestCase
 
     video = create(:video, parent: show)
 
-    get :show, show_id: show.id.to_s, id: video.id.to_s, format: :json
+    get :show, params: { show_id: show.id.to_s, id: video.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -451,7 +451,7 @@ class VideosControllerTest < ActionController::TestCase
 
     video = create(:video, parent: playlist)
 
-    get :show, playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json
+    get :show, params: { playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -464,7 +464,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     show = create(:show, users: [admin])
 
-    get :show, show_id: show.id.to_s, id: 'nope', format: :json
+    get :show, params: { show_id: show.id.to_s, id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -477,7 +477,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     playlist = create(:playlist, user: admin)
 
-    get :show, playlist_id: playlist.id.to_s, id: 'nope', format: :json
+    get :show, params: { playlist_id: playlist.id.to_s, id: 'nope', format: :json}
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -492,7 +492,7 @@ class VideosControllerTest < ActionController::TestCase
     show = create(:show, users: [admin])
     video = create(:video, parent: show)
 
-    get :show, show_id: show.id.to_s, id: video.id.to_s, format: :json
+    get :show, params: { show_id: show.id.to_s, id: video.id.to_s, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -505,7 +505,7 @@ class VideosControllerTest < ActionController::TestCase
     playlist = create(:playlist, user: admin)
     video = create(:video, parent: playlist)
 
-    get :show, playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json
+    get :show, params: { playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -516,7 +516,7 @@ class VideosControllerTest < ActionController::TestCase
     login_as_host
     video = create(:video)
 
-    get :show, id: video.id.to_s, format: :json
+    get :show, params: { id: video.id.to_s, format: :json }
     assert_response :expectation_failed
 
     results = JSON.parse(response.body)
@@ -531,7 +531,7 @@ class VideosControllerTest < ActionController::TestCase
 
     video = create(:video, parent: show)
 
-    get :show, show_id: show.id.to_s, id: video.id.to_s, format: :json
+    get :show, params: { show_id: show.id.to_s, id: video.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -546,7 +546,7 @@ class VideosControllerTest < ActionController::TestCase
 
     video = create(:video, parent: playlist)
 
-    get :show, playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json
+    get :show, params: { playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -562,7 +562,7 @@ class VideosControllerTest < ActionController::TestCase
 
     video = create(:video, parent: show)
 
-    get :show, show_id: show.id.to_s, id: video.id.to_s, format: :json
+    get :show, params: { show_id: show.id.to_s, id: video.id.to_s, format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -576,7 +576,7 @@ class VideosControllerTest < ActionController::TestCase
 
     video = create(:video, parent: playlist)
 
-    get :show, playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json
+    get :show, params: { playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -587,7 +587,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     show = create(:show, users: [host])
 
-    get :show, show_id: show.id.to_s, id: 'nope', format: :json
+    get :show, params: { show_id: show.id.to_s, id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -600,7 +600,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     playlist = create(:playlist, user: host)
 
-    get :show, playlist_id: playlist.id.to_s, id: 'nope', format: :json
+    get :show, params: { playlist_id: playlist.id.to_s, id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -615,7 +615,7 @@ class VideosControllerTest < ActionController::TestCase
     show = create(:show, users: [host])
     video = create(:video, parent: show)
 
-    get :show, show_id: show.id.to_s, id: video.id.to_s, format: :json
+    get :show, params: { show_id: show.id.to_s, id: video.id.to_s, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -628,7 +628,7 @@ class VideosControllerTest < ActionController::TestCase
     playlist = create(:playlist, user: host)
     video = create(:video, parent: playlist)
 
-    get :show, playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json
+    get :show, params: { playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -646,7 +646,7 @@ class VideosControllerTest < ActionController::TestCase
   test 'Admin: cannot create a video without show_id or playlist_id' do
     login_as_admin
 
-    post :create, video: {}, format: :json
+    post :create, params: { video: {}, format: :json }
     assert_response :expectation_failed
 
     results = JSON.parse(response.body)
@@ -663,7 +663,7 @@ class VideosControllerTest < ActionController::TestCase
       title: 'Title',
       link: 'http://example.com/'
     }
-    post :create, show_id: show.id.to_s, video: video_params, format: :json
+    post :create, params: { show_id: show.id.to_s, video: video_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -681,7 +681,7 @@ class VideosControllerTest < ActionController::TestCase
       title: 'Title',
       link: 'http://example.com/'
     }
-    post :create, playlist_id: playlist.id.to_s, video: video_params, format: :json
+    post :create, params: { playlist_id: playlist.id.to_s, video: video_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -700,7 +700,7 @@ class VideosControllerTest < ActionController::TestCase
       title: 'Title',
       link: 'http://example.com/'
     }
-    post :create, show_id: show.id.to_s, video: video_params, format: :json
+    post :create, params: { show_id: show.id.to_s, video: video_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -719,7 +719,7 @@ class VideosControllerTest < ActionController::TestCase
       title: 'Title',
       link: 'http://example.com/'
     }
-    post :create, playlist_id: playlist.id.to_s, video: video_params, format: :json
+    post :create, params: { playlist_id: playlist.id.to_s, video: video_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -733,7 +733,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     show = create(:show, users: [admin])
 
-    post :create, show_id: show.id.to_s, video: {}, format: :json
+    post :create, params: { show_id: show.id.to_s, video: {}, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -757,7 +757,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     playlist = create(:playlist, user: admin)
 
-    post :create, playlist_id: playlist.id.to_s, video: {}, format: :json
+    post :create, params: { playlist_id: playlist.id.to_s, video: {}, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -782,7 +782,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     show = create(:show, users: [admin])
 
-    post :create, show_id: show.id.to_s, video: {}, format: :json
+    post :create, params: { show_id: show.id.to_s, video: {}, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -794,7 +794,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     playlist = create(:playlist, user: admin)
 
-    post :create, playlist_id: playlist.id.to_s, video: {}, format: :json
+    post :create, params: { playlist_id: playlist.id.to_s, video: {}, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -804,7 +804,7 @@ class VideosControllerTest < ActionController::TestCase
   test 'Host: cannot create a video without show_id or playlist_id' do
     login_as_host
 
-    post :create, video: {}, format: :json
+    post :create, params: { video: {}, format: :json }
     assert_response :expectation_failed
 
     results = JSON.parse(response.body)
@@ -821,7 +821,7 @@ class VideosControllerTest < ActionController::TestCase
       title: 'Title',
       link: 'http://example.com/'
     }
-    post :create, show_id: show.id.to_s, video: video_params, format: :json
+    post :create, params: { show_id: show.id.to_s, video: video_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -839,7 +839,7 @@ class VideosControllerTest < ActionController::TestCase
       title: 'Title',
       link: 'http://example.com/'
     }
-    post :create, playlist_id: playlist.id.to_s, video: video_params, format: :json
+    post :create, params: {playlist_id: playlist.id.to_s, video: video_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -858,7 +858,7 @@ class VideosControllerTest < ActionController::TestCase
       title: 'Title',
       link: 'http://example.com/'
     }
-    post :create, show_id: show.id.to_s, video: video_params, format: :json
+    post :create, params: { show_id: show.id.to_s, video: video_params, format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -876,7 +876,7 @@ class VideosControllerTest < ActionController::TestCase
       title: 'Title',
       link: 'http://example.com/'
     }
-    post :create, playlist_id: playlist.id.to_s, video: video_params, format: :json
+    post :create, params: { playlist_id: playlist.id.to_s, video: video_params, format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -889,7 +889,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     show = create(:show, users: [host])
 
-    post :create, show_id: show.id.to_s, video: {}, format: :json
+    post :create, params: { show_id: show.id.to_s, video: {}, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -913,7 +913,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     playlist = create(:playlist, user: host)
 
-    post :create, playlist_id: playlist.id.to_s, video: {}, format: :json
+    post :create, params: { playlist_id: playlist.id.to_s, video: {}, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -938,7 +938,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     show = create(:show, users: [host])
 
-    post :create, show_id: show.id.to_s, video: {}, format: :json
+    post :create, params: { show_id: show.id.to_s, video: {}, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -950,7 +950,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     playlist = create(:playlist, user: host)
 
-    post :create, playlist_id: playlist.id.to_s, video: {}, format: :json
+    post :create, params: { playlist_id: playlist.id.to_s, video: {}, format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -958,7 +958,7 @@ class VideosControllerTest < ActionController::TestCase
   end
 
   test 'Guest: create should get redirected to login' do
-    post :create, video: {}, format: :json
+    post :create, params: { video: {}, format: :json }
     assert_redirected_to  '/users/sign_in'
   end
 
@@ -969,7 +969,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     video = create(:video)
 
-    put :update, id: video.id.to_s, video: {}, format: :json
+    put :update, params: { id: video.id.to_s, video: {}, format: :json }
 
     assert_response :expectation_failed
 
@@ -989,7 +989,7 @@ class VideosControllerTest < ActionController::TestCase
       title: "Updated Title",
       link: "https://updatedurl.com/video"
     }
-    put :update, show_id: show.id.to_s, id: video.id.to_s, video: video_params, format: :json
+    put :update, params: { show_id: show.id.to_s, id: video.id.to_s, video: video_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -1012,7 +1012,7 @@ class VideosControllerTest < ActionController::TestCase
       title: "Updated Title",
       link: "https://updatedurl.com/video"
     }
-    put :update, playlist_id: playlist.id.to_s, id: video.id.to_s, video: video_params, format: :json
+    put :update, params: { playlist_id: playlist.id.to_s, id: video.id.to_s, video: video_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -1029,7 +1029,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     show = create(:show, users: [admin])
 
-    put :update, show_id: show.id.to_s, id: 'nope', format: :json
+    put :update, params: { show_id: show.id.to_s, id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -1042,7 +1042,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     playlist = create(:playlist, user: admin)
 
-    put :update, playlist_id: playlist.id.to_s, id: 'nope', format: :json
+    put :update, params: { playlist_id: playlist.id.to_s, id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -1057,7 +1057,7 @@ class VideosControllerTest < ActionController::TestCase
 
     Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:find).raises(Exception.new("Random Exception"))
 
-    put :update, show_id: show.id.to_s, id: 'whatever', format: :json
+    put :update, params: { show_id: show.id.to_s, id: 'whatever', format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -1070,7 +1070,7 @@ class VideosControllerTest < ActionController::TestCase
 
     Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:find).raises(Exception.new("Random Exception"))
 
-    put :update, playlist_id: playlist.id.to_s, id: 'whatever', format: :json
+    put :update, params: { playlist_id: playlist.id.to_s, id: 'whatever', format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -1081,7 +1081,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     video = create(:video)
 
-    put :update, id: video.id.to_s, video: {}, format: :json
+    put :update, params: { id: video.id.to_s, video: {}, format: :json }
 
     assert_response :expectation_failed
 
@@ -1101,7 +1101,7 @@ class VideosControllerTest < ActionController::TestCase
       title: "Updated Title",
       link: "https://updatedurl.com/video"
     }
-    put :update, show_id: show.id.to_s, id: video.id.to_s, video: video_params, format: :json
+    put :update, params: { show_id: show.id.to_s, id: video.id.to_s, video: video_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -1124,7 +1124,7 @@ class VideosControllerTest < ActionController::TestCase
       title: "Updated Title",
       link: "https://updatedurl.com/video"
     }
-    put :update, playlist_id: playlist.id.to_s, id: video.id.to_s, video: video_params, format: :json
+    put :update, params: { playlist_id: playlist.id.to_s, id: video.id.to_s, video: video_params, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -1141,7 +1141,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     show = create(:show, users: [host])
 
-    put :update, show_id: show.id.to_s, id: 'nope', format: :json
+    put :update, params: { show_id: show.id.to_s, id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -1154,7 +1154,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     playlist = create(:playlist, user: host)
 
-    put :update, playlist_id: playlist.id.to_s, id: 'nope', format: :json
+    put :update, params: { playlist_id: playlist.id.to_s, id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -1169,7 +1169,7 @@ class VideosControllerTest < ActionController::TestCase
 
     Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:find).raises(Exception.new("Random Exception"))
 
-    put :update, show_id: show.id.to_s, id: 'whatever', format: :json
+    put :update, params: { show_id: show.id.to_s, id: 'whatever', format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -1182,7 +1182,7 @@ class VideosControllerTest < ActionController::TestCase
 
     Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:find).raises(Exception.new("Random Exception"))
 
-    put :update, playlist_id: playlist.id.to_s, id: 'whatever', format: :json
+    put :update, params: { playlist_id: playlist.id.to_s, id: 'whatever', format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -1192,7 +1192,7 @@ class VideosControllerTest < ActionController::TestCase
   test 'Guest: update should get redirected to login' do
     video = create(:video)
 
-    put :update, id: video.id.to_s, format: :json
+    put :update, params: { id: video.id.to_s, format: :json }
     assert_redirected_to  '/users/sign_in'
   end
 
@@ -1203,7 +1203,7 @@ class VideosControllerTest < ActionController::TestCase
     login_as_admin
     video = create(:video)
 
-    delete :destroy, id: video.id.to_s, format: :json
+    delete :destroy, params: { id: video.id.to_s, format: :json }
     assert_response :expectation_failed
 
     results = JSON.parse(response.body)
@@ -1217,7 +1217,7 @@ class VideosControllerTest < ActionController::TestCase
     show = create(:show, users: [admin])
     video = create(:video, parent: show)
 
-    delete :destroy, show_id: show.id.to_s, id: video.id.to_s, format: :json
+    delete :destroy, params: { show_id: show.id.to_s, id: video.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -1235,7 +1235,7 @@ class VideosControllerTest < ActionController::TestCase
     playlist = create(:playlist, user: admin)
     video = create(:video, parent: playlist)
 
-    delete :destroy, playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json
+    delete :destroy, params: { playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -1252,7 +1252,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     show = create(:show, users: [admin])
 
-    delete :destroy, show_id: show.id.to_s, id: 'nope', format: :json
+    delete :destroy, params: { show_id: show.id.to_s, id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -1265,7 +1265,7 @@ class VideosControllerTest < ActionController::TestCase
     admin = login_as_admin
     playlist = create(:playlist, user: admin)
 
-    delete :destroy, playlist_id: playlist.id.to_s, id: 'nope', format: :json
+    delete :destroy, params: { playlist_id: playlist.id.to_s, id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -1280,7 +1280,7 @@ class VideosControllerTest < ActionController::TestCase
 
     Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:find).raises(Exception.new("Random Exception"))
 
-    delete :destroy, show_id: show.id.to_s, id: 'whatever', format: :json
+    delete :destroy, params: { show_id: show.id.to_s, id: 'whatever', format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -1293,7 +1293,7 @@ class VideosControllerTest < ActionController::TestCase
 
     Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:find).raises(Exception.new("Random Exception"))
 
-    delete :destroy, playlist_id: playlist.id.to_s, id: 'whatever', format: :json
+    delete :destroy, params: { playlist_id: playlist.id.to_s, id: 'whatever', format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -1304,7 +1304,7 @@ class VideosControllerTest < ActionController::TestCase
     login_as_host
     video = create(:video)
 
-    delete :destroy, id: video.id.to_s, format: :json
+    delete :destroy, params: { id: video.id.to_s, format: :json }
     assert_response :expectation_failed
 
     results = JSON.parse(response.body)
@@ -1318,7 +1318,7 @@ class VideosControllerTest < ActionController::TestCase
     show = create(:show, users: [host])
     video = create(:video, parent: show)
 
-    delete :destroy, show_id: show.id.to_s, id: video.id.to_s, format: :json
+    delete :destroy, params: { show_id: show.id.to_s, id: video.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -1336,7 +1336,7 @@ class VideosControllerTest < ActionController::TestCase
     playlist = create(:playlist, user: host)
     video = create(:video, parent: playlist)
 
-    delete :destroy, playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json
+    delete :destroy, params: { playlist_id: playlist.id.to_s, id: video.id.to_s, format: :json }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -1353,7 +1353,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     show = create(:show, users: [host])
 
-    delete :destroy, show_id: show.id.to_s, id: 'nope', format: :json
+    delete :destroy, params: { show_id: show.id.to_s, id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -1366,7 +1366,7 @@ class VideosControllerTest < ActionController::TestCase
     host = login_as_host
     playlist = create(:playlist, user: host)
 
-    delete :destroy, playlist_id: playlist.id.to_s, id: 'nope', format: :json
+    delete :destroy, params: { playlist_id: playlist.id.to_s, id: 'nope', format: :json }
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -1381,7 +1381,7 @@ class VideosControllerTest < ActionController::TestCase
 
     Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:find).raises(Exception.new("Random Exception"))
 
-    delete :destroy, show_id: show.id.to_s, id: 'whatever', format: :json
+    delete :destroy, params: { show_id: show.id.to_s, id: 'whatever', format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -1394,7 +1394,7 @@ class VideosControllerTest < ActionController::TestCase
 
     Video::ActiveRecord_Associations_CollectionProxy.any_instance.stubs(:find).raises(Exception.new("Random Exception"))
 
-    delete :destroy, playlist_id: playlist.id.to_s, id: 'whatever', format: :json
+    delete :destroy, params: { playlist_id: playlist.id.to_s, id: 'whatever', format: :json }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -1404,7 +1404,7 @@ class VideosControllerTest < ActionController::TestCase
   test 'Guest: destroy should get redirected to login' do
     video = create(:video)
 
-    delete :destroy, id: video.id.to_s, format: :json
+    delete :destroy, params: { id: video.id.to_s, format: :json }
     assert_redirected_to  '/users/sign_in'
   end
 end

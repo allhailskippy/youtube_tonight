@@ -36,13 +36,13 @@ shared_examples "the video playlist index page" do
   it_should_behave_like "playlist_info" do
     let(:playlist_info ) { @page.playlist_info }
   end
-
-  it 'starts the preview' do
-    row = @page.find_row(playlist.videos.first)
-    row.preview_start.click
-    wait_for_angular_requests_to_finish
-    expect(row.preview_start['disabled']).to be_truthy
-  end
+# TODO: Check this once action cable has been implemented
+#  it 'starts the preview' do
+#    row = @page.find_row(playlist.videos.first)
+#    row.preview_start.click
+#    wait_for_angular_requests_to_finish
+#    expect(row.preview_start['disabled']).to be_truthy
+#  end
 end
 
 shared_examples "video playlist duration" do

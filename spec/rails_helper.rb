@@ -36,7 +36,6 @@ require 'capybara/poltergeist'
 require 'sidekiq/testing'
 Sidekiq::Testing.fake!
 
-require 'declarative_authorization/maintenance'
 require 'selenium-webdriver'
 require 'site_prism'
 
@@ -83,6 +82,7 @@ else
   end
   Capybara.javascript_driver = :poltergeist
 end
+Capybara.server = :puma
 Capybara.server_port = 12345
 
 WebMock.disable_net_connect!(allow_localhost: true)
@@ -94,9 +94,9 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
   config.include FactoryGirl::Syntax::Methods
-  config.include Authorization::Maintenance
   config.include SpecHelpers
   config.include Warden::Test::Helpers
+  config.include Authorization::Maintenance
 
   # Setting up rspec retry because we get some false negatives sometimes
   config.verbose_retry = true

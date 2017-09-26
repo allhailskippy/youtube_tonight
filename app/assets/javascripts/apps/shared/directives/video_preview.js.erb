@@ -19,8 +19,8 @@ var controller = function(
   /**
    * Setup
    */
-  $scope.dispatcher = ConnectionHelper.getDispatcher();
-  $scope.channel = $scope.dispatcher.subscribe('video_player');
+  $scope.connectionHelper = ConnectionHelper;
+  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', 'video_player');
   $scope.senderId = null;
   $scope.video = null;
 
@@ -105,24 +105,24 @@ var VideoPreview = function(
                   e.target.mute();
                 };
 
-                $scope.dispatcher.trigger('video_player.playing', {
+                $scope.consumer.send({
                   video: $scope.video,
                   player_id: $scope.playerId,
                   sender_id: $scope.senderId,
                   state: $scope.currentState
-                });
+                }, 'playing');
               }
 
               // We've stopped!
               if(e.data == YT.PlayerState.ENDED) {
                 $scope.currentState.playing = false;
                 $scope.currentState.mute = $scope.alwaysMute || $scope.mute;
-                $scope.dispatcher.trigger('video_player.stop', {
+                $scope.consumer.send({
                   video: $scope.video,
                   player_id: $scope.playerId,
                   sender_id: $scope.senderId,
                   state: $scope.currentState
-                });
+                }, 'stop');
               }
             }
           }
@@ -133,160 +133,148 @@ var VideoPreview = function(
       /**
        * Event Handlers
        */
-      // Restister/unregister this player
-      $scope.dispatcher.bind('client_connected', function(message) {
-        $scope.dispatcher.trigger('video_player.registered', {
-          player_id: $scope.playerId
-        });
-      });
+      $scope.consumer.subscribe(function(response) {
+        var message = response.message;
+        switch(response.action) {
+          case 'client_connected':
+          case 'registered_check':
+            $scope.consumer.send({ player_id: $scope.playerId }, 'registered');
+            break;
+          case 'play':
+            if(message.player_id == $scope.playerId) {
+              // Stop the current player
+              if($scope.player) {
+                $scope.consumer.send({
+                  player_id: $scope.playerId,
+                  sender_id: $scope.senderId,
+                  video: $scope.video
+                }, 'stop');
+              };
+
+              $scope.video = message.video;
+
+              // Allow override of start time in the message
+              if(message.current_time) {
+                $scope.video.start_time = message.current_time;
+              }
+              $scope.currentState.video = message.video;
+              $scope.video = message.video;
+              $scope.senderId = message.sender_id;
+
+              // Clear out any existing players
+              $element.children().remove();
+
+              // Create the div to hold the video and give it a unique id
+              var random_seed = 1 + Math.floor(Math.random() * 100000);
+              $scope.preview_id = $scope.video.id + '-' + random_seed;
+              var preview = $(
+                '<div style="position:relative">' +
+                '  <div class="prev-overlay" style="' +
+                '    width: ' + $scope.width + 'px;' +
+                '    height: ' + $scope.height + 'px;' +
+                '  "></div>' +
+                '  <div id="' + $scope.preview_id + '"></div>' +
+                '</div>' +
+                '<style>' +
+                '  .prev-overlay {' +
+                '    width: 100%;' +
+                '    height: 100%;' +
+                '    position: absolute;' +
+                '    z-index: 1000000;' +
+                '    background-color: transparent;' +
+                '  }' +
+                '</style>'
+              );
+
+              // Add new div for player
+              $element.append(preview);
+
+              // Create the player
+              VideoPreviewHelper.waitForReady(function() {
+                $scope.newPlayer($scope.preview_id);
+              });
+            };
+            break;
+          case 'pause':
+            if(message.player_id == $scope.playerId) {
+              $scope.currentState.paused = true;
+              $scope.player.pauseVideo();
+
+              // Notify that we've paused
+              $scope.consumer.send({ player_id: $scope.playerId }, 'paused');
+            };
+            break;
+          case 'unpause':
+            if(message.player_id == $scope.playerId) {
+              $scope.currentState.paused = false;
+              $scope.player.playVideo();
+
+              // Notify that we've unpaused
+              $scope.consumer.send({ player_id: $scope.playerId }, 'unpaused');
+            };
+            break;
+          case 'stop':
+            if((message.player_id == 'all'
+                && $scope.video
+                && $scope.video.id == message.video.id)
+              || message.player_id == $scope.playerId) {
+
+              if($scope.player) {
+                $scope.player.stopVideo();
+                $scope.currentState = {
+                  video: null,
+                  playing: false,
+                  paused: false,
+                  mute: false
+                }
+              }
+
+              // Clear out player
+              $element.children().remove();
+
+              // Notify that we've stopped
+              $scope.consumer.send({
+                video: $scope.video,
+                player_id: $scope.playerId,
+                sender_id: $scope.senderId,
+                state: $scope.currentState
+              }, 'stopped');
+            }
+            break;
+          case 'mute':
+            if(message.player_id == $scope.playerId && $scope.player) {
+              $scope.currentState.mute = true;
+              $scope.player.mute();
+            }
+            break;
+          case 'unmute':
+            if(!$scope.alwaysMute
+              && message.player_id == $scope.playerId && $scope.player) {
+              $scope.currentState.mute = false;
+              $scope.player.unMute();
+            }
+            break;
+          case 'set_time':
+            if(message.player_id == $scope.playerId && $scope.player) {
+              $scope.player.seekTo(message.time, true);
+            }
+            break;
+          case 'get_current_state':
+            if(message.player_id == $scope.playerId) {
+              var state = $scope.getCurrentState(message);
+              $scope.consumer.send(state, 'current_state');
+            }
+            break;
+        }
+      }); // end subsribe
 
       $window.onunload = function() {
-        $scope.dispatcher.trigger('video_player.unregistered', {
-          player_id: $scope.playerId
-        });
+        if($scope.connectionHelper.wrangler.connected) {
+          $scope.consumer.send({
+            player_id: $scope.playerId
+          }, 'unregistered');
+        }
       };
-
-      $scope.channel.bind('registered_check', function(message) {
-        $scope.dispatcher.trigger('video_player.registered', {
-          player_id: $scope.playerId
-        });
-      });
-
-      // Wait for notice to play video
-      $scope.channel.bind('play', function(message) {
-        if(message.player_id == $scope.playerId) {
-          // Stop the current player
-          if($scope.player) {
-            $scope.dispatcher.trigger('stop', {
-              player_id: $scope.playerId,
-              sender_id: $scope.senderId,
-              video: $scope.video
-            });
-          };
-
-          $scope.video = message.video;
-          // Allow override of start time in the message
-          if(message.current_time) {
-            $scope.video.start_time = message.current_time;
-          }
-          $scope.currentState.video = message.video;
-          $scope.video = message.video;
-          $scope.senderId = message.sender_id;
-
-          // Clear out any existing players
-          $element.children().remove();
-
-          // Create the div to hold the video and give it a unique id
-          var random_seed = 1 + Math.floor(Math.random() * 100000);
-          $scope.preview_id = $scope.video.id + '-' + random_seed;
-          var preview = $(
-            '<div style="position:relative">' +
-            '  <div class="prev-overlay" style="' +
-            '    width: ' + $scope.width + 'px;' +
-            '    height: ' + $scope.height + 'px;' +
-            '  "></div>' +
-            '  <div id="' + $scope.preview_id + '"></div>' +
-            '</div>' +
-            '<style>' +
-            '  .prev-overlay {' +
-            '    width: 100%;' +
-            '    height: 100%;' +
-            '    position: absolute;' +
-            '    z-index: 1000000;' +
-            '    background-color: transparent;' +
-            '  }' +
-            '</style>'
-          );
-
-          // Add new div for player
-          $element.append(preview);
-
-          // Create the player
-          VideoPreviewHelper.waitForReady(function() {
-            $scope.newPlayer($scope.preview_id);
-          });
-        };
-      });
-
-      // Notice to pause a video
-      $scope.channel.bind('pause', function(message) {
-        if(message.player_id == $scope.playerId) {
-          $scope.currentState.paused = true;
-          $scope.player.pauseVideo();
-
-          // Notify that we've paused
-          $scope.dispatcher.trigger('video_player.paused', {
-            player_id: $scope.playerId
-          });
-        };
-      });
-
-      // Notice to unpause a video
-      $scope.channel.bind('unpause', function(message) {
-        if(message.player_id == $scope.playerId) {
-          $scope.currentState.paused = false;
-          $scope.player.playVideo();
-
-          // Notify that we've unpaused
-          $scope.dispatcher.trigger('video_player.unpaused', {
-            player_id: $scope.playerId
-          });
-        };
-      });
-
-      // Notice to stop a video
-      $scope.channel.bind('stop', function(message) {
-        if((message.player_id == 'all'
-            && $scope.video
-            && $scope.video.id == message.video.id)
-          || message.player_id == $scope.playerId) {
-
-          if($scope.player) {
-            $scope.player.stopVideo();
-            $scope.currentState = {
-              video: null,
-              playing: false,
-              paused: false,
-              mute: false
-            }
-          }
-
-          // Clear out player
-          $element.children().remove();
-
-          // Notify that we've stopped
-          $scope.dispatcher.trigger('video_player.stopped', {
-            video: $scope.video,
-            player_id: $scope.playerId,
-            sender_id: $scope.senderId,
-            state: $scope.currentState
-          });
-        }
-      });
-
-      // Mute player
-      $scope.channel.bind('mute', function(message) {
-        if(message.player_id == $scope.playerId && $scope.player) {
-          $scope.currentState.mute = true;
-          $scope.player.mute();
-        }
-      });
-
-      // Unmute player
-      $scope.channel.bind('unmute', function(message) {
-        if(!$scope.alwaysMute
-          && message.player_id == $scope.playerId && $scope.player) {
-          $scope.currentState.mute = false;
-          $scope.player.unMute();
-        }
-      });
-
-      // Set the video to a specific time
-      $scope.channel.bind('set_time', function(message) {
-        if(message.player_id == $scope.playerId && $scope.player) {
-          $scope.player.seekTo(message.time, true);
-        }
-      });
 
       $scope.getCurrentState = function(message) {
         // If we don't have a getCurrentTime method,
@@ -306,14 +294,6 @@ var VideoPreview = function(
         }
         return state;
       };
-
-      // Get the current state of the player
-      $scope.channel.bind('get_current_state', function(message) {
-        if(message.player_id == $scope.playerId) {
-          var state = $scope.getCurrentState(message);
-          $scope.dispatcher.trigger('video_player.current_state', state);
-        }
-      });
     }
   };
 };

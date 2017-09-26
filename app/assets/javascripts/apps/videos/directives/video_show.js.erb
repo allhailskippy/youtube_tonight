@@ -19,8 +19,7 @@ var controller = function(
   /**
    * Setup
    */
-  $scope.dispatcher = ConnectionHelper.getDispatcher();
-  $scope.channel = ConnectionHelper.getChannel('video_player');
+  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', 'video_player');
   $scope.playerId = ConnectionHelper.getPlayerId('preview-' + $scope.video.parent_id);
   $scope.senderId = $scope.senderId || 'video-' + $scope.video.id + '-' + Math.floor(Math.random() * 1000000);
   $scope.playing = false;
@@ -55,19 +54,19 @@ var controller = function(
   $scope.play = function() {
     if(!$scope.previewRequested) {
       $scope.previewRequested = true;
-      $scope.dispatcher.trigger('video_player.play', {
+      $scope.consumer.send({
         video: $scope.video,
         player_id: $scope.playerId,
         sender_id: $scope.senderId
-      });
+      }, 'play');
     }
   };
 
   $scope.stop = function() {
-    $scope.dispatcher.trigger('video_player.stop', {
+    $scope.consumer.send({
       player_id: $scope.playerId,
       sender_id: $scope.senderId
-    });
+    }, 'stop');
   };
 
   $scope.startSlide = function(t) {
@@ -75,12 +74,12 @@ var controller = function(
   };
 
   $scope.endSlide = function(t) {
-    $scope.dispatcher.trigger('video_player.set_time', {
+    $scope.consumer.send({
       video: $scope.video,
       player_id: $scope.playerId,
       sender_id: $scope.senderId,
       time: t
-    });
+    }, 'set_time');
   };
 
   $scope.isCurrentlyPlaying = function() {
@@ -94,24 +93,28 @@ var controller = function(
   /**
    * Event Handlers
    */
-  $scope.channel.bind('playing', function(message) {
-    if(message.player_id == $scope.playerId) {
-      $scope.previewRequested = false;
-      if(message.sender_id == $scope.senderId) {
-        $scope.playing = true;
-        $scope.$applyAsync();
-      } else {
-        $scope.playing = false;
-        $scope.$applyAsync();
-      }
-    }
-  });
-
-  $scope.channel.bind('stopped', function(message) {
-    if(message.sender_id == $scope.senderId) {
-      $scope.previewRequested = false;
-      $scope.playing = false;
-      $scope.$applyAsync();
+  $scope.consumer.subscribe(function(response) {
+    var message = response.message;
+    switch(response.action) {
+      case 'playing':
+        if(message.player_id == $scope.playerId) {
+          $scope.previewRequested = false;
+          if(message.sender_id == $scope.senderId) {
+            $scope.playing = true;
+            $scope.$applyAsync();
+          } else {
+            $scope.playing = false;
+            $scope.$applyAsync();
+          }
+        }
+        break;
+      case 'stopped':
+        if(message.sender_id == $scope.senderId) {
+          $scope.previewRequested = false;
+          $scope.playing = false;
+          $scope.$applyAsync();
+        }
+        break;
     }
   });
 };

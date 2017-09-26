@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/css/bootstrap-select.min.css" />
 
-    <%= javascript_include_tag "application", "moment", "modernizr", "bootstrap-slider" %>
+    <%= javascript_include_tag "application", "moment", "modernizr", "bootstrap-slider", "angular-actioncable", "angular-websocket" %>
     <%= javascript_include_tag "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/js/bootstrap-select.min.js" %>
     <% if Rails.env.test? %>
       <%= javascript_include_tag "jquery.simulate", "jquery.simulate.ext", "jquery.simulate.drag-n-drop" %>
@@ -43,18 +43,18 @@
           </div>
           <div id="navbar" class="">
             <% unless current_user.try(:requires_auth) %>
-              <% if permitted_to?(:index, :users) %>
+              <% if policy(:user).index? %>
                 <ul class="nav navbar-nav" id="users_nav">
                   <li><a href="/#/users">Users</a></li>
                 </ul>
               <% end %>
-              <% if permitted_to?(:index, :shows) %>
+              <% if policy(:show).index? %>
                 <ul class="nav navbar-nav" id="shows_nav">
                   <li><a href="/#/shows">Shows</a></li>
                 </ul>
               <% end %>
               <% playlists = current_user.try(:playlists) %>
-              <% if current_user.present? && permitted_to?(:index, playlists) %>
+              <% if current_user.present? && policy(:playlist).index? %>
                 <ul class="nav navbar-nav" id="playlists_nav">
                   <li><a href="/#/playlists">Playlists</a></li>
                 </ul>

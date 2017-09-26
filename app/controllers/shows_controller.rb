@@ -4,7 +4,8 @@ class ShowsController < ApplicationController
     respond_to do |format|
       format.json do
         begin
-          shows = Show.includes(:videos).with_permissions_to(:index).all
+          policy_scope(Show).includes(:videos).all
+          shows = policy_scope(Show).includes(:videos).all
           render json: { data: shows }
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
@@ -21,15 +22,13 @@ class ShowsController < ApplicationController
       format.json do
         begin
           show = Show.find(params[:id])
-
-          # Used to differentiate between not found and not authorized
-          permitted_to!(:show, show)
+          authorize(show, :show?)
 
           render json: { data: show }
         rescue ActiveRecord::RecordNotFound
           render json: { errors: ['Not Found'] },
                  status: :not_found
-        rescue Authorization::NotAuthorized, Authorization::AttributeAuthorizationError
+        rescue Pundit::NotAuthorizedError
           render json: { errors: ['Unauthorized'] },
                  status: :unauthorized
         rescue Exception => e
@@ -46,15 +45,17 @@ class ShowsController < ApplicationController
     respond_to do |format|
       format.json do
         begin
-          show = Show.all.build(show_params)
-
-          permitted_to!(:create, show)
+          show = Show.new(show_params)
+          authorize(show, :create?)
           show.save!
 
           render json: { data: show }
         rescue ActiveRecord::RecordInvalid
           render json: { errors: show.errors, full_errors: show.errors.full_messages },
                  status: :unprocessable_entity
+        rescue Pundit::NotAuthorizedError
+          render json: { errors: ['Unauthorized'] },
+                 status: :unauthorized
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
           render json: { errors: [e.to_s] },
@@ -70,8 +71,7 @@ class ShowsController < ApplicationController
       format.json do
         begin
           show = Show.find(params[:id])
-
-          permitted_to!(:update, show)
+          authorize(show, :update?)
           show.update_attributes!(show_params)
 
           # Gets rid of user/hosts cache values
@@ -84,6 +84,9 @@ class ShowsController < ApplicationController
         rescue ActiveRecord::RecordInvalid
           render json: { errors: show.errors, full_errors: show.errors.full_messages },
                  status: :unprocessable_entity
+        rescue Pundit::NotAuthorizedError
+          render json: { errors: ['Unauthorized'] },
+                 status: :unauthorized
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
           render json: { errors: [e.to_s.titleize] },
@@ -99,13 +102,16 @@ class ShowsController < ApplicationController
       format.json do
         begin
           show = Show.find(params[:id])
-          permitted_to!(:delete, show)
+          authorize(show, :destroy?)
           show.destroy
 
           render json: { data: {} }
         rescue ActiveRecord::RecordNotFound
           render json: { errors: ['Not Found'] },
                  status: :not_found
+        rescue Pundit::NotAuthorizedError
+          render json: { errors: ['Unauthorized'] },
+                 status: :unauthorized
         rescue Exception => e
           NewRelic::Agent.notice_error(e)
           render json: { :errors => [e.to_s] },
