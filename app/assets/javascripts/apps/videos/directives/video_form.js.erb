@@ -100,8 +100,7 @@ var controller = function(
     }).catch(Notice.handleErrors);
   };
 
-  $scope.consumer.subscribe(function() {});
-  $scope.consumer.onConfirmSubscription(function() {
+  $scope.consumer.subscribe(function() {}).then(function() {
     $scope.cancel = function() {
       $scope.consumer.send({
         video: $scope.currentVideo,
@@ -116,7 +115,7 @@ var controller = function(
       $scope.queryVideos();
       $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'Show' });
     };
-  });
+  }) ;
 
   $scope.hasVideo = function() {
     return $scope.currentVideo && $scope.currentVideo.api_video_id;

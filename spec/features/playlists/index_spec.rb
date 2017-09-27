@@ -85,6 +85,7 @@ shared_examples "the index page" do
         # replace it with 1 video. Therefore change of -4
         VideoImportWorker.drain
       }.to change(playlist1.videos, :count).by(-4)
+      wait_for_angular_requests_to_finish
 
       row = @page.find_row(playlist1)
       expect(row.sec_actions.refresh_videos['disabled']).to be_blank

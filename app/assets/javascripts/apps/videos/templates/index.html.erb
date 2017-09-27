@@ -88,7 +88,7 @@
     <br />
     <div class="row" id="videos">
       <div class="list-group" ui-sortable="sortableOptions" ng-model="videos">
-        <div ng-repeat="video in videos" class="panel panel-primary">
+        <div ng-repeat="video in videos" class="panel panel-primary video-container">
           <div class="panel-body row video-row" id="video_{{video.id}}">
             <div class="col-md-9">
               <video-show
