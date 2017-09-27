@@ -1,5 +1,5 @@
 class DeviseSessionPolicy < ApplicationPolicy
-  exclude_attrs :new?, :edit?
+  exclude_attributes :new?, :edit?
 
   def manage?
     true 

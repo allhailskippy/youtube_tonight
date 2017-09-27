@@ -1,5 +1,5 @@
 class BroadcastPolicy < ApplicationPolicy
-  only_attrs :index?
+  only_attribute :index?
 
   def index?
     has_role?(:host, :admin)

@@ -51,7 +51,8 @@ class Playlist < ActiveRecord::Base
     videos.reload
     update_attributes!(video_count: videos.count, importing_videos: false)
 
-    #WebsocketRails[:playlist_events].trigger('updated', { playlist_id: id })
+    PlaylistEventsChannel.broadcast_to(user, {action: 'updated', message: {'playlist_id': id}})
+
     videos
   end
 end

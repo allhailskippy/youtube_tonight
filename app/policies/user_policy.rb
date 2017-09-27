@@ -1,6 +1,6 @@
 class UserPolicy < ApplicationPolicy
-  add_attrs :requires_auth?, :import_playlists?
-  exclude_attrs :new?, :edit?
+  add_attributes :requires_auth?, :import_playlists?
+  exclude_attributes :new?, :edit?
 
   def manage?
     has_role?(:admin)

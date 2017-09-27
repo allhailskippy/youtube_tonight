@@ -112,7 +112,7 @@ var controller = function(
   $scope.toggleMute = function(mute) {
     if($scope.state.playing) {
       angular.forEach($scope.playerIds, function(playerId) {
-        var action = 'video_player.' + (mute ? 'mute' : 'unmute');
+        var action = mute ? 'mute' : 'unmute';
         $scope.consumer.send({ player_id: playerId }, action);
       });
       $scope.$applyAsync();
