@@ -144,12 +144,15 @@ var VideoPreview = function(
             if(message.player_id == $scope.playerId) {
               // Stop the current player
               if($scope.player) {
-                $scope.consumer.send({
-                  player_id: $scope.playerId,
-                  sender_id: $scope.senderId,
-                  video: $scope.video
-                }, 'stop');
+                $scope.player.stopVideo();
               };
+
+              // Notify that we've stopped
+              $scope.consumer.send({
+                video: $scope.video,
+                player_id: $scope.playerId,
+                sender_id: $scope.senderId
+              }, 'stopped');
 
               $scope.video = message.video;
 
@@ -163,6 +166,7 @@ var VideoPreview = function(
 
               // Clear out any existing players
               $element.children().remove();
+              $scope.player = undefined;
 
               // Create the div to hold the video and give it a unique id
               var random_seed = 1 + Math.floor(Math.random() * 100000);
@@ -221,16 +225,17 @@ var VideoPreview = function(
 
               if($scope.player) {
                 $scope.player.stopVideo();
-                $scope.currentState = {
-                  video: null,
-                  playing: false,
-                  paused: false,
-                  mute: false
-                }
+              }
+              $scope.currentState = {
+                video: null,
+                playing: false,
+                paused: false,
+                mute: false
               }
 
               // Clear out player
               $element.children().remove();
+              $scope.player = undefined;
 
               // Notify that we've stopped
               $scope.consumer.send({

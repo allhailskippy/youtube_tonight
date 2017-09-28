@@ -91,6 +91,53 @@ shared_examples "the index page" do
       expect(row.sec_actions.refresh_videos['disabled']).to be_blank
     end
 
+    it 'will refresh the playlists when it gets an updated command via socket' do
+      row = @page.find_row(playlist1)
+      expect(row.sec_actions.refresh_videos['class']).to_not include('disabled')
+
+      # Will get picked up when page refreshes
+      playlist1.update_attribute(:importing_videos, true)
+
+      row.sec_actions.refresh_videos.click
+      wait_for_angular_requests_to_finish
+
+      row = @page.find_row(playlist1)
+      expect(row.sec_actions.refresh_videos['class']).to include('disabled')
+
+      # Will get picked up when page refreshes
+      playlist1.update_attribute(:importing_videos, false)
+
+      PlaylistEventsChannel.broadcast_to(current_user, { action: 'updated', message: { playlist_id: playlist1.id }})
+      wait_for_angular_requests_to_finish
+
+      row = @page.find_row(playlist1)
+      expect(row.sec_actions.refresh_videos['class']).to_not include('disabled')
+    end
+
+    it 'will not refresh if the updated command is for an id not in the list' do
+      row = @page.find_row(playlist1)
+      expect(row.sec_actions.refresh_videos['class']).to_not include('disabled')
+
+      # Will get picked up when page refreshes
+      playlist1.update_attribute(:importing_videos, true)
+
+      row.sec_actions.refresh_videos.click
+      wait_for_angular_requests_to_finish
+
+      row = @page.find_row(playlist1)
+      expect(row.sec_actions.refresh_videos['class']).to include('disabled')
+
+      # Will get picked up when page refreshes
+      playlist1.update_attribute(:importing_videos, false)
+
+      PlaylistEventsChannel.broadcast_to(current_user, { action: 'updated', message: { playlist_id: 'invalid'}})
+      wait_for_angular_requests_to_finish
+
+      # Playlist is done importing, but since we didn't get a matching playlist, it should remain disabled
+      row = @page.find_row(playlist1)
+      expect(row.sec_actions.refresh_videos['class']).to include('disabled')
+    end
+
     describe 'videos' do
       it 'goes for playlist1' do
         row = @page.find_row(playlist1)

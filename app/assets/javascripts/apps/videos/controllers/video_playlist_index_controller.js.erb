@@ -113,11 +113,6 @@ var VideosPlaylistIndexCtrl = function(
         }
         break;
       case 'stop':
-        if(message.player_id == $scope.previewPlayerId) {
-          $scope.showPreview = false;
-          $scope.$applyAsync();
-        };
-        break;
       case 'stopped':
         if(message.player_id == $scope.previewPlayerId) {
           $scope.showPreview = false;
