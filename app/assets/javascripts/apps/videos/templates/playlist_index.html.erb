@@ -19,7 +19,7 @@
       <hr />
     </div>
     <playlist-info playlist="playlist"></playlist-info>
-    <div class="text-center">
+    <div class="text-center" id="preview_area" player-id="{{previewPlayerId}}">
       <img
         data-src="holder.js/302x170?text=Preview&amp;bg=666&amp;fg=ccc"
         class="img-thumbnail"
@@ -31,7 +31,6 @@
       <div class="preview_container">
         <video-preview
           player-id="{{previewPlayerId}}"
-          mirror="{{broadcastId}}"
           width="302"
           height="170"
           mute="true"

@@ -143,17 +143,18 @@ var VideoPreview = function(
           case 'play':
             if(message.player_id == $scope.playerId) {
               // Stop the current player
-              if($scope.player) {
+              if($scope.player && $scope.player.stopVideo) {
                 $scope.player.stopVideo();
               };
 
-              // Notify that we've stopped
-              $scope.consumer.send({
-                video: $scope.video,
-                player_id: $scope.playerId,
-                sender_id: $scope.senderId
-              }, 'stopped');
-
+              // Notify that we've stopped if we've got a video already playing
+              if($scope.video) {
+                $scope.consumer.send({
+                  video: $scope.video,
+                  player_id: $scope.playerId,
+                  sender_id: $scope.senderId
+                }, 'stopped');
+              }
               $scope.video = message.video;
 
               // Allow override of start time in the message

@@ -43,27 +43,29 @@
       ></video-controls>
       <hr />
 
-      <img
-        data-src="holder.js/302x170?text=Preview&amp;bg=666&amp;fg=ccc"
-        class="img-thumbnail"
-        alt="Preview [302x170]"
-        src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22302%22%20height%3D%22170%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20302%20170%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_150f8a330f6%20text%20%7B%20fill%3A%23ccc%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A15pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_150f8a330f6%22%3E%3Crect%20width%3D%22302%22%20height%3D%22170%22%20fill%3D%22%23666%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22113.203125%22%20y%3D%2291.6%22%3EPreview%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
-        style="width: 302px; height: 170px;"
-        ng-show="!showPreview"
-      >
-      <div class="preview_container">
-        <video-preview
-          player-id="{{previewPlayerId}}"
-          mirror="{{broadcastId}}"
-          width="302"
-          height="170"
-          mute="true"
-          ng-show="showPreview"
-          show-controls="true"
-        ></video-preview>
-        <video-controls
-          player-id="{{previewPlayerId}}"
-        ></video-controls>
+      <div class="text-center" id="preview_area" player-id="{{previewPlayerId}}">
+        <img
+          data-src="holder.js/302x170?text=Preview&amp;bg=666&amp;fg=ccc"
+          class="img-thumbnail"
+          alt="Preview [302x170]"
+          src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22302%22%20height%3D%22170%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20302%20170%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_150f8a330f6%20text%20%7B%20fill%3A%23ccc%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A15pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_150f8a330f6%22%3E%3Crect%20width%3D%22302%22%20height%3D%22170%22%20fill%3D%22%23666%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22113.203125%22%20y%3D%2291.6%22%3EPreview%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
+          style="width: 302px; height: 170px;"
+          ng-show="!showPreview"
+        >
+        <div class="preview_container">
+          <video-preview
+            player-id="{{previewPlayerId}}"
+            mirror="{{broadcastId}}"
+            width="302"
+            height="170"
+            mute="true"
+            ng-show="showPreview"
+            show-controls="true"
+          ></video-preview>
+          <video-controls
+            player-id="{{previewPlayerId}}"
+          ></video-controls>
+        </div>
       </div>
     </div>
   </div>

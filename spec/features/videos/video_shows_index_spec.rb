@@ -110,6 +110,16 @@ shared_examples "the video show index page" do
       expected = ["video_#{video2.id}", "video_#{video3.id}", "video_#{video1.id}"]
       expect(ids).to eq(expected)
     end
+
+    it_should_behave_like "preview_player" do
+      let(:parent) { show }
+
+      before do
+        # Reload the page to get the new videos
+        @page.load(show_id: show.id)
+        wait_for_angular_requests_to_finish
+      end
+    end
   end
 
   context 'add new video' do
