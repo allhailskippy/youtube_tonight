@@ -84,6 +84,7 @@ else
 end
 Capybara.server = :puma
 Capybara.server_port = 12345
+Capybara.default_max_wait_time = 4
 
 WebMock.disable_net_connect!(allow_localhost: true)
 ActiveRecord::Migration.maintain_test_schema!

@@ -1,40 +1,10 @@
 shared_examples "preview_player" do
-  # Using real video information here
-  let(:video1) do
-    Video.create({
-      parent: parent,
-      title: 'We do something new',
-      link: 'https://www.youtube.com/v/fXp-299i4mw',
-      api_video_id: 'fXp-299i4mw',
-      api_channel_id: 'UCSaLiUL_ICoYtisQgIK_cSA',
-      api_channel_title: 'Paul Mason',
-      api_thumbnail_medium_url: 'https://i.ytimg.com/vi/fXp-299i4mw/mqdefault.jpg',
-      api_thumbnail_default_url: 'https://i.ytimg.com/vi/fXp-299i4mw/default.jpg',
-      api_thumbnail_high_url: 'https://i.ytimg.com/vi/fXp-299i4mw/hqdefault.jpg',
-      api_title: 'We do something new',
-      api_duration: 'PT1M24S',
-      api_duration_seconds: 84
-    })
-  end
-
-  let(:video2) do
-    Video.create({
-      parent: parent,
-      title: "I explain what's the deal",
-      link: 'https://www.youtube.com/v/FdyReQRUUJM',
-      api_video_id: 'FdyReQRUUJM',
-      api_channel_id: 'UCSaLiUL_ICoYtisQgIK_cSA',
-      api_channel_title: 'Paul Mason',
-      api_thumbnail_medium_url: 'https://i.ytimg.com/vi/FdyReQRUUJM/mqdefault.jpg',
-      api_thumbnail_default_url: 'https://i.ytimg.com/vi/FdyReQRUUJM/default.jpg',
-      api_thumbnail_high_url: 'https://i.ytimg.com/vi/FdyReQRUUJM/hqdefault.jpg',
-      api_title: "I explain what's the deal",
-      api_duration: 'PT1M48S',
-      api_duration_seconds: 108
-    })
-  end
-
-  let(:preload) { video1; video2 }
+  let(:preload) {
+    # To avoid state getting overridden
+    VideoPlayerChannel.any_instance.stubs(:get_current_state)
+    VideoPlayerChannel.any_instance.stubs(:current_state)
+    video1; video2
+  }
 
   it 'toggles the preview' do
     VideoPlayerChannel.any_instance.expects(:play).once
@@ -48,6 +18,9 @@ shared_examples "preview_player" do
 
     VideoPlayerChannel.broadcast_to('video_player', { action: 'playing', message: { player_id: player_id, sender_id: sender_id }})
 
+    wait_until do
+      !row.preview_stop['class'].include?('disabled')
+    end
     using_wait_time(0) do
       expect{ row.preview_start }.to raise_error(Capybara::ElementNotFound)
     end
@@ -55,6 +28,9 @@ shared_examples "preview_player" do
 
     VideoPlayerChannel.broadcast_to('video_player', { action: 'stopped', message: { player_id: player_id, sender_id: sender_id }})
 
+    wait_until do
+      !row.preview_start['class'].include?('disabled')
+    end
     expect(row.preview_start['class']).to_not include('disabled')
     using_wait_time(0) do
       expect{ row.preview_stop }.to raise_error(Capybara::ElementNotFound)
@@ -71,10 +47,11 @@ shared_examples "preview_player" do
 
     row1.preview_start.click
     wait_for_angular_requests_to_finish
-    sleep 1
 
     VideoPlayerChannel.broadcast_to('video_player', { action: 'playing', message: { player_id: player_id, sender_id: sender_id }})
-    sleep 1 
+    wait_until do
+      !row1.preview_stop['class'].include?('disabled')
+    end
 
     # first video should show as playing
     using_wait_time(0) do
@@ -91,7 +68,9 @@ shared_examples "preview_player" do
     VideoPlayerChannel.broadcast_to('video_player', { action: 'stopped', message: { player_id: player_id, sender_id: sender_id }})
     sender_id = row2.thumbnail_area["sender-id"]
     VideoPlayerChannel.broadcast_to('video_player', { action: 'playing', message: { player_id: player_id, sender_id: sender_id }})
-    sleep 1
+    wait_until do
+      !row1.preview_start['class'].include?('disabled')
+    end
 
     # second video should now show as playing
     expect(row1.preview_start['class']).to_not include('disabled')
@@ -107,6 +86,9 @@ shared_examples "preview_player" do
   it 'toggles control button enabled state' do
     row = @page.find_row(video1)
 
+    # Plays video
+    VideoPlayerChannel.any_instance.expects(:play).once
+
     # Controls should start disabled
     controls = @page.preview_controls
     expect(controls.slider['disabled']).to be_truthy
@@ -120,12 +102,18 @@ shared_examples "preview_player" do
 
     row.preview_start.click
     wait_for_angular_requests_to_finish
+    sleep 1
 
     player_id = @page.preview_area["player-id"]
-    sender_id = row.thumbnail_area["sender-id"]
+    sender_id = @page.preview_controls.container["sender-id"]
 
-    sleep 2
-    
+    VideoPlayerChannel.broadcast_to('video_player', { action: 'playing', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+    VideoPlayerChannel.broadcast_to('video_player', { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': true, playing: true}})
+
+    wait_until do
+      controls.slider['disabled'].blank?
+    end
+
     # Controls should be enabled
     expect(controls.slider['disabled']).to be_blank
     expect(controls.pause['disabled']).to be_blank
@@ -137,30 +125,59 @@ shared_examples "preview_player" do
     end
 
     # Toggle pause
+    VideoPlayerChannel.any_instance.expects(:pause).once
+    VideoPlayerChannel.any_instance.expects(:unpause).once
+
     controls.pause.click
-    sleep 2
+    VideoPlayerChannel.broadcast_to('video_player', { action: 'paused', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+    VideoPlayerChannel.broadcast_to('video_player', { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': true, 'mute': true, playing: true}})
+
+    wait_until do
+      controls.play['disabled'].blank?
+    end
     expect(controls.play['disabled']).to be_blank
     expect{ controls.pause }.to raise_error(Capybara::ElementNotFound)
 
     controls.play.click
-    sleep 2
+    VideoPlayerChannel.broadcast_to('video_player', { action: 'playing', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+    VideoPlayerChannel.broadcast_to('video_player', { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': true, playing: true}})
+    wait_until do
+      controls.pause['disabled'].blank?
+    end
     expect(controls.pause['disabled']).to be_blank
     expect{ controls.play }.to raise_error(Capybara::ElementNotFound)
 
     # Toggle mute
+    VideoPlayerChannel.any_instance.expects(:unmute).once
     controls.unmute.click
-    sleep 2
+    VideoPlayerChannel.broadcast_to('video_player', { action: 'unmute', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+    VideoPlayerChannel.broadcast_to('video_player', { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': false, playing: true}})
+    wait_until do
+      controls.mute['disabled'].blank?
+    end
     expect(controls.mute['disabled']).to be_blank
     expect{ controls.unmute }.to raise_error(Capybara::ElementNotFound)
 
+    VideoPlayerChannel.any_instance.expects(:mute).once
     controls.mute.click
-    sleep 2
+    VideoPlayerChannel.broadcast_to('video_player', { action: 'nmute', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+    VideoPlayerChannel.broadcast_to('video_player', { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': true, playing: true}})
+    wait_until do
+      controls.unmute['disabled'].blank?
+    end
     expect(controls.unmute['disabled']).to be_blank
     expect{ controls.mute }.to raise_error(Capybara::ElementNotFound)
 
     # Stop disables controls
+    VideoPlayerChannel.any_instance.expects(:stop).once
+
     controls.stop.click
-    sleep 2
+    VideoPlayerChannel.broadcast_to('video_player', { action: 'stopped', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+    VideoPlayerChannel.broadcast_to('video_player', { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: nil, 'paused': false, 'mute': false, playing: false}})
+
+    wait_until do
+      controls.slider['disabled'].present?
+    end
     expect(controls.slider['disabled']).to be_truthy
     expect(controls.pause['disabled']).to be_truthy
     expect(controls.stop['disabled']).to be_truthy

@@ -111,9 +111,7 @@ shared_examples "the video show index page" do
       expect(ids).to eq(expected)
     end
 
-    it_should_behave_like "preview_player" do
-      let(:parent) { show }
-    end
+    it_should_behave_like "preview_player"
   end
 
   context 'add new video' do

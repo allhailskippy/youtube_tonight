@@ -177,7 +177,6 @@ var controller = function(
       case 'current_state':
         if(message.player_id == $scope.playerIds[0] &&
           message.sender_id == $scope.senderId) {
-
           $scope.state.playing = message.playing;
           $scope.state.paused = message.paused;
           $scope.state.video = message.video;
@@ -192,15 +191,25 @@ var controller = function(
         }
         break;
     }
+  }).then(function() {
+    // Start monitering the state of the video
+    // in case it's changed by another person
+    $scope.stateInterval = $interval(function() {
+      $scope.consumer.send({
+        player_id: $scope.playerIds[0],
+        sender_id: $scope.senderId
+      }, 'get_current_state');
+    }, 200);
   });
 
-  // Look up state of the associated player
-  $scope.stateInterval = $interval(function() {
-    $scope.consumer.send({
-      player_id: $scope.playerIds[0],
-      sender_id: $scope.senderId
-    }, 'get_current_state');
-  }, 200);
+  // Kill interval when no longer connected to the websocket
+  $scope.$watch(function() {
+    return ConnectionHelper.wrangler.disconnected;
+  }, function(newVal) {
+    if(newVal) {
+      $interval.cancel($scope.stateInterval);
+    }
+  });
 };
 
 controller.$inject = [

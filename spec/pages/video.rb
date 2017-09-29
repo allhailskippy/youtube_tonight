@@ -21,6 +21,7 @@ class VideoShowSection < SitePrism::Section
 end
 
 class VideoPreviewControlSection < SitePrism::Section
+  element :container, ".preview-container"
   element :slider, ".preview-slider"
   element :play, ".preview-play"
   element :pause, ".preview-pause"

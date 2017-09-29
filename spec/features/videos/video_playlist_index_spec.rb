@@ -38,7 +38,8 @@ shared_examples "the video playlist index page" do
   end
 
   it_should_behave_like "preview_player" do
-    let(:parent) { playlist }
+    let(:video1) { playlist.videos.first }
+    let(:video2) { playlist.videos.second }
   end
 end
 
