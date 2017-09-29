@@ -39,12 +39,6 @@ shared_examples "the video playlist index page" do
 
   it_should_behave_like "preview_player" do
     let(:parent) { playlist }
-
-    before do
-      # Reload the page to get the new videos
-      @page.load(playlist_id: playlist.id)
-      wait_for_angular_requests_to_finish
-    end
   end
 end
 
