@@ -13,14 +13,11 @@
 'use strict';
 
 var controller = function(
-  $scope, $window,
-  ConnectionHelper
+  $scope, $window
 ) {
   /**
    * Setup
    */
-  $scope.connectionHelper = ConnectionHelper;
-  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', 'video_player');
   $scope.senderId = null;
   $scope.video = null;
 
@@ -32,13 +29,12 @@ var controller = function(
 };
 
 controller.$inject = [
-  '$scope', '$window',
-  'ConnectionHelper'
+  '$scope', '$window'
 ];
 
 var VideoPreview = function(
   $window,
-  Video, VideoPreviewHelper) {
+  Video, VideoPreviewHelper, ConnectionHelper) {
   return {
     restrict: 'E',
     scope: {
@@ -47,7 +43,8 @@ var VideoPreview = function(
       width: '=',
       height: '=',
       mute: '@',
-      alwaysMute: '@'
+      alwaysMute: '@',
+      broadcast: '=?'
     },
     controller: controller,
     template: '',
@@ -55,6 +52,8 @@ var VideoPreview = function(
       /**
        * Setup
        */
+      $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', { player_id: $scope.playerId, broadcast: $scope.broadcast });
+
       // Initialize the YT iframe api script
       var tag = document.createElement('script');
       tag.src = "https://www.youtube.com/iframe_api";
@@ -136,10 +135,6 @@ var VideoPreview = function(
       $scope.consumer.subscribe(function(response) {
         var message = response.message;
         switch(response.action) {
-          case 'client_connected':
-          case 'registered_check':
-            $scope.consumer.send({ player_id: $scope.playerId }, 'registered');
-            break;
           case 'play':
             if(message.player_id == $scope.playerId) {
               // Stop the current player
@@ -274,14 +269,6 @@ var VideoPreview = function(
         }
       }); // end subsribe
 
-      $window.onunload = function() {
-        if($scope.connectionHelper.wrangler.connected) {
-          $scope.consumer.send({
-            player_id: $scope.playerId
-          }, 'unregistered');
-        }
-      };
-
       $scope.getCurrentState = function(message) {
         // If we don't have a getCurrentTime method,
         //  we don't have a valid player.
@@ -301,11 +288,12 @@ var VideoPreview = function(
         return state;
       };
     }
+
   };
 };
 VideoPreview.$inject = [
   '$window',
-  'Video', 'VideoPreviewHelper'
+  'Video', 'VideoPreviewHelper', 'ConnectionHelper'
 ]
 
 // Service for storing shared states

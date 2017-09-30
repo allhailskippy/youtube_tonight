@@ -37,9 +37,10 @@
         mute="state.mute"
         ng-show="state.playing"
         always-mute="true"
+        broadcast="true"
       ></video-preview>
       <video-controls
-        player-id="{{broadcastId}},{{previewBroadcastId}}"
+        player-id="{{previewBroadcastId}}"
       ></video-controls>
       <hr />
 
@@ -71,6 +72,7 @@
   </div>
   <div class="col-md-9 col-md-offset-3 main" ng-show="shouldShowForm()">
     <video-form
+      player-id="{{previewPlayerId}}"
       query-videos='queryVideos()'
       current-video="currentVideo"
       close-form="closeForm()"

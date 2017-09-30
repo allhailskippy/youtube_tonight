@@ -48,7 +48,7 @@ var Video = function(
      */
     // Delete video
     video.destroy = function() {
-      var consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', 'video_player');
+      var consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', {player_id: 'all'});
       consumer.onConfirmSubscription(function() {
         consumer.send({
           video: video,

@@ -20,15 +20,9 @@ var controller = function(
   /**
    * Setup
    */
-  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', 'video_player');
-
-  // Allow option to control many players.
-  // The first one will be reflected in the
-  // state of the controls
-  $scope.playerIds = $scope.playerId.split(',');
-
   // Unique value for this control
-  $scope.senderId = $scope.playerIds[0] + '-' + Math.floor(Math.random() * 1000000);
+  $scope.senderId = $scope.playerId + '-' + Math.floor(Math.random() * 1000000);
+  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', { player_id: $scope.playerId });
 
   // Track the state of the slider
   $scope.sliding = false;
@@ -71,17 +65,13 @@ var controller = function(
 
   $scope.pause = function() {
     if($scope.enablePause()) {
-      angular.forEach($scope.playerIds, function(playerId) {
-        $scope.consumer.send({ player_id: playerId }, 'pause');
-      });
+      $scope.consumer.send({ player_id: $scope.playerId }, 'pause');
     }
   };
 
   $scope.play = function() {
     if($scope.state.video) {
-      angular.forEach($scope.playerIds, function(playerId) {
-        $scope.consumer.send({ player_id: playerId }, 'unpause');
-      });
+      $scope.consumer.send({ player_id: $scope.playerId }, 'unpause');
     }
   };
 
@@ -95,9 +85,7 @@ var controller = function(
 
   $scope.stop = function() {
     if($scope.enableStop()) {
-      angular.forEach($scope.playerIds, function(playerId) {
-        $scope.consumer.send({ player_id: playerId }, 'stop');
-      });
+      $scope.consumer.send({ player_id: $scope.playerId }, 'stop');
     }
   };
 
@@ -111,10 +99,8 @@ var controller = function(
 
   $scope.toggleMute = function(mute) {
     if($scope.state.playing) {
-      angular.forEach($scope.playerIds, function(playerId) {
-        var action = mute ? 'mute' : 'unmute';
-        $scope.consumer.send({ player_id: playerId }, action);
-      });
+      var action = mute ? 'mute' : 'unmute';
+      $scope.consumer.send({ player_id: $scope.playerId }, action);
       $scope.$applyAsync();
     }
   };
@@ -127,13 +113,11 @@ var controller = function(
     $scope.sliding = false;
     $scope.state.current_time = t;
 
-    angular.forEach($scope.playerIds, function(playerId) {
-      $scope.consumer.send({
-        video: $scope.state.video,
-        player_id: playerId,
-        time: t
-      }, 'set_time');
-    });
+    $scope.consumer.send({
+      video: $scope.state.video,
+      player_id: $scope.playerId,
+      time: t
+    }, 'set_time');
   };
 
   /**
@@ -143,26 +127,26 @@ var controller = function(
     var message = response.message;
     switch(response.action) {
       case 'playing':
-        if(message.player_id == $scope.playerIds[0]) {
+        if(message.player_id == $scope.playerId) {
           $scope.state.playing = true;
           $scope.state.video = message.video;
           $scope.$applyAsync();
         }
         break;
       case 'paused':
-        if(message.player_id == $scope.playerIds[0]) {
+        if(message.player_id == $scope.playerId) {
           $scope.state.paused = true;
           $scope.$applyAsync();
         }
         break;
       case 'unpaused':
-        if(message.player_id == $scope.playerIds[0]) {
+        if(message.player_id == $scope.playerId) {
           $scope.state.paused = false;
           $scope.$applyAsync();
         }
         break;
       case 'stopped':
-        if(message.player_id == $scope.playerIds[0]) {
+        if(message.player_id == $scope.playerId) {
           // Reset controls state
           $scope.state = {
             playing: false,
@@ -175,7 +159,7 @@ var controller = function(
         }
         break;
       case 'current_state':
-        if(message.player_id == $scope.playerIds[0] &&
+        if(message.player_id == $scope.playerId &&
           message.sender_id == $scope.senderId) {
           $scope.state.playing = message.playing;
           $scope.state.paused = message.paused;
@@ -194,9 +178,11 @@ var controller = function(
   }).then(function() {
     // Start monitering the state of the video
     // in case it's changed by another person
+    // TODO: Reduce how often this is actually started
+    //       It's only really relevant for the broadcast preview
     $scope.stateInterval = $interval(function() {
       $scope.consumer.send({
-        player_id: $scope.playerIds[0],
+        player_id: $scope.playerId,
         sender_id: $scope.senderId
       }, 'get_current_state');
     }, 200);

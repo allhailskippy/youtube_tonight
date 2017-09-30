@@ -16,7 +16,7 @@ shared_examples "preview_player" do
     player_id = @page.preview_area["player-id"]
     sender_id = row.thumbnail_area["sender-id"]
 
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'playing', message: { player_id: player_id, sender_id: sender_id }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'playing', message: { player_id: player_id, sender_id: sender_id }})
 
     wait_until do
       !row.preview_stop['class'].include?('disabled')
@@ -26,7 +26,7 @@ shared_examples "preview_player" do
     end
     expect(row.preview_stop['class']).to_not include('disabled')
 
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'stopped', message: { player_id: player_id, sender_id: sender_id }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'stopped', message: { player_id: player_id, sender_id: sender_id }})
 
     wait_until do
       !row.preview_start['class'].include?('disabled')
@@ -48,7 +48,7 @@ shared_examples "preview_player" do
     row1.preview_start.click
     wait_for_angular_requests_to_finish
 
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'playing', message: { player_id: player_id, sender_id: sender_id }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'playing', message: { player_id: player_id, sender_id: sender_id }})
     wait_until do
       !row1.preview_stop['class'].include?('disabled')
     end
@@ -65,9 +65,9 @@ shared_examples "preview_player" do
 
     row2.preview_start.click
     wait_for_angular_requests_to_finish
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'stopped', message: { player_id: player_id, sender_id: sender_id }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'stopped', message: { player_id: player_id, sender_id: sender_id }})
     sender_id = row2.thumbnail_area["sender-id"]
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'playing', message: { player_id: player_id, sender_id: sender_id }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'playing', message: { player_id: player_id, sender_id: sender_id }})
     wait_until do
       !row1.preview_start['class'].include?('disabled')
     end
@@ -107,8 +107,8 @@ shared_examples "preview_player" do
     player_id = @page.preview_area["player-id"]
     sender_id = @page.preview_controls.container["sender-id"]
 
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'playing', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': true, playing: true}})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'playing', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': true, playing: true}})
 
     wait_until do
       controls.slider['disabled'].blank?
@@ -129,8 +129,8 @@ shared_examples "preview_player" do
     VideoPlayerChannel.any_instance.expects(:unpause).once
 
     controls.pause.click
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'paused', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': true, 'mute': true, playing: true}})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'paused', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': true, 'mute': true, playing: true}})
 
     wait_until do
       controls.play['disabled'].blank?
@@ -139,8 +139,8 @@ shared_examples "preview_player" do
     expect{ controls.pause }.to raise_error(Capybara::ElementNotFound)
 
     controls.play.click
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'playing', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': true, playing: true}})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'playing', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': true, playing: true}})
     wait_until do
       controls.pause['disabled'].blank?
     end
@@ -150,8 +150,8 @@ shared_examples "preview_player" do
     # Toggle mute
     VideoPlayerChannel.any_instance.expects(:unmute).once
     controls.unmute.click
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'unmute', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': false, playing: true}})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'unmute', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': false, playing: true}})
     wait_until do
       controls.mute['disabled'].blank?
     end
@@ -160,8 +160,8 @@ shared_examples "preview_player" do
 
     VideoPlayerChannel.any_instance.expects(:mute).once
     controls.mute.click
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'nmute', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': true, playing: true}})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'nmute', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': true, playing: true}})
     wait_until do
       controls.unmute['disabled'].blank?
     end
@@ -172,8 +172,8 @@ shared_examples "preview_player" do
     VideoPlayerChannel.any_instance.expects(:stop).once
 
     controls.stop.click
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'stopped', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
-    VideoPlayerChannel.broadcast_to('video_player', { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: nil, 'paused': false, 'mute': false, playing: false}})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'stopped', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: nil, 'paused': false, 'mute': false, playing: false}})
 
     wait_until do
       controls.slider['disabled'].present?

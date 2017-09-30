@@ -20,7 +20,7 @@ var controller = function(
    * Setup
    */
   $scope.showId = $routeParams.show_id;
-  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', 'video_player');
+  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', { player_id: $scope.playerId });
   $scope.currentVideo = $scope.currentVideo || Video.build({parent_id: $scope.showId, parent_type: 'Show'});
   $scope.searchResults = [];
   var searchTimeout;
@@ -139,6 +139,7 @@ var VideoForm = function() {
   return {
     restrict: 'E',
     scope: {
+      playerId: '@',
       currentVideo: '=',
       videos: '=?',
       queryVideos: '&',

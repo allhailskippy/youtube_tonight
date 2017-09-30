@@ -1,14 +1,39 @@
 class VideoPlayerChannel < ApplicationCable::Channel
   def subscribed
-    stream_for 'video_player'
+    if player_id = params[:data][:player_id]
+      player = Player.find_or_initialize_by({ player_id: player_id })
+      player.registered_count += 1
+      player.save!
+
+      stream_for(params[:data][:broadcast] ? 'broadcast' : player_id)
+    end
   end
   
   def unsubscribed
+    player_id = params[:data][:player_id]
+    if player = Player.where({ player_id: player_id }).first
+      if player.registered_count == 1
+        player.destroy
+      else
+        player.registered_count -= 1
+        player.save!
+      end
+    end
   end
 
   PlayerEvents.events.each do |e|
     define_method("#{e}") do |message|
-      VideoPlayerChannel.broadcast_to(params["data"], message)
+      player_ids = []
+      if(message[:player_id] == 'all')
+        player_ids = Player.all.collect(&:player_id)
+      else
+        if player = Player.where(player_id: params[:data][:player_id]).first
+          player_ids = [(player.broadcast ? 'broadcast' : player.player_id)]
+        end
+      end
+      player_ids.each do |player_id|
+        VideoPlayerChannel.broadcast_to(player_id, message)
+      end
     end
   end
 end

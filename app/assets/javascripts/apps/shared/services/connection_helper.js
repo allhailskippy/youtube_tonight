@@ -21,18 +21,13 @@ var ConnectionHelper = function(
 
   self.channel = null;
   self.playerIds = {};
-  self.registeredPlayers = {};
 
   self.wrangler = function() {
     return ActionCableSocketWrangler;
   };
 
-  self.broadcastReady = function(broadcastId) {
-    return self.registeredPlayers[broadcastId] > 0;
-  };
-
-  self.newConsumer = function(channelName, streamId) {
-    return new ActionCableChannel(channelName, streamId)
+  self.newConsumer = function(channelName, data) {
+    return new ActionCableChannel(channelName, data)
   };
 
   // Can have many players, but only one per base, per page
@@ -40,29 +35,6 @@ var ConnectionHelper = function(
     self.playerIds[base] = self.playerIds[base] ||
       base + '-' + Math.floor(Math.random() * 1000000);
     return self.playerIds[base];
-  }
-
-  self.registeredPlayerCheck = function($scope) {
-    // Reset players
-    self.registeredPlayers = {};
-
-    var consumer = self.newConsumer('VideoPlayerChannel', 'video_player');
-    consumer.subscribe(function(response) {
-      var message = response.message;
-      switch(response.action) {
-        case 'registered':
-          var count = self.registeredPlayers[message.player_id]  || 0;
-          self.registeredPlayers[message.player_id] = count + 1;
-          break;
-        case 'unregistered':
-          var count = self.registeredPlayers[message.player_id] || 0;
-          self.registeredPlayers[message.player_id] = (count > 0 ) ? count - 1 : 0;
-          break;
-      }
-    });
-    consumer.onConfirmSubscription(function() {
-      consumer.send({}, 'registered_check');
-    });
   }
 };
 

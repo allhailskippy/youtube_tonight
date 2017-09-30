@@ -19,8 +19,8 @@ var controller = function(
   /**
    * Setup
    */
-  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', 'video_player');
   $scope.playerId = ConnectionHelper.getPlayerId('preview-' + $scope.video.parent_id);
+  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', { player_id: $scope.playerId });
   $scope.senderId = $scope.senderId || 'video-' + $scope.video.id + '-' + Math.floor(Math.random() * 1000000);
   $scope.playing = false;
   $scope.previewRequested = false;
@@ -32,23 +32,25 @@ var controller = function(
   /**
    * Watched variables
    */
-  // Watch for changes to the registered players
-  $scope.$watch(function() {
-    return ConnectionHelper.registeredPlayers
-  }, function(players) {
-    ConnectionHelper.registeredPlayers;
-
-    // Check to see if all our broadcasts have been killed
-    if(players[$scope.broadcastId] == 0) {
-      $scope.currentlyPlaying = false;
-    }
-  });
+// TODO: Replace this with better method for monitering broaccast ready
+//  // Watch for changes to the registered players
+//  $scope.$watch(function() {
+//    return ConnectionHelper.registeredPlayers
+//  }, function(players) {
+//    ConnectionHelper.registeredPlayers;
+//
+//    // Check to see if all our broadcasts have been killed
+//    if(players[$scope.broadcastId] == 0) {
+//      $scope.currentlyPlaying = false;
+//    }
+//  });
 
   /**
    * Scope Methods
    */
   $scope.broadcastReady = function() {
-    return ConnectionHelper.broadcastReady($scope.broadcastId);
+// TODO:
+//    return ConnectionHelper.broadcastReady($scope.broadcastId);
   };
 
   $scope.play = function() {

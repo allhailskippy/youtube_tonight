@@ -16,9 +16,9 @@ var VideosPlaylistIndexCtrl = function(
   /**
    * Setup
    */
-  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', 'video_player');
   $scope.playlist_id = $routeParams.playlist_id;
   $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.playlist_id);
+  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', { player_id: $scope.previewPlayerId });
 
   $scope.playlist = Playlist.build(playlist_data.data);
   $scope.playlist_url = '/#/playlists/' + $scope.playlist.user_id + '/index';

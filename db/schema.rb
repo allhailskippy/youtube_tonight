@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -11,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170918161530) do
+ActiveRecord::Schema.define(version: 20170930000144) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,9 +27,19 @@ ActiveRecord::Schema.define(version: 20170918161530) do
     t.string   "queue"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
   end
 
-  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+  create_table "players", force: :cascade do |t|
+    t.integer  "user_id"
+    t.string   "player_id"
+    t.boolean  "broadcast",        default: false
+    t.integer  "registered_count", default: 0
+    t.integer  "creator_id"
+    t.integer  "updater_id"
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+  end
 
   create_table "playlists", force: :cascade do |t|
     t.integer  "user_id"
@@ -95,20 +104,20 @@ ActiveRecord::Schema.define(version: 20170918161530) do
     t.string   "email"
     t.string   "profile_image"
     t.string   "auth_hash"
-    t.integer  "expires_at",          limit: 8
+    t.bigint   "expires_at"
     t.integer  "creator_id"
     t.integer  "updater_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
-    t.string   "encrypted_password",            default: "",    null: false
-    t.integer  "sign_in_count",                 default: 0
+    t.string   "encrypted_password",  default: "",    null: false
+    t.integer  "sign_in_count",       default: 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.boolean  "requires_auth",                 default: true
-    t.boolean  "importing_playlists",           default: false
+    t.boolean  "requires_auth",       default: true
+    t.boolean  "importing_playlists", default: false
     t.string   "refresh_token"
   end
 
