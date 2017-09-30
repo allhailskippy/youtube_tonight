@@ -1,14 +1,17 @@
 class VideoPlayerChannel < ApplicationCable::Channel
   def subscribed
     if player_id = params[:data][:player_id]
-      player = Player.find_or_initialize_by({ player_id: player_id })
-      player.registered_count += 1
-      player.save!
+      ActiveRecord::Base.transaction do
+        player = Player.find_or_initialize_by({ player_id: player_id, broadcast_id: params[:data][:broadcast_id] })
+        player.registered_count += 1
+        player.save!
+      end
 
-      stream_for(params[:data][:broadcast] ? 'broadcast' : player_id)
+      broadcast_id = params[:data][:broadcast_id]
+      stream_for(broadcast_id.present? ? "broadcast:#{broadcast_id}" : player_id)
     end
   end
-  
+
   def unsubscribed
     player_id = params[:data][:player_id]
     if player = Player.where({ player_id: player_id }).first
@@ -28,7 +31,7 @@ class VideoPlayerChannel < ApplicationCable::Channel
         player_ids = Player.all.collect(&:player_id)
       else
         if player = Player.where(player_id: params[:data][:player_id]).first
-          player_ids = [(player.broadcast ? 'broadcast' : player.player_id)]
+          player_ids = [(player.broadcast_id.present? ? "broadcast:#{player.broadcast_id}" : player.player_id)]
         end
       end
       player_ids.each do |player_id|

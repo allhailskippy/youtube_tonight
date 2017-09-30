@@ -44,7 +44,7 @@ var VideoPreview = function(
       height: '=',
       mute: '@',
       alwaysMute: '@',
-      broadcast: '=?'
+      broadcastId: '@'
     },
     controller: controller,
     template: '',
@@ -52,7 +52,7 @@ var VideoPreview = function(
       /**
        * Setup
        */
-      $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', { player_id: $scope.playerId, broadcast: $scope.broadcast });
+      $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', { player_id: $scope.playerId, broadcast_id: $scope.broadcastId});
 
       // Initialize the YT iframe api script
       var tag = document.createElement('script');

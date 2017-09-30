@@ -28,7 +28,7 @@ var VideosIndexCtrl = function(
 
   $scope.broadcastId = 'broadcast-' + $scope.showId;
   $scope.previewBroadcastId = $scope.broadcastId + Math.floor(Math.random() * 1000000);
-  $scope.broadcastConsumer = ConnectionHelper.newConsumer('VideoPlayerChannel', {player_id: $scope.previewBroadcastId, broadcast: true});
+  $scope.broadcastConsumer = ConnectionHelper.newConsumer('VideoPlayerChannel', {player_id: $scope.previewBroadcastId, broadcast_id: $scope.broadcastId});
 
   $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.showId);
   $scope.previewConsumer = ConnectionHelper.newConsumer('VideoPlayerChannel', {player_id: $scope.previewPlayerId});

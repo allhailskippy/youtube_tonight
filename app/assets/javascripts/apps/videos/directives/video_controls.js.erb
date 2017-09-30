@@ -22,7 +22,7 @@ var controller = function(
    */
   // Unique value for this control
   $scope.senderId = $scope.playerId + '-' + Math.floor(Math.random() * 1000000);
-  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', { player_id: $scope.playerId });
+  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', { player_id: $scope.playerId, broadcast_id: $scope.broadcastId });
 
   // Track the state of the slider
   $scope.sliding = false;
@@ -178,14 +178,14 @@ var controller = function(
   }).then(function() {
     // Start monitering the state of the video
     // in case it's changed by another person
-    // TODO: Reduce how often this is actually started
-    //       It's only really relevant for the broadcast preview
-    $scope.stateInterval = $interval(function() {
-      $scope.consumer.send({
-        player_id: $scope.playerId,
-        sender_id: $scope.senderId
-      }, 'get_current_state');
-    }, 200);
+    if($scope.broadcastId) {
+      $scope.stateInterval = $interval(function() {
+        $scope.consumer.send({
+          player_id: $scope.playerId,
+          sender_id: $scope.senderId
+        }, 'get_current_state');
+      }, 200);
+    }
   });
 
   // Kill interval when no longer connected to the websocket
@@ -207,7 +207,8 @@ var VideoControls = function() {
   return {
     restrict: 'E',
     scope: {
-      playerId: '@'
+      playerId: '@',
+      broadcastId: '@'
     },
     controller: controller,
     templateUrl: '<%= asset_path("apps/videos/templates/video_controls.html") %>'
