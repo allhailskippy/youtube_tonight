@@ -26,31 +26,11 @@ var controller = function(
   $scope.previewRequested = false;
   $scope.sliding = false;
 
-  $scope.showId = $routeParams.show_id;
-  $scope.broadcastId = 'broadcast-' + $scope.showId;
-
-  /**
-   * Watched variables
-   */
-// TODO: Replace this with better method for monitering broaccast ready
-//  // Watch for changes to the registered players
-//  $scope.$watch(function() {
-//    return ConnectionHelper.registeredPlayers
-//  }, function(players) {
-//    ConnectionHelper.registeredPlayers;
-//
-//    // Check to see if all our broadcasts have been killed
-//    if(players[$scope.broadcastId] == 0) {
-//      $scope.currentlyPlaying = false;
-//    }
-//  });
-
   /**
    * Scope Methods
    */
   $scope.broadcastReady = function() {
-// TODO:
-//    return ConnectionHelper.broadcastReady($scope.broadcastId);
+    return ConnectionHelper.broadcastReady($scope.broadcastId);
   };
 
   $scope.play = function() {
@@ -59,7 +39,8 @@ var controller = function(
       $scope.consumer.send({
         video: $scope.video,
         player_id: $scope.playerId,
-        sender_id: $scope.senderId
+        sender_id: $scope.senderId,
+        broadcast_id: $scope.broadcastId
       }, 'play');
     }
   };
@@ -67,7 +48,8 @@ var controller = function(
   $scope.stop = function() {
     $scope.consumer.send({
       player_id: $scope.playerId,
-      sender_id: $scope.senderId
+      sender_id: $scope.senderId,
+      broadcast_id: $scope.broadcastId
     }, 'stop');
   };
 
@@ -80,6 +62,7 @@ var controller = function(
       video: $scope.video,
       player_id: $scope.playerId,
       sender_id: $scope.senderId,
+      broadcast_id: $scope.broadcastId,
       time: t
     }, 'set_time');
   };
@@ -135,7 +118,8 @@ var VideoShow = function() {
       state: '=',
       allowBroadcast: '=',
       playVideo: '&',
-      stopVideo: '&'
+      stopVideo: '&',
+      broadcastId: '@'
     },
     controller: controller,
     templateUrl: '<%= asset_path("apps/videos/templates/video_show.html") %>'

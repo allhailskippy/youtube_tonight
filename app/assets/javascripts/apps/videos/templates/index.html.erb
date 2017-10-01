@@ -32,12 +32,12 @@
       >
       <video-preview
         player-id="{{previewBroadcastId}}"
-        width="302"
-        height="170"
+        broadcast-id="{{broadcastId}}"
         mute="state.mute"
         ng-show="state.playing"
         always-mute="true"
-        broadcast-id="{{broadcastId}}"
+        width="302"
+        height="170"
       ></video-preview>
       <video-controls
         player-id="{{previewBroadcastId}}"
@@ -57,7 +57,6 @@
         <div class="preview_container">
           <video-preview
             player-id="{{previewPlayerId}}"
-            mirror="{{broadcastId}}"
             width="302"
             height="170"
             mute="true"
@@ -103,6 +102,7 @@
                 allow-broadcast="true"
                 stop-video="stopVideo(video)"
                 play-video="playVideo(video)"
+                broadcast-id="{{broadcastId}}"
               ></video-show>
             </div>
             <div

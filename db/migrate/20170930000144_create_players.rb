@@ -4,7 +4,7 @@ class CreatePlayers < ActiveRecord::Migration[5.0]
       t.integer :user_id
       t.string :player_id
       t.string :broadcast_id, default: nil
-      t.integer :registered_count, default: 0
+      t.boolean :live, default: false
       t.userstamps
       t.timestamps
     end

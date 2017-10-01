@@ -36,6 +36,30 @@ var ConnectionHelper = function(
       base + '-' + Math.floor(Math.random() * 1000000);
     return self.playerIds[base];
   }
+
+  self.registeredPlayers = {};
+
+  self.monitorBroadcasts = function(broadcastId) {
+    var consumer = self.newConsumer('VideoPlayerChannel', { player_id: 'monitor', broadcast_id: broadcastId })
+    consumer.subscribe(function(response) {
+      var message = response.message;
+      switch(response.action) {
+        case 'registered':
+          self.registeredPlayers[message.broadcast_id] = self.registeredPlayers[message.broadcast_id] || []
+          self.registeredPlayers[message.broadcast_id].push(message.player_id);
+          break;
+        case 'unregistered':
+          var n = self.registeredPlayers[message.broadcast_id].indexOf(message.player_id);
+          self.registeredPlayers[message.broadcast_id].splice(n, 1);
+          break;
+      }
+    });
+  };
+
+  self.broadcastReady = function(broadcastId) {
+    self.registeredPlayers[broadcastId] = self.registeredPlayers[broadcastId] || []
+    return self.registeredPlayers[broadcastId].length > 0;
+  };
 };
 
 ConnectionHelper.$inject = [

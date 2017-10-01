@@ -27,40 +27,42 @@ var VideosIndexCtrl = function(
   $scope.currentVideoOrder = [];
 
   $scope.broadcastId = 'broadcast-' + $scope.showId;
-  $scope.previewBroadcastId = $scope.broadcastId + Math.floor(Math.random() * 1000000);
+  $scope.previewBroadcastId = $scope.broadcastId + '-' + Math.floor(Math.random() * 1000000);
   $scope.broadcastConsumer = ConnectionHelper.newConsumer('VideoPlayerChannel', {player_id: $scope.previewBroadcastId, broadcast_id: $scope.broadcastId});
 
   $scope.previewPlayerId = ConnectionHelper.getPlayerId('preview-' + $scope.showId);
   $scope.previewConsumer = ConnectionHelper.newConsumer('VideoPlayerChannel', {player_id: $scope.previewPlayerId});
 
-
-//  $scope.broadcastIds = [$scope.broadcastId, $scope.previewBroadcastId];
-
   $scope.senderIds = {}
   $scope.state = {};
   $scope.broadcastState = {};
 
+  // Start watching for live broadcasts
+  ConnectionHelper.monitorBroadcasts($scope.broadcastId);
+
   /**
    * Watched variables
    */
-  // If the broadcast window is close, but we still have
+  // If the broadcast window is closed, but we still have
   // a preview playing, force stop the video
-// TODO: Replace this with a more appropriate way to stop the video when out of broadcast windows
-//  $scope.$watch('broadcastReady()', function(newVal, oldVal) {
-//    if(newVal != oldVal && !newVal) {
-//      if($scope.state.video) {
-//        $scope.state = {
-//          playing: false,
-//          paused: false,
-//          video: null
-//        }
-//        $scope.consumer.send({
-//          video: $scope.state.video,
-//          player_id: $scope.previewBroadcastId
-//        }, 'stop');
-//      }
-//    }
-//  });
+  $scope.$watch(function() {
+    return ConnectionHelper.broadcastReady($scope.broadcastId);
+  }, function(newVal, oldVal) {
+    if(newVal != oldVal && !newVal) {
+      if($scope.state.video) {
+        $scope.state = {
+          playing: false,
+          paused: false,
+          video: null
+        }
+        $scope.broadcastConsumer.send({
+          video: $scope.state.video,
+          player_id: $scope.previewBroadcastId,
+          broadcast_id: $scope.broadcastId,
+        }, 'stop');
+      }
+    }
+  });
 
   /**
    * Scope Methods
@@ -99,6 +101,10 @@ var VideosIndexCtrl = function(
 
   $scope.launchBroadcastPlayer = function() {
     $window.open('/broadcasts#/shows/' + $scope.show.id);
+  };
+
+  $scope.broadcastReady = function() {
+    return ConnectionHelper.broadcastReady($scope.broadcastId);
   };
 
   // Look up list of videos
@@ -156,9 +162,6 @@ var VideosIndexCtrl = function(
     }
   };
 
-  /**
-   * Event Handlers
-   */
   // Preview Events
   $scope.doCurrentState = true;
   $scope.doPlaying = true;
@@ -166,63 +169,19 @@ var VideosIndexCtrl = function(
     var message = response.message;
     switch(response.action) {
       case 'playing':
-        if(message.player_id == $scope.previewPlayerId) {
-          $scope.showPreview = true;
-          $scope.$applyAsync();
-        }
-        if(message.player_id == $scope.previewBroadcastId) {
-          $scope.state = message.state;
-        }
+        $scope.showPreview = true;
+        $scope.$applyAsync();
         break;
       case 'stop':
-        if(message.player_id == $scope.previewPlayerId) {
-          $scope.showPreview = false;
-          $scope.$applyAsync();
-        };
+        $scope.showPreview = false;
+        $scope.$applyAsync();
         break;
       case 'stopped':
-        if(message.player_id == $scope.previewPlayerId) {
-          $scope.showPreview = false;
-          $scope.$applyAsync();
-        };
-        if(message.player_id == $scope.previewBroadcastId) {
-          $scope.state = message.state;
-        }
-        break;
-      case 'current_state':
-        if($scope.doCurrentState && message.player_id == $scope.broadcastId) {
-          $scope.broadcastState = message;
-
-          if(message.playing) {
-            $scope.broadcastConsumer.send({
-              player_id: $scope.previewBroadcastId,
-              video: message.video
-            }, 'play');
-          }
-          $scope.doCurrentState = false;
-          // TODO: Figure out why this was unbound
-          // $scope.previewChannel.unbind('current_state');
-        }
-        break;
-      case 'playing':
-        if($scope.doPlaying) {
-          if($scope.broadcastState.paused) {
-            $scope.broadcastConsumer.send({ player_id: $scope.previewBroadcastId }, 'pause');
-          }
-          if($scope.broadcastState.current_time) {
-            $scope.broadcastConsumer.send({
-              player_id: $scope.previewBroadcastId,
-              time: $scope.broadcastState.current_time
-            }, 'set_time');
-          }
-          $scope.doPlaying = false;
-
-          // Don't need to listen to this anymore
-         // TODO: Figure out why this is unbound here
-         // $scope.previewChannel.unbind('playing');
-        }
+        $scope.showPreview = false;
+        $scope.$applyAsync();
         break;
       case 'update_video_list':
+        // TODO: Move this to another channel
         // Video list changed, need to update
         if(message.show_id == $scope.showId) {
           $scope.queryVideos();
@@ -231,17 +190,14 @@ var VideosIndexCtrl = function(
     }
   })
 
-  //Broadcast init
-  $scope.broadcastReady = function() {
-// TODO: Replace this with whatever I decide to do to make this work
-//    return ConnectionHelper.broadcastReady($scope.broadcastId);
-  };
-
   $scope.broadcastConsumer.subscribe(function(response) {
+    var message = response.message;
     switch(response.action) {
-      case '':
-        //TODO: Decide if this really needs to be subscribed to
-        // or if it can be merged into a single consumer
+      case 'playing':
+        $scope.state = message.state;
+        break;
+      case 'stopped':
+        $scope.state = message.state;
         break;
     }
   }).then(function() {
@@ -251,33 +207,31 @@ var VideosIndexCtrl = function(
     }, 'get_current_state');
   });
 
-
   // Broadcast events
   $scope.playVideo = function(video) {
     if($scope.broadcastReady()) {
       $scope.broadcastConsumer.send({
         video: video,
         player_id: $scope.previewBroadcastId,
+        broadcast_id: $scope.broadcastId,
         sender_id: 'video-' + video.id
       }, 'play');
     }
   };
 
   $scope.stopVideo = function(video) {
-    if($scope.broadcastReady()) {
-      $scope.state = {
-        playing: false,
-        paused: false,
-        video: null
-      }
-      $scope.broadcastConsumer.send({
-        video: video,
-        player_id: $scope.previewBroadcastId,
-        sender_id: 'video-' + video.id
-      }, 'stop');
+    $scope.state = {
+      playing: false,
+      paused: false,
+      video: null
     }
+    $scope.broadcastConsumer.send({
+      video: video,
+      player_id: $scope.previewBroadcastId,
+      broadcast_id: $scope.broadcastId,
+      sender_id: 'video-' + video.id
+    }, 'stop');
   };
-
 };
 
 VideosIndexCtrl.$inject = [

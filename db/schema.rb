@@ -34,7 +34,7 @@ ActiveRecord::Schema.define(version: 20170930000144) do
     t.integer  "user_id"
     t.string   "player_id"
     t.string   "broadcast_id"
-    t.integer  "registered_count", default: 0
+    t.boolean  "live",         default: false
     t.integer  "creator_id"
     t.integer  "updater_id"
     t.datetime "created_at",                   null: false
