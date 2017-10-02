@@ -40,19 +40,28 @@ var ConnectionHelper = function(
   self.registeredPlayers = {};
 
   self.monitorBroadcasts = function(broadcastId) {
-    var consumer = self.newConsumer('VideoPlayerChannel', { player_id: 'monitor', broadcast_id: broadcastId })
+    self.registeredPlayers = {};
+    var consumer = self.newConsumer('VideoPlayerChannel', { player_id: 'monitor', broadcast_id: broadcastId });
     consumer.subscribe(function(response) {
       var message = response.message;
       switch(response.action) {
         case 'registered':
           self.registeredPlayers[message.broadcast_id] = self.registeredPlayers[message.broadcast_id] || []
-          self.registeredPlayers[message.broadcast_id].push(message.player_id);
+          if(self.registeredPlayers[message.broadcast_id].indexOf(message.player_id) < 0) {
+            self.registeredPlayers[message.broadcast_id].push(message.player_id);
+          }
           break;
         case 'unregistered':
           var n = self.registeredPlayers[message.broadcast_id].indexOf(message.player_id);
           self.registeredPlayers[message.broadcast_id].splice(n, 1);
           break;
       }
+    });
+    consumer.onConfirmSubscription(function() {
+      consumer.send({
+        player_id: 'monitor',
+        broadcastId: broadcastId
+      }, 'registered_check');
     });
   };
 
