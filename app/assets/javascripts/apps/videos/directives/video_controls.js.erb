@@ -142,6 +142,7 @@ var controller = function(
       case 'playing':
         $scope.state.playing = true;
         $scope.state.video = message.video;
+        $scope.state.duration = message.video.end_time || message.video.api_duration_seconds;
         $scope.$applyAsync();
         break;
       case 'paused':
@@ -183,6 +184,10 @@ var controller = function(
     // Start monitering the state of the video
     // in case it's changed by another person
     if($scope.broadcastId) {
+      // In case we already have an interval, try and cancel it first
+      if($scope.stateInterval) {
+        $interval.cancel($scope.stateInterval);
+      }
       $scope.stateInterval = $interval(function() {
         $scope.consumer.send({
           player_id: $scope.playerId,

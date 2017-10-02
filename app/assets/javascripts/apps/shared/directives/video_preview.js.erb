@@ -33,7 +33,7 @@ controller.$inject = [
 ];
 
 var VideoPreview = function(
-  $window,
+  $window, $interval,
   Video, VideoPreviewHelper, ConnectionHelper) {
   return {
     restrict: 'E',
@@ -93,8 +93,6 @@ var VideoPreview = function(
               $scope.player.playVideo();
             },
             'onStateChange': function(e) {
-              $scope.player.getCurrentTime();
-
               // We're playing!
               if(e.data == YT.PlayerState.PLAYING) {
                 $scope.currentState.playing = true;
@@ -112,6 +110,28 @@ var VideoPreview = function(
                   broadcast_id: $scope.broadcastId,
                   state: $scope.currentState
                 }, 'playing');
+
+                // If we have an end time, need to monitor it
+                if($scope.video.end_time) {
+                  // Before starting a new interval, cancel any existing ones
+                  if($scope.endTimeInterval) {
+                    $interval.cancel($scope.endTimeInterval);
+                    $scope.endTimeInterval = undefined;
+                  }
+                  $scope.endTimeInterval = $interval(function() {
+                    if($scope.player && $scope.player.getCurrentTime) {
+                      var curTime = $scope.player.getCurrentTime();
+                      if (curTime >= $scope.video.end_time) {
+                        $interval.cancel($scope.endTimeInterval);
+                        $scope.endTimeInterval = undefined;
+                        $scope.consumer.send({
+                          player_id: $scope.playerId,
+                          broadcast_id: $scope.broadcastId
+                        }, 'stop')
+                      }
+                    }
+                  }, 200);
+                }
               }
 
               // We've stopped!
@@ -218,6 +238,9 @@ var VideoPreview = function(
             }, 'unpaused');
             break;
           case 'stop':
+            $interval.cancel($scope.endTimeInterval);
+            $scope.endTimeInterval = undefined;
+
             if($scope.player) {
               $scope.player.stopVideo();
             }
@@ -295,7 +318,7 @@ var VideoPreview = function(
   };
 };
 VideoPreview.$inject = [
-  '$window',
+  '$window', '$interval',
   'Video', 'VideoPreviewHelper', 'ConnectionHelper'
 ]
 
