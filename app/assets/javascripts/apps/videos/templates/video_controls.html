@@ -5,7 +5,7 @@
       class="preview-slider"
       ng-model="state.current_time"
       ng-disabled="!enableSlider()"
-      min="0"
+      min="state.start_time"
       step="1"
       max="state.duration"
       handle="round"

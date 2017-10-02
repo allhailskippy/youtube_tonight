@@ -142,6 +142,7 @@ var controller = function(
       case 'playing':
         $scope.state.playing = true;
         $scope.state.video = message.video;
+        $scope.state.start_time = message.video.start_time || 0
         $scope.state.duration = message.video.end_time || message.video.api_duration_seconds;
         $scope.$applyAsync();
         break;
