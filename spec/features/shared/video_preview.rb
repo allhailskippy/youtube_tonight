@@ -150,7 +150,6 @@ shared_examples "preview_player" do
     # Toggle mute
     VideoPlayerChannel.any_instance.expects(:unmute).once
     controls.unmute.click
-    VideoPlayerChannel.broadcast_to(player_id, { action: 'unmute', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
     VideoPlayerChannel.broadcast_to(player_id, { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': false, playing: true}})
     wait_until do
       controls.mute['disabled'].blank?

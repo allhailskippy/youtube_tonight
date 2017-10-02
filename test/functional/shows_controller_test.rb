@@ -77,7 +77,7 @@ class ShowsControllerTest < ActionController::TestCase
 
     # Check hosts explicitly
     assert_equal host.id.to_s, results["data"][0]["hosts"]
-    assert_equal [user.id, host.id].join(','), results["data"][1]["hosts"]
+    assert_equal [user.id, host.id].sort.join(','), results["data"][1]["hosts"]
   end
 
   test 'Host: index should handle an exception' do
