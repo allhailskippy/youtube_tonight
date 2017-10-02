@@ -302,7 +302,7 @@ var VideoPreview = function(
           case 'registered_check':
             if($scope.live) {
               $scope.consumer.send({
-                player_id: 'monitor',
+                player_id: $scope.playerId,
                 broadcast_id: $scope.broadcastId
               }, 'registered');
             }

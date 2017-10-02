@@ -60,7 +60,7 @@ var ConnectionHelper = function(
     consumer.onConfirmSubscription(function() {
       consumer.send({
         player_id: 'monitor',
-        broadcastId: broadcastId
+        broadcast_id: broadcastId
       }, 'registered_check');
     });
   };

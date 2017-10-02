@@ -36,7 +36,9 @@ class VideosCommonPage < SitePrism::Page
   elements :errors, "div[notices='notices'] .alert-danger"
   sections :rows, VideoShowSection, "#videos .video-row"
   element :preview_area, "#preview_area"
+  element :broadcast_area, "#broadcast_area"
   section :preview_controls, VideoPreviewControlSection, ".preview_container video-controls"
+  section :broadcast_controls, VideoPreviewControlSection, "#broadcast_area video-controls"
 
   def find_row(video)
     rows.find{|row| row.root_element['id'] == "video_#{video.id}" }

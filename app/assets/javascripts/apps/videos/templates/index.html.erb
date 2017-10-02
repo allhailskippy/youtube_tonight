@@ -30,19 +30,21 @@
         style="width: 302px; height: 170px;"
         ng-show="!state.playing"
       >
-      <video-preview
-        player-id="{{previewBroadcastId}}"
-        broadcast-id="{{broadcastId}}"
-        mute="state.mute"
-        ng-show="state.playing"
-        always-mute="true"
-        width="302"
-        height="170"
-      ></video-preview>
-      <video-controls
-        player-id="{{previewBroadcastId}}"
-        broadcast-id="{{broadcastId}}"
-      ></video-controls>
+      <div class="text-center" id="broadcast_area" player-id="{{previewBroadcastId}}">
+        <video-preview
+          player-id="{{previewBroadcastId}}"
+          broadcast-id="{{broadcastId}}"
+          mute="state.mute"
+          ng-show="state.playing"
+          always-mute="true"
+          width="302"
+          height="170"
+        ></video-preview>
+        <video-controls
+          player-id="{{previewBroadcastId}}"
+          broadcast-id="{{broadcastId}}"
+        ></video-controls>
+      </div>
       <hr />
 
       <div class="text-center" id="preview_area" player-id="{{previewPlayerId}}">
