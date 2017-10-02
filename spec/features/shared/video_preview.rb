@@ -16,7 +16,7 @@ shared_examples "preview_player" do
     player_id = @page.preview_area["player-id"]
     sender_id = row.thumbnail_area["sender-id"]
 
-    VideoPlayerChannel.broadcast_to(player_id, { action: 'playing', message: { player_id: player_id, sender_id: sender_id }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'playing', message: { player_id: player_id, sender_id: sender_id,  video: JSON.parse(video1.to_json) }})
 
     wait_until do
       !row.preview_stop['class'].include?('disabled')
@@ -26,7 +26,7 @@ shared_examples "preview_player" do
     end
     expect(row.preview_stop['class']).to_not include('disabled')
 
-    VideoPlayerChannel.broadcast_to(player_id, { action: 'stopped', message: { player_id: player_id, sender_id: sender_id }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'stopped', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
 
     wait_until do
       !row.preview_start['class'].include?('disabled')
@@ -48,7 +48,7 @@ shared_examples "preview_player" do
     row1.preview_start.click
     wait_for_angular_requests_to_finish
 
-    VideoPlayerChannel.broadcast_to(player_id, { action: 'playing', message: { player_id: player_id, sender_id: sender_id }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'playing', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
     wait_until do
       !row1.preview_stop['class'].include?('disabled')
     end
@@ -65,9 +65,9 @@ shared_examples "preview_player" do
 
     row2.preview_start.click
     wait_for_angular_requests_to_finish
-    VideoPlayerChannel.broadcast_to(player_id, { action: 'stopped', message: { player_id: player_id, sender_id: sender_id }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'stopped', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
     sender_id = row2.thumbnail_area["sender-id"]
-    VideoPlayerChannel.broadcast_to(player_id, { action: 'playing', message: { player_id: player_id, sender_id: sender_id }})
+    VideoPlayerChannel.broadcast_to(player_id, { action: 'playing', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
     wait_until do
       !row1.preview_start['class'].include?('disabled')
     end

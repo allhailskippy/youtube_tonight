@@ -32,6 +32,8 @@
     });
 
     $rootScope.$on('$routeChangeStart', function(scope, next, current) {
+      ActionCableConfig.wsUri = ApplicationConstants.WEBSOCKET_URL;
+
       // Users awaiting authorization get sent to the requires_auth page
       if($rootScope.currentUser.requires_auth) {
         scope.preventDefault();
@@ -62,8 +64,6 @@
         });
         angular.element(document.querySelector(menuId)).addClass('active');
       }
-
-       ActionCableConfig.wsUri = ApplicationConstants.WEBSOCKET_URL;
     });
   };
   runFunc.$inject = [
