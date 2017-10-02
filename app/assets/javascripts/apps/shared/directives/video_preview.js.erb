@@ -45,7 +45,8 @@ var VideoPreview = function(
       mute: '@',
       alwaysMute: '@',
       broadcastId: '@',
-      live: '=?'
+      live: '=?',
+      broadcastState: '=?'
     },
     controller: controller,
     template: '',
@@ -110,6 +111,18 @@ var VideoPreview = function(
                   broadcast_id: $scope.broadcastId,
                   state: $scope.currentState
                 }, 'playing');
+
+                // If we're playing, start sending state information to keep
+                // controls and preview up to date, but clean out any we have first
+                if($scope.broadcastState) {
+                  if($scope.stateInterval) {
+                    $interval.cancel($scope.stateInterval);
+                  }
+                  $scope.stateInterval = $interval(function() {
+                    var state = $scope.getCurrentState();
+                    $scope.consumer.send(state, 'current_state');
+                  }, 200);
+                }
 
                 // If we have an end time, need to monitor it
                 if($scope.video.end_time) {
@@ -238,6 +251,9 @@ var VideoPreview = function(
             }, 'unpaused');
             break;
           case 'stop':
+            $interval.cancel($scope.stateInterval);
+            $scope.stateInterval = undefined;
+
             $interval.cancel($scope.endTimeInterval);
             $scope.endTimeInterval = undefined;
 
@@ -299,7 +315,6 @@ var VideoPreview = function(
         //  we don't have a valid player.
         var state = angular.extend({
           player_id: $scope.playerId,
-          sender_id: message.sender_id,
           broadcast_id: $scope.broadcastId
         }, $scope.currentState);
 
@@ -308,7 +323,7 @@ var VideoPreview = function(
             state.current_time = $scope.player.getCurrentTime();
           }
           if($scope.player.getDuration) {
-            state.duration = $scope.player.getDuration();
+            state.duration = $scope.video.end_time || $scope.player.getDuration();
           }
         }
         return state;

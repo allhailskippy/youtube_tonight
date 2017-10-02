@@ -181,22 +181,6 @@ var controller = function(
         $scope.$applyAsync();
         break;
     }
-  }).then(function() {
-    // Start monitering the state of the video
-    // in case it's changed by another person
-    if($scope.broadcastId) {
-      // In case we already have an interval, try and cancel it first
-      if($scope.stateInterval) {
-        $interval.cancel($scope.stateInterval);
-      }
-      $scope.stateInterval = $interval(function() {
-        $scope.consumer.send({
-          player_id: $scope.playerId,
-          broadcast_id: $scope.broadcastId,
-          sender_id: $scope.senderId
-        }, 'get_current_state');
-      }, 200);
-    }
   });
 
   // Kill interval when no longer connected to the websocket
