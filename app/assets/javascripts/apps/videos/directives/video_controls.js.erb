@@ -201,6 +201,12 @@ var controller = function(
       $interval.cancel($scope.stateInterval);
     }
   });
+
+  // Stop the interval if we leave the page
+  $scope.$on('$locationChangeStart', function(event) {
+    console.log('$locationChangeStart');
+    $interval.cancel($scope.stateInterval);
+  })
 };
 
 controller.$inject = [
