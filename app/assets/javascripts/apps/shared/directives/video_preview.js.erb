@@ -260,6 +260,14 @@ var VideoPreview = function(
               $scope.consumer.send(state, 'current_state');
             }
             break;
+          case 'registered_check':
+            if($scope.live) {
+              $scope.consumer.send({
+                player_id: 'monitor',
+                broadcast_id: $scope.broadcastId
+              }, 'registered');
+            }
+            break;
         }
       }); // end subsribe
 
