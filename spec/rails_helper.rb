@@ -100,9 +100,9 @@ RSpec.configure do |config|
   config.include Authorization::Maintenance
 
   # Setting up rspec retry because we get some false negatives sometimes
-  config.verbose_retry = true
-  config.display_try_failure_messages = true
-  config.default_retry_count = 5 if ENV['RETRY'].present?
+  config.verbose_retry = false
+  config.display_try_failure_messages = false
+  config.default_retry_count = 5
   config.global_fixtures = :all
 
   config.before(:suite) do
