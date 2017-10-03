@@ -1,3 +1,6 @@
+class ParentException < StandardError
+end
+
 class ApplicationController < ActionController::Base
   # Permissions
   include Pundit
@@ -31,7 +34,39 @@ class ApplicationController < ActionController::Base
   # Rails
   protect_from_forgery
 
+  # Handle common exceptions
+  rescue_from Exception, with: :general_exception_error
+  rescue_from Pundit::NotAuthorizedError, with: :authorization_error
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found_error
+  rescue_from ActiveRecord::RecordInvalid, with: :invalid_record_error
+  rescue_from ParentException, with: :parent_error
+
 protected
+  def not_found_error
+    render json: { errors: ['Not Found'] },
+           status: :not_found
+  end
+
+  def invalid_record_error(e)
+    render json: { errors: e.record.errors, full_errors: e.record.errors.full_messages },
+           status: :unprocessable_entity
+  end
+
+  def authorization_error
+    render json: { errors: ['Unauthorized'] },
+           status: :unauthorized
+  end
+
+  def general_exception_error(e)
+    NewRelic::Agent.notice_error(e)
+    render json: { errors: [e.to_s] },
+           status: :unprocessable_entity
+  end
+
+  def parent_error
+    render json: { errors: ['Expected Show or Playlist to be provided'] },
+           status: :expectation_failed
+  end
 
   # Allow current user in models
   def set_current_user

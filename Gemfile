@@ -67,6 +67,7 @@ group :test do
   gem 'database_cleaner'
   gem 'site_prism'
   gem 'rails-controller-testing'
+  gem 'minitest-retry'
 end
 
 group :development, :test do
