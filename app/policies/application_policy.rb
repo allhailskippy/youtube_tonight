@@ -22,12 +22,12 @@ class ApplicationPolicy
   #
   # This will replace all the defaults
   # class NewPolicy < ApplicationPolicy
-  #   only_attrs :index?, :custom?
+  #   only_attributes :index?, :custom?
   # end
   #
   # This will add some custom methods to the list of defaults
   # class NewPolicy < ApplicationPolicy
-  #   add_attrs :custom?, :custom2?
+  #   add_attributes :custom?, :custom2?
   # end
   #
   # This will exclude one or more attrs from the defaults
@@ -38,35 +38,35 @@ class ApplicationPolicy
   # All of these methods are available singular or plural
   # although each takes the same format for params, so you can send
   # multiple values to a singular method
-  @@attrs = [
+  DEFAULT_ATTRIBUTES = [
     :index?, :show?, :create?, :new?, :update?,
     :edit?, :destroy?, :read?, :manage?
-  ]
+  ].freeze
   class << self
     # Reads the attrs minus any exclusions
     def attrs
-      @attrs ||= @@attrs
-      @attrs - (@exclude_attrs || [])
+      @attrs ||= DEFAULT_ATTRIBUTES.dup
+      @attrs - (@exclude_attributes || [])
     end
 
     # Use this when you want to fully replace the defaults
-    def only_attrs(*t)
+    def only_attributes(*t)
       @attrs = t
     end
-    alias_method :only_attribute, :only_attrs
+    alias_method :only_attribute, :only_attributes
 
     # Will append multiple attrs
-    def add_attrs(*t)
-      @attrs ||= @@attrs
+    def add_attributes(*t)
+      @attrs ||= DEFAULT_ATTRIBUTES.dup
       @attrs += t
     end
-    alias_method :add_attribute, :add_attrs
+    alias_method :add_attribute, :add_attributes
 
     # Used to exclude attrs from default
-    def exclude_attrs(*t)
-      @exclude_attrs = *t
+    def exclude_attributes(*t)
+      @exclude_attributes = *t
     end
-    alias_method :exclude_attribute, :exclude_attrs
+    alias_method :exclude_attribute, :exclude_attributes
   end
   def attrs
     self.class.attrs

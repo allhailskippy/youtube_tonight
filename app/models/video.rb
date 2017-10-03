@@ -29,7 +29,7 @@ class Video < ActiveRecord::Base
   end
 
   def send_video_update_request
-    #WebsocketRails[:video_player].trigger(:update_video_list, {:show_id => parent_id})
+    ShowEventsChannel.broadcast_to(parent, {'action' => 'update_video_list' })
   end
 
   def is_show?

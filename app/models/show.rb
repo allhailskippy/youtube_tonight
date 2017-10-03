@@ -12,7 +12,7 @@ class Show < ActiveRecord::Base
 
   # == Instance Methods =====================================================
   def hosts
-    @hosts || users.collect{|u| u.id.to_s}.join(',')
+    @hosts || users.collect{|u| u.id.to_s}.sort.join(',')
   end
 
   def hosts=(ids)

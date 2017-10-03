@@ -132,15 +132,15 @@ describe 'Not Logged In: /users/sign_in', js: true, type: :feature do
 
     user = User.last
 
-    expected = ["def5678", "ghi91011", "jkl121314", "plr1", "plr2"]
-    expect(user.playlists.collect(&:api_playlist_id)).to eq(expected)
+    expected = ["def5678", "ghi91011", "jkl121314", "plr1", "plr2"].sort
+    expect(user.playlists.collect(&:api_playlist_id).sort).to eq(expected)
 
     # Executes the video import requests
     VideoImportWorker.drain
 
     # Videos should be the ones from the stub
-    expected = ["a123", "a124", "b234", "c123ghi91011", "c123jkl121314", "c123plr1", "c123plr2"]
-    expect(user.playlists.collect{|p| p.videos.collect(&:api_video_id) }.flatten).to eq(expected)
+    expected = ["a123", "a124", "b234", "c123ghi91011", "c123jkl121314", "c123plr1", "c123plr2"].sort
+    expect(user.playlists.collect{|p| p.videos.collect(&:api_video_id).sort }.flatten).to eq(expected)
   end
 
   it 'logs in with existing user' do

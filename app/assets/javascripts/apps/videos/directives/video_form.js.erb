@@ -20,8 +20,7 @@ var controller = function(
    * Setup
    */
   $scope.showId = $routeParams.show_id;
-//  $scope.dispatcher = ConnectionHelper.getDispatcher();
-//  $scope.channel = ConnectionHelper.getChannel('video_player');
+  $scope.consumer = ConnectionHelper.newConsumer('VideoPlayerChannel', { player_id: $scope.playerId });
   $scope.currentVideo = $scope.currentVideo || Video.build({parent_id: $scope.showId, parent_type: 'Show'});
   $scope.searchResults = [];
   var searchTimeout;
@@ -101,21 +100,22 @@ var controller = function(
     }).catch(Notice.handleErrors);
   };
 
-  $scope.cancel = function() {
-// TODO: re-implement this with action cable
-//    $scope.dispatcher.trigger('video_player.stop', {
-//      video: $scope.currentVideo,
-//      player_id: 'preview',
-//      force: true
-//    });
-    Notice.reset();
-    if($scope.hasVideos()) {
-      $scope.closeForm();
-    }
-    $scope.searchResults = [];
-    $scope.queryVideos();
-    $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'Show' });
-  };
+  $scope.consumer.subscribe(function() {}).then(function() {
+    $scope.cancel = function() {
+      $scope.consumer.send({
+        video: $scope.currentVideo,
+        player_id: 'preview',
+        force: true
+      }, 'stop');
+      Notice.reset();
+      if($scope.hasVideos()) {
+        $scope.closeForm();
+      }
+      $scope.searchResults = [];
+      $scope.queryVideos();
+      $scope.currentVideo = Video.build({ parent_id: $scope.showId, parent_type: 'Show' });
+    };
+  }) ;
 
   $scope.hasVideo = function() {
     return $scope.currentVideo && $scope.currentVideo.api_video_id;
@@ -139,6 +139,7 @@ var VideoForm = function() {
   return {
     restrict: 'E',
     scope: {
+      playerId: '@',
       currentVideo: '=',
       videos: '=?',
       queryVideos: '&',

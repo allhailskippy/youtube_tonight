@@ -16,6 +16,18 @@ class VideoShowSection < SitePrism::Section
   element :add_to_queue, "#add-to-queue"
   element :update, "#update"
   element :cancel, "#cancel"
+
+  element :thumbnail_area, ".thumbnail-area"
+end
+
+class VideoPreviewControlSection < SitePrism::Section
+  element :container, ".preview-container"
+  element :slider, ".preview-slider"
+  element :play, ".preview-play"
+  element :pause, ".preview-pause"
+  element :stop, ".preview-stop"
+  element :mute, ".preview-mute"
+  element :unmute, ".preview-unmute"
 end
 
 class VideosCommonPage < SitePrism::Page
@@ -23,6 +35,10 @@ class VideosCommonPage < SitePrism::Page
   element :back, "#back"
   elements :errors, "div[notices='notices'] .alert-danger"
   sections :rows, VideoShowSection, "#videos .video-row"
+  element :preview_area, "#preview_area"
+  element :broadcast_area, "#broadcast_area"
+  section :preview_controls, VideoPreviewControlSection, ".preview_container video-controls"
+  section :broadcast_controls, VideoPreviewControlSection, "#broadcast_area video-controls"
 
   def find_row(video)
     rows.find{|row| row.root_element['id'] == "video_#{video.id}" }

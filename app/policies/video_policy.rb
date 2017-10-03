@@ -1,5 +1,5 @@
 class VideoPolicy < ApplicationPolicy
-  exclude_attrs :new?, :edit?
+  exclude_attributes :new?, :edit?
 
   def index?
     record.is_a?(Symbol) || read?

@@ -10,6 +10,11 @@ class UserMailer < ActionMailer::Base
     @user = user
     @emails = User.joins(:roles).where(roles: { title: 'admin' }).select(:email).without_system_admin.collect(&:email) rescue nil
     @emails = [User.find(SYSTEM_ADMIN_ID).email] if @emails.blank?
-    mail(to: @emails.join(','), subject: "New user registration at YouTube Tonight")
+
+    if @emails.present?
+      mail(to: @emails.join(','), subject: "New user registration at YouTube Tonight")
+    end
+  rescue Exception => e
+    NewRelic::Agent.notice_error(e)
   end
 end

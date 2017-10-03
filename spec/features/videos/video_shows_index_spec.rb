@@ -62,8 +62,17 @@ shared_examples "the video show index page" do
 
       # Has the launch broadcast button
       expect(@page.launch_broadcast['ng-click']).to eq('launchBroadcastPlayer()')
+
+      # New window sends out a registration notice
+      VideoPlayerChannel.expects(:broadcast_to).with("broadcast:broadcast-#{show.id}", anything).at_least_once
       new_window = window_opened_by { @page.launch_broadcast.click() }
+      wait_for_angular_requests_to_finish
+      sleep 2
+
       expect(new_window).to_not be_blank
+      within_window(new_window) do
+        expect(page.current_url).to end_with("/broadcasts#/shows/#{show.id}")
+      end
       new_window.close
     end
 
@@ -86,32 +95,362 @@ shared_examples "the video show index page" do
       expected = ["video_#{video1.id}", "video_#{video2.id}", "video_#{video3.id}"]
       expect(ids).to eq(expected)
       page.execute_script %Q{
-        var source = $('#videos .ui-sortable-handle').first();
-        var height = source.height() + 10;
+        var source = $($('#videos .video-container')[0]);
+        var height = source.height() + 30;
         source.simulate('drag-n-drop', { dy: height, interpolation: { stepWidth: 10, stepDelay: 5 }})
       }
-      sleep 1
       wait_for_angular_requests_to_finish
+      sleep 2
 
       ids = @page.rows.collect{|r| r.root_element["id"]  }
       expected = ["video_#{video2.id}", "video_#{video1.id}", "video_#{video3.id}"]
       expect(ids).to eq(expected)
 
       page.execute_script %Q{
-        var source = $($('#videos .ui-sortable-handle')[1]);
-        var height = source.height() + 10;
+        var source = $($('#videos .video-container')[1]);
+        var height = source.height() + 30;
         source.simulate('drag-n-drop', { dy: height, interpolation: { stepWidth: 10, stepDelay: 5 }})
       }
-      sleep 1
       wait_for_angular_requests_to_finish
+      sleep 2
 
       ids = @page.rows.collect{|r| r.root_element["id"]  }
       expected = ["video_#{video2.id}", "video_#{video3.id}", "video_#{video1.id}"]
       expect(ids).to eq(expected)
     end
+
+    it_should_behave_like "preview_player"
+
+    context 'broadcasting behaviour' do
+      let(:preload) {
+        # To avoid state getting overridden
+        VideoPlayerChannel.any_instance.stubs(:get_current_state)
+        VideoPlayerChannel.any_instance.stubs(:current_state)
+        video1; video2
+      }
+
+      it 'toggles broadcast buttons' do
+        # Starts disabled
+        @page.rows.each do |row|
+          expect(row.start_broadcasting['disabled']).to be_truthy
+        end
+
+        # Registered player enables
+        broadcast_id = "broadcast-#{show.id}"
+        player_id = @page.broadcast_area["player-id"]
+        VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'registered', message: { player_id: player_id, broadcast_id: broadcast_id } })
+        # Sending a second registration should not cause any issues
+        VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'registered', message: { player_id: player_id, broadcast_id: broadcast_id } })
+
+        wait_until do
+          @page.find_row(video1).start_broadcasting['disabled'].blank?
+        end
+
+        @page.rows.each do |row|
+          expect(row.start_broadcasting['disabled']).to be_blank
+        end
+
+        # Unregistered player disables again
+        VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'unregistered', message: { player_id: player_id, broadcast_id: broadcast_id } })
+        @page.rows.each do |row|
+          expect(row.start_broadcasting['disabled']).to be_truthy
+        end
+      end
+
+      it 'toggles broadcast button with broadcast window' do
+        # Starts disabled
+        @page.rows.each do |row|
+          expect(row.start_broadcasting['disabled']).to be_truthy
+        end
+
+        # Broadcast window opened enables them
+        new_window = window_opened_by { @page.launch_broadcast.click() }
+
+        wait_until do
+          @page.find_row(video1).start_broadcasting['disabled'].blank?
+        end
+
+        @page.rows.each do |row|
+          expect(row.start_broadcasting['disabled']).to be_blank
+        end
+
+        # Closing the window disables them again
+        new_window.close
+        wait_until do
+          !@page.find_row(video1).start_broadcasting['disabled'].blank?
+        end
+
+        @page.rows.each do |row|
+          expect(row.start_broadcasting['disabled']).to be_truthy
+        end
+      end
+    end
+
+    context 'on load behaviour' do
+      let(:preload) do
+        VideoPlayerChannel.any_instance.expects(:registered_check).at_least_once
+      end
+
+      it 'loads the page' do
+        # Just so we can trigger the preload method
+        expect(true).to eq(true)
+      end
+    end
+
+    it 'toggles the broadcast button' do
+      row = @page.find_row(video1)
+      player_id = @page.broadcast_area["player-id"]
+      sender_id = row.thumbnail_area["sender-id"]
+      broadcast_id = "broadcast-#{show.id}"
+
+      # Let the page know we're ready to broadcast
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'registered', message: { player_id: player_id, broadcast_id: broadcast_id } })
+
+      VideoPlayerChannel.any_instance.expects(:play).once
+
+      row.start_broadcasting.click
+      wait_for_angular_requests_to_finish
+
+      message = {
+        action: 'playing',
+        message: {
+          player_id: player_id,
+          sender_id: sender_id,
+          video: JSON.parse(video1.to_json),
+          state: {
+            video: JSON.parse(video1.to_json),
+            playing: true,
+            paused: false,
+            mute: false
+          }
+        }
+      }
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", message)
+
+      wait_until do
+        !row.stop_broadcasting['class'].include?('disabled')
+      end
+      using_wait_time(0) do
+        expect{ row.start_broadcasting }.to raise_error(Capybara::ElementNotFound)
+      end
+      expect(row.stop_broadcasting['class']).to_not include('disabled')
+
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'stopped', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+
+      wait_until do
+        !row.start_broadcasting['class'].include?('disabled')
+      end
+      expect(row.start_broadcasting['class']).to_not include('disabled')
+      using_wait_time(0) do
+        expect{ row.stop_broadcasting }.to raise_error(Capybara::ElementNotFound)
+      end
+    end
+
+    it 'starts a new video while one is already running' do
+      row1 = @page.find_row(video1)
+      row2 = @page.find_row(video2)
+      player_id = @page.broadcast_area["player-id"]
+      sender_id = row1.thumbnail_area["sender-id"]
+      broadcast_id = "broadcast-#{show.id}"
+
+      # Let the page know we're ready to broadcast
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'registered', message: { player_id: player_id, broadcast_id: broadcast_id } })
+
+      VideoPlayerChannel.any_instance.expects(:stopped).once
+
+      row1.start_broadcasting.click
+      wait_for_angular_requests_to_finish
+
+      message = {
+        action: 'playing',
+        message: {
+          player_id: player_id,
+          sender_id: sender_id,
+          video: JSON.parse(video1.to_json),
+          state: {
+            video: JSON.parse(video1.to_json),
+            playing: true,
+            paused: false,
+            mute: false
+          }
+        }
+      }
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", message)
+      wait_until do
+        !row1.stop_broadcasting['class'].include?('disabled')
+      end
+
+      # first video should show as playing
+      using_wait_time(0) do
+        expect{ row1.start_broadcasting }.to raise_error(Capybara::ElementNotFound)
+      end
+      expect(row1.stop_broadcasting['class']).to_not include('disabled')
+      expect(row2.start_broadcasting['class']).to_not include('disabled')
+      using_wait_time(0) do
+        expect{ row2.stop_broadcasting }.to raise_error(Capybara::ElementNotFound)
+      end
+
+      row2.start_broadcasting.click
+      wait_for_angular_requests_to_finish
+
+      message = {
+        action: 'stopped',
+        message: {
+          player_id: player_id,
+          sender_id: sender_id,
+          video: JSON.parse(video1.to_json),
+          state: {
+            video: JSON.parse(video1.to_json),
+            playing: true,
+            paused: false,
+            mute: false
+          }
+        }
+      }
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", message)
+
+      sender_id = row2.thumbnail_area["sender-id"]
+      message = {
+        action: 'playing',
+        message: {
+          player_id: player_id,
+          sender_id: sender_id,
+          video: JSON.parse(video2.to_json),
+          state: {
+            video: JSON.parse(video2.to_json),
+            playing: true,
+            paused: false,
+            mute: false
+          }
+        }
+      }
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", message)
+
+      wait_until do
+        !row1.start_broadcasting['class'].include?('disabled')
+      end
+
+      # second video should now show as playing
+      expect(row1.start_broadcasting['class']).to_not include('disabled')
+      using_wait_time(0) do
+        expect{ row1.stop_broadcasting }.to raise_error(Capybara::ElementNotFound)
+      end
+      using_wait_time(0) do
+        expect{ row2.start_broadcasting }.to raise_error(Capybara::ElementNotFound)
+      end
+      expect(row2.stop_broadcasting['class']).to_not include('disabled')
+    end
+
+    it 'toggles control button enabled state' do
+      row = @page.find_row(video1)
+      player_id = @page.broadcast_area["player-id"]
+      sender_id = row.thumbnail_area["sender-id"]
+      broadcast_id = "broadcast-#{show.id}"
+      sender_id = @page.broadcast_controls.container["sender-id"]
+
+      # Let the page know we're ready to broadcast
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'registered', message: { player_id: player_id, broadcast_id: broadcast_id } })
+
+      # Plays video
+      VideoPlayerChannel.any_instance.expects(:play).once
+
+      # Controls should start disabled
+      controls = @page.broadcast_controls
+      expect(controls.slider['disabled']).to be_truthy
+      expect(controls.pause['disabled']).to be_truthy
+      expect(controls.stop['disabled']).to be_truthy
+      expect(controls.mute['disabled']).to be_truthy
+      using_wait_time(0) do
+        expect{ controls.play }.to raise_error(Capybara::ElementNotFound)
+        expect{ controls.unmute }.to raise_error(Capybara::ElementNotFound)
+      end
+
+      row.start_broadcasting.click
+      wait_for_angular_requests_to_finish
+      sleep 1
+
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'playing', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': true, playing: true}})
+
+      wait_until do
+        controls.slider['disabled'].blank?
+      end
+
+      # Controls should be enabled
+      expect(controls.slider['disabled']).to be_blank
+      expect(controls.pause['disabled']).to be_blank
+      expect(controls.stop['disabled']).to be_blank
+      expect(controls.unmute['disabled']).to be_blank
+      using_wait_time(0) do
+        expect{ controls.play }.to raise_error(Capybara::ElementNotFound)
+        expect{ controls.mute }.to raise_error(Capybara::ElementNotFound)
+      end
+
+      # Toggle pause
+      VideoPlayerChannel.any_instance.expects(:pause).once
+      VideoPlayerChannel.any_instance.expects(:unpause).once
+
+      controls.pause.click
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'paused', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': true, 'mute': true, playing: true}})
+
+      wait_until do
+        controls.play['disabled'].blank?
+      end
+      expect(controls.play['disabled']).to be_blank
+      expect{ controls.pause }.to raise_error(Capybara::ElementNotFound)
+
+      controls.play.click
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'playing', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': true, playing: true}})
+      wait_until do
+        controls.pause['disabled'].blank?
+      end
+      expect(controls.pause['disabled']).to be_blank
+      expect{ controls.play }.to raise_error(Capybara::ElementNotFound)
+
+      # Toggle mute
+      VideoPlayerChannel.any_instance.expects(:unmute).once
+      controls.unmute.click
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': false, playing: true}})
+      wait_until do
+        controls.mute['disabled'].blank?
+      end
+      expect(controls.mute['disabled']).to be_blank
+      expect{ controls.unmute }.to raise_error(Capybara::ElementNotFound)
+
+      VideoPlayerChannel.any_instance.expects(:mute).once
+      controls.mute.click
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'nmute', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) , 'paused': false, 'mute': true, playing: true}})
+      wait_until do
+        controls.unmute['disabled'].blank?
+      end
+      expect(controls.unmute['disabled']).to be_blank
+      expect{ controls.mute }.to raise_error(Capybara::ElementNotFound)
+
+      # Stop disables controls
+      VideoPlayerChannel.any_instance.expects(:stop).once
+
+      controls.stop.click
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'stopped', message: { player_id: player_id, sender_id: sender_id, video: JSON.parse(video1.to_json) }})
+      VideoPlayerChannel.broadcast_to("broadcast:#{broadcast_id}", { action: 'current_state', message: { player_id: player_id, sender_id: sender_id, video: nil, 'paused': false, 'mute': false, playing: false}})
+
+      wait_until do
+        controls.slider['disabled'].present?
+      end
+      expect(controls.slider['disabled']).to be_truthy
+      expect(controls.pause['disabled']).to be_truthy
+      expect(controls.stop['disabled']).to be_truthy
+      expect(controls.mute['disabled']).to be_truthy
+      using_wait_time(0) do
+        expect{ controls.play }.to raise_error(Capybara::ElementNotFound)
+        expect{ controls.unmute }.to raise_error(Capybara::ElementNotFound)
+      end
+    end
   end
 
-  context 'add new video' do
+  context 'manage video' do
     let(:show) { create(:show, users: [current_user]) }
     let(:video1) { with_user(current_user) { create(:video, parent: show, start_time: 10, end_time: 15) } }
     let(:video2) { create(:video, parent: show) }
@@ -352,8 +691,48 @@ shared_examples "the video show index page" do
         row.delete.click
       end
       wait_for_angular_requests_to_finish
+      sleep 2
 
       expect(@page.rows.length).to eq(2)
+    end
+
+    it 'sends stop requests to all available players on destroy' do
+      VideoPlayerChannel.stubs(:broadcast_to).with(anything, has_entry('action', 'registered_check'))
+      player = create(:player)
+      player_ids = [
+        "broadcast:broadcast-#{show.id}",
+        @page.preview_area['player-id'],
+        player.player_id
+      ]
+      player_ids.each do |pid|
+        VideoPlayerChannel.expects(:broadcast_to).with(pid, has_entry("action", "stop")).at_least_once
+      end
+
+      row = @page.find_row(video1)
+      sleep 1
+
+      accept_confirm("Are you sure you want to delete this video from the queue?\nThis cannot be undone.") do
+        row.delete.click
+      end
+      wait_for_angular_requests_to_finish
+      sleep 2
+
+      wait_until do
+        @page.rows.length == 2
+      end
+    end
+
+    it 'sends update_video_list request on destroy' do
+      ShowEventsChannel.expects(:broadcast_to).with(show, has_entry('action', 'update_video_list')).once
+
+      row = @page.find_row(video1)
+      sleep 1
+
+      accept_confirm("Are you sure you want to delete this video from the queue?\nThis cannot be undone.") do
+        row.delete.click
+      end
+      wait_for_angular_requests_to_finish
+      sleep 2
     end
 
     it 'cancels deleting a video' do

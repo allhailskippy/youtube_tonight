@@ -17,8 +17,8 @@ var IndexCtrl = function(
    */
   $scope.show = Show.build(show_data.data);
   $scope.showId = $scope.show.id;
-  $scope.playerId = 'broadcast-' + $scope.show.id;
-
+  $scope.broadcastId = 'broadcast-' + $scope.show.id;
+  $scope.playerId = $scope.broadcastId + '-' + Math.floor(Math.random() * 1000000);
 };
 
 IndexCtrl.$inject = [

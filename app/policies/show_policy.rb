@@ -1,5 +1,5 @@
 class ShowPolicy < ApplicationPolicy
-  exclude_attrs :new?, :edit?
+  exclude_attributes :new?, :edit?
 
   def manage?
     !!has_role?(:admin)
