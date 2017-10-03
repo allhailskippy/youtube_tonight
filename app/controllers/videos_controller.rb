@@ -1,40 +1,28 @@
-class ParentException < StandardError
-end
-
 class VideosController < ApplicationController
   # GET /videos.json
   def index
     respond_to do |format|
       format.json do
-        begin
-          params[:q] ||= {}
-          params[:q][:s] ||= 'id desc'
-          params[:per_page] ||= '10'
-          params[:page] ||= '1'
+        params[:q] ||= {}
+        params[:q][:s] ||= 'id desc'
+        params[:per_page] ||= '10'
+        params[:page] ||= '1'
 
-          # Prevent pagination from being 0 or lower
-          params[:page] = params[:page].to_i < 1 ? '1' : params[:page]
-          params[:per_page] = params[:per_page].to_i < 1 ? '1' : params[:per_page]
+        # Prevent pagination from being 0 or lower
+        params[:page] = params[:page].to_i < 1 ? '1' : params[:page]
+        params[:per_page] = params[:per_page].to_i < 1 ? '1' : params[:per_page]
 
-          search = scoped.search(params[:q])
-          videos = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
+        search = scoped.search(params[:q])
+        videos = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
 
-          render json: {
-            page: params[:page],
-            per_page: params[:per_page],
-            total: videos.total_entries,
-            total_pages: videos.total_pages,
-            offset: videos.offset,
-            data: videos
-          }
-        rescue ParentException
-          render json: { errors: ['Expected Show or Playlist to be provided'] },
-                 status: :expectation_failed
-        rescue Exception => e
-          NewRelic::Agent.notice_error(e)
-          render json: { errors: [e.to_s] },
-                 status: :unprocessable_entity
-        end
+        render json: {
+          page: params[:page],
+          per_page: params[:per_page],
+          total: videos.total_entries,
+          total_pages: videos.total_pages,
+          offset: videos.offset,
+          data: videos
+        }
       end
     end
   end
@@ -43,25 +31,10 @@ class VideosController < ApplicationController
   def show
     respond_to do |format|
       format.json do
-        begin
-          video = scoped.find(params[:id])
-          authorize(video, :show?)
+        video = scoped.find(params[:id])
+        authorize(video, :show?)
 
-          render json: { data: video}
-        rescue ParentException
-          render json: { errors: ['Expected Show or Playlist to be provided'] },
-                 status: :expectation_failed
-        rescue ActiveRecord::RecordNotFound
-          render json: { errors: ['Not Found'] },
-                 status: :not_found
-        rescue Pundit::NotAuthorizedError
-          render json: { errors: ['Unauthorized'] },
-                 status: :not_found
-        rescue Exception => e
-          NewRelic::Agent.notice_error(e)
-          render json: { errors: [e.to_s] },
-                 status: :unprocessable_entity
-        end
+        render json: { data: video}
       end
     end
   end
@@ -70,29 +43,11 @@ class VideosController < ApplicationController
   def create
     respond_to do |format|
       format.json do
-        begin
-          video = scoped.build(video_params)
-          authorize(video, :create?)
-          video.save!
+        video = scoped.build(video_params)
+        authorize(video, :create?)
+        video.save!
 
-          render json: { data: video }
-        rescue ParentException
-          render json: { errors: ['Expected Show or Playlist to be provided'] },
-                 status: :expectation_failed
-        rescue ActiveRecord::RecordInvalid
-          render json: { errors: video.errors, full_errors: video.errors.full_messages },
-                 status: :unprocessable_entity
-        rescue ActiveRecord::RecordNotFound
-          render json: { errors: ['Not Found'] },
-                 status: :not_found
-        rescue Pundit::NotAuthorizedError
-          render json: { errors: ['Unauthorized'] },
-                 status: :not_found
-        rescue Exception => e
-          NewRelic::Agent.notice_error(e)
-          render json: { errors: [e.to_s] },
-                 status: :unprocessable_entity
-        end
+        render json: { data: video }
       end
     end
   end
@@ -101,30 +56,12 @@ class VideosController < ApplicationController
   def update
     respond_to do |format|
       format.json do
-        begin
-          video = scoped.find(params[:id])
-          video.assign_attributes(video_params)
-          authorize(video, :update?)
-          video.save!
+        video = scoped.find(params[:id])
+        video.assign_attributes(video_params)
+        authorize(video, :update?)
+        video.save!
 
-          render json: { data: video }
-        rescue ParentException
-          render json: { errors: ['Expected Show or Playlist to be provided'] },
-                 status: :expectation_failed
-        rescue ActiveRecord::RecordNotFound
-          render json: { errors: ['Not Found'] },
-                 status: :not_found
-        rescue ActiveRecord::RecordInvalid
-          render json: { errors: video.errors, full_errors: video.errors.full_messages },
-                 status: :unprocessable_entity
-        rescue Pundit::NotAuthorizedError
-          render json: { errors: ['Unauthorized'] },
-                 status: :not_found
-        rescue Exception => e
-          NewRelic::Agent.notice_error(e)
-          render json: { errors: [e.to_s.titleize] },
-                 status: :unprocessable_entity
-        end
+        render json: { data: video }
       end
     end
   end
@@ -133,26 +70,11 @@ class VideosController < ApplicationController
   def destroy
     respond_to do |format|
       format.json do
-        begin
-          video = scoped.find(params[:id])
-          authorize(video, :destroy?)
-          video.destroy
+        video = scoped.find(params[:id])
+        authorize(video, :destroy?)
+        video.destroy
 
-          render json: { data: {} }
-        rescue ParentException
-          render json: { errors: ['Expected Show or Playlist to be provided'] },
-                 status: :expectation_failed
-        rescue ActiveRecord::RecordNotFound
-          render json: { errors: ['Not Found'] },
-                 status: :not_found
-        rescue Pundit::NotAuthorizedError
-          render json: { errors: ['Unauthorized'] },
-                 status: :not_found
-        rescue Exception => e
-          NewRelic::Agent.notice_error(e)
-          render json: { :errors => [e.to_s] },
-                 status: :unprocessable_entity
-        end
+        render json: { data: {} }
       end
     end
   end

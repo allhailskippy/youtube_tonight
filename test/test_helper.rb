@@ -3,6 +3,8 @@ require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 require 'sidekiq/testing'
 require 'mocha/mini_test'
+require 'minitest/retry'
+Minitest::Retry.use!(verbose: false, retry_count: 5)
 
 ['helpers'].each do |lib|
   Dir["#{File.dirname(__FILE__)}/#{lib}/**/*.rb"].each {|f| require f}

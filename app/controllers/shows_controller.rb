@@ -3,15 +3,9 @@ class ShowsController < ApplicationController
   def index
     respond_to do |format|
       format.json do
-        begin
-          policy_scope(Show).includes(:videos).all
-          shows = policy_scope(Show).includes(:videos).all
-          render json: { data: shows }
-        rescue Exception => e
-          NewRelic::Agent.notice_error(e)
-          render json: { errors: [e.to_s] },
-                 status: :unprocessable_entity
-        end
+        policy_scope(Show).includes(:videos).all
+        shows = policy_scope(Show).includes(:videos).all
+        render json: { data: shows }
       end
     end
   end
@@ -20,22 +14,10 @@ class ShowsController < ApplicationController
   def show
     respond_to do |format|
       format.json do
-        begin
-          show = Show.find(params[:id])
-          authorize(show, :show?)
+        show = Show.find(params[:id])
+        authorize(show, :show?)
 
-          render json: { data: show }
-        rescue ActiveRecord::RecordNotFound
-          render json: { errors: ['Not Found'] },
-                 status: :not_found
-        rescue Pundit::NotAuthorizedError
-          render json: { errors: ['Unauthorized'] },
-                 status: :unauthorized
-        rescue Exception => e
-          NewRelic::Agent.notice_error(e)
-          render json: { errors: [e.to_s] },
-                 status: :unprocessable_entity
-        end
+        render json: { data: show }
       end
     end
   end
@@ -44,23 +26,11 @@ class ShowsController < ApplicationController
   def create
     respond_to do |format|
       format.json do
-        begin
-          show = Show.new(show_params)
-          authorize(show, :create?)
-          show.save!
+        show = Show.new(show_params)
+        authorize(show, :create?)
+        show.save!
 
-          render json: { data: show }
-        rescue ActiveRecord::RecordInvalid
-          render json: { errors: show.errors, full_errors: show.errors.full_messages },
-                 status: :unprocessable_entity
-        rescue Pundit::NotAuthorizedError
-          render json: { errors: ['Unauthorized'] },
-                 status: :unauthorized
-        rescue Exception => e
-          NewRelic::Agent.notice_error(e)
-          render json: { errors: [e.to_s] },
-                 status: :unprocessable_entity
-        end
+        render json: { data: show }
       end
     end
   end
@@ -69,29 +39,14 @@ class ShowsController < ApplicationController
   def update
     respond_to do |format|
       format.json do
-        begin
-          show = Show.find(params[:id])
-          authorize(show, :update?)
-          show.update_attributes!(show_params)
+        show = Show.find(params[:id])
+        authorize(show, :update?)
+        show.update_attributes!(show_params)
 
-          # Gets rid of user/hosts cache values
-          show = Show.find(show.id)
+        # Gets rid of user/hosts cache values
+        show = Show.find(show.id)
 
-          render json: { data: show }
-        rescue ActiveRecord::RecordNotFound
-          render json: { errors: ['Not Found'] },
-                 status: :not_found
-        rescue ActiveRecord::RecordInvalid
-          render json: { errors: show.errors, full_errors: show.errors.full_messages },
-                 status: :unprocessable_entity
-        rescue Pundit::NotAuthorizedError
-          render json: { errors: ['Unauthorized'] },
-                 status: :unauthorized
-        rescue Exception => e
-          NewRelic::Agent.notice_error(e)
-          render json: { errors: [e.to_s.titleize] },
-                 status: :unprocessable_entity
-        end
+        render json: { data: show }
       end
     end
   end
@@ -100,23 +55,11 @@ class ShowsController < ApplicationController
   def destroy
     respond_to do |format|
       format.json do
-        begin
-          show = Show.find(params[:id])
-          authorize(show, :destroy?)
-          show.destroy
+        show = Show.find(params[:id])
+        authorize(show, :destroy?)
+        show.destroy
 
-          render json: { data: {} }
-        rescue ActiveRecord::RecordNotFound
-          render json: { errors: ['Not Found'] },
-                 status: :not_found
-        rescue Pundit::NotAuthorizedError
-          render json: { errors: ['Unauthorized'] },
-                 status: :unauthorized
-        rescue Exception => e
-          NewRelic::Agent.notice_error(e)
-          render json: { :errors => [e.to_s] },
-                 status: :unprocessable_entity
-        end
+        render json: { data: {} }
       end
     end
   end
