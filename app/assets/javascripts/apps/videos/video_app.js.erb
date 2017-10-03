@@ -17,7 +17,12 @@ var routesConfig = function($routeProvider) {
     controller: 'VideosIndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/index.html") %>',
     permission: 'video.index',
-    menu: 'shows'
+    menu: 'shows',
+    resolve: {
+      show_data: ['$route', 'Show', function($route, Show) {
+        return Show.find($route.current.params.show_id);
+      }]
+    }
   }).
   when('/playlists/:playlist_id/videos', {
     controller: 'VideosPlaylistIndexCtrl',

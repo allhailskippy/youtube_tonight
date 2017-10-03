@@ -53,10 +53,13 @@ class VideoPlayerChannel < ApplicationCable::Channel
       player_ids = []
       player_id = params[:data][:player_id]
       broadcast_id = params[:data][:broadcast_id]
-      if(message[:player_id] == 'all')
+
+
+      m = message['message'].with_indifferent_access
+      if(m && m['player_id'] == 'all')
         # Typically used when deleting a video and need to notify
         # all players that the event occured. Not used often
-        player_ids = Player.all.collect(&:player_id)
+        player_ids = Player.all.collect{|player| (player.broadcast_id.present? ? "broadcast:#{player.broadcast_id}" : player.player_id) }
       elsif player_id == 'monitor'
         player_ids = ["broadcast:#{broadcast_id}"]
       elsif player = Player.where(player_id: player_id).first
@@ -64,6 +67,7 @@ class VideoPlayerChannel < ApplicationCable::Channel
         # other players all get their own
         player_ids = [(player.broadcast_id.present? ? "broadcast:#{player.broadcast_id}" : player.player_id)]
       end
+
       player_ids.each do |player_id|
         VideoPlayerChannel.broadcast_to(player_id, message)
       end
