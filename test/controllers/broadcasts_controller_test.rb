@@ -1,4 +1,6 @@
-class BroadcastsControllerTest < ActionController::TestCase
+require 'test_helper'
+
+class BroadcastsControllerTest < ActionDispatch::IntegrationTest
   ##
   # Routes
   ##
@@ -10,23 +12,23 @@ class BroadcastsControllerTest < ActionController::TestCase
   # Index
   ##
   test 'Admin: should get index as html' do
-    login_as_admin
+    authenticate_as_admin
 
-    get :index, format: :html
+    get broadcasts_url(format: :html)
     assert_response :success
     assert_template :index, layout: 'broadcasts'
   end
 
   test 'Host: should get index as html' do
-    login_as_host
+    authenticate_as_host
 
-    get :index, format: :html
+    get broadcasts_url(format: :html)
     assert_response :success
     assert_template :index, layout: 'broadcasts'
   end
 
   test 'Guest: should get index as html' do
-    get :index, format: :html
+    get broadcasts_url(format: :html)
     assert_redirected_to  '/users/sign_in'
   end
 end

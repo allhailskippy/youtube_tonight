@@ -1,4 +1,6 @@
-class CurrentUserControllerTest < ActionController::TestCase
+require 'test_helper'
+
+class CurrentUserControllerTest < ActionDispatch::IntegrationTest
   ##
   # Routes
   ##
@@ -10,9 +12,9 @@ class CurrentUserControllerTest < ActionController::TestCase
   # Index
   ##
   test 'Admin: should get index as json' do
-    user = login_as_admin
+    user = authenticate_as_admin
 
-    get :index, format: :json
+    get current_user_url(format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -42,9 +44,9 @@ class CurrentUserControllerTest < ActionController::TestCase
   end
 
   test 'Host: should get index as json' do
-    login_as_host
+    authenticate_as_host
 
-    get :index, format: :json
+    get current_user_url(format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -74,7 +76,7 @@ class CurrentUserControllerTest < ActionController::TestCase
   end
 
   test 'Guest: should get index as json' do
-    get :index, format: :json
+    get current_user_url(format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)

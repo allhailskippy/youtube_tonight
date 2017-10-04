@@ -1,4 +1,6 @@
-class PlaylistsControllerTest < ActionController::TestCase
+require 'test_helper'
+
+class PlaylistsControllerTest < ActionDispatch::IntegrationTest
   ##
   # Routes
   ##
@@ -14,13 +16,13 @@ class PlaylistsControllerTest < ActionController::TestCase
   ##
   test 'Admin: should get index without any params' do
     host = create_user(role_titles: [:host])
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     p1 = create(:playlist, user: admin)
     p2 = create(:playlist, user: admin)
     p3 = create(:playlist, user: host)
 
-    get :index, params: { format: :json }
+    get playlists_url(format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -40,11 +42,11 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Admin: should get index with custom params' do
     host = create_user(role_titles: [:host])
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     playlists = 10.times.map { create(:playlist, user: host) }
 
-    get :index, params: { format: :json, q: { user_id_eq: host.id.to_s, s: 'id asc'}, per_page: '3', page: '2' }
+    get playlists_url(format: :json), params: { q: { user_id_eq: host.id.to_s, s: 'id asc'}, per_page: '3', page: '2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -69,11 +71,11 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Admin: cannot set page < 1' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     p1 = create(:playlist, user: admin)
 
-    get :index, params: { format: :json, per_page: '-1', page: '-2' }
+    get playlists_url(format: :json), params: { per_page: '-1', page: '-2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -83,9 +85,9 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Admin: index should handle an exception' do
     Ransack::Search.any_instance.stubs(:result).raises(Exception.new("Random Exception"))
-    login_as_admin
+    authenticate_as_admin
 
-    get :index, params: { format: :json }
+    get playlists_url(format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -95,14 +97,14 @@ class PlaylistsControllerTest < ActionController::TestCase
   test 'Host: should get index without any params' do
     admin = create_user(role_titles: [:admin])
     host2 = create_user(role_titles: [:host])
-    host = login_as_host
+    host = authenticate_as_host
 
     p1 = create(:playlist, user: host)
     p2 = create(:playlist, user: host)
     p3 = create(:playlist, user: admin)
     p4 = create(:playlist, user: host2)
 
-    get :index, params: { format: :json }
+    get playlists_url(format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -122,10 +124,10 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test "Host: cannot see other users playlists" do
     host2 = create_user(role_titles: [:host])
-    host = login_as_host
+    host = authenticate_as_host
     playlists = 10.times.map { create(:playlist, user: host2) }
 
-    get :index, params: { format: :json, q: { user_id_eq: host2.id.to_s } }
+    get playlists_url(format: :json), params: { q: { user_id_eq: host2.id.to_s } }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -139,11 +141,11 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Host: should get index with custom params' do
     host2 = create_user(role_titles: [:host])
-    host = login_as_host
+    host = authenticate_as_host
 
     playlists = 10.times.map { create(:playlist, user: host) }
 
-    get :index, params: { format: :json, q: { user_id_eq: host.id.to_s, s: 'id asc'}, per_page: '3', page: '2' }
+    get playlists_url(format: :json), params: { q: { user_id_eq: host.id.to_s, s: 'id asc'}, per_page: '3', page: '2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -168,11 +170,11 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Host: cannot set page < 1' do
-    host = login_as_host
+    host = authenticate_as_host
 
     p1 = create(:playlist, user: host)
 
-    get :index, params: { format: :json, per_page: '-1', page: '-2' }
+    get playlists_url(format: :json), params: { per_page: '-1', page: '-2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -182,9 +184,9 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Host: index should handle an exception' do
     Ransack::Search.any_instance.stubs(:result).raises(Exception.new("Random Exception"))
-    login_as_host
+    authenticate_as_host
 
-    get :index, params: { format: :json }
+    get playlists_url(format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -192,19 +194,19 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Guest: index should get redirected to login' do
-    get :index, params: { format: :json }
-    assert_redirected_to  '/users/sign_in'
+    get playlists_url(format: :json)
+    assert_response :unauthorized
   end
 
   ##
   # Show
   ##
   test 'Admin: should get show for own playlist' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     p1 = create(:playlist, user: admin)
 
-    get :show, params: { id: p1.id.to_s, format: :json }
+    get playlist_url(id: p1.id, format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -215,11 +217,11 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Admin: should get show for another users playlist' do
     host = create_user(role_titles: [:host])
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     p1 = create(:playlist, user: host)
 
-    get :show, params: { id: p1.id.to_s, format: :json }
+    get playlist_url(id: p1.id, format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -229,9 +231,9 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Admin: should not find nonexistant playlist' do
-    login_as_admin
+    authenticate_as_admin
 
-    get :show, params: { id: 'nope', format: :json }
+    get playlist_url(id: 'nope', format: :json)
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -242,10 +244,10 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Admin: show should handle an exception' do
     Playlist.stubs(:find).raises(Exception.new("Random Exception"))
-    admin = login_as_admin
+    admin = authenticate_as_admin
     playlist = create(:playlist, user: admin)
 
-    get :show, params: { id: playlist.id.to_s, format: :json }
+    get playlist_url(id: playlist.id, format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -253,11 +255,11 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Host: should get show for own playlist' do
-    host = login_as_host
+    host = authenticate_as_host
 
     p1 = create(:playlist, user: host)
 
-    get :show, params: { id: p1.id.to_s, format: :json }
+    get playlist_url(id: p1.id, format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -268,11 +270,11 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Host: should not get show for another users playlist' do
     user = create_user(role_titles: [:host])
-    host = login_as_host
+    host = authenticate_as_host
 
     p1 = create(:playlist, user: user)
 
-    get :show, params: { id: p1.id.to_s, format: :json }
+    get playlist_url(id: p1.id, format: :json)
     assert_response :unauthorized
 
     results = JSON.parse(response.body)
@@ -282,9 +284,9 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Host: should not find nonexistant playlist' do
-    login_as_host
+    authenticate_as_host
 
-    get :show, params: { id: 'nope', format: :json }
+    get playlist_url(id: 'nope', format: :json)
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -295,10 +297,10 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Host: show should handle an exception' do
     Playlist.stubs(:find).raises(Exception.new("Random Exception"))
-    host = login_as_host
+    host = authenticate_as_host
     playlist = create(:playlist, user: host)
 
-    get :show, params: { id: playlist.id.to_s, format: :json }
+    get playlist_url(id: playlist.id, format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -306,20 +308,20 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Guest: show should get redirected to login' do
-    get :show, params: { id: 'whatver', format: :json }
-    assert_redirected_to  '/users/sign_in'
+    get playlist_url(id: 'whatever', format: :json)
+    assert_response :unauthorized
   end
 
   ##
   # Create
   ##
   test 'Admin: should create playlists for itself' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     playlist = create(:playlist, user: admin)
     User.any_instance.expects(:import_playlists).once.returns([playlist])
 
-    post :create, params: { format: :json }
+    post playlists_url(format: :json)
     assert_response :success
 
 
@@ -331,12 +333,12 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Admin: should create playlist for a different user' do
     host = create_user(role_titles: [:host])
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     playlist = create(:playlist, user: host)
     User.any_instance.expects(:import_playlists).once.returns([playlist])
 
-    post :create, params: { user_id: host.id.to_s, format: :json }
+    post playlists_url(format: :json), params: { user_id: host.id.to_s }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -347,9 +349,9 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Admin: create should handle exception' do
     User.any_instance.stubs(:import_playlists).raises(Exception.new("Random Exception"))
-    login_as_admin
+    authenticate_as_admin
 
-    post :create, params: { format: :json }
+    post playlists_url(format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -357,12 +359,12 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Host: should create playlist for itself' do
-    host = login_as_host
+    host = authenticate_as_host
 
     playlist = create(:playlist, user: host)
     User.any_instance.expects(:import_playlists).once.returns([playlist])
 
-    post :create, params: { format: :json }
+    post playlists_url(format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -373,17 +375,17 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Host: cannot create playlist for a different user' do
     host2 = create_user(role_titles: [:host])
-    host = login_as_host
+    host = authenticate_as_host
 
-    post :create, params: { user_id: host2.id.to_s, format: :json }
+    post playlists_url(format: :json), params: { user_id: host2.id.to_s }
     assert_response :unauthorized
   end
 
   test 'Host: create should handle exception' do
     User.any_instance.stubs(:import_playlists).raises(Exception.new("Random Exception"))
-    login_as_host
+    authenticate_as_host
 
-    post :create, params: { format: :json }
+    post playlists_url(format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -393,20 +395,20 @@ class PlaylistsControllerTest < ActionController::TestCase
   test 'Guest: create should get redirected to login' do
     user = create_user(role_titles: [:admin])
 
-    post :create, params: { user_id: user.id.to_s, format: :json }
-    assert_redirected_to  '/users/sign_in'
+    post playlists_url(format: :json), params: { user_id: user.id.to_s }
+    assert_response :unauthorized
   end
 
   ##
   # Update
   ##
   test 'Admin: should update playlist for itself' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     playlist = create(:playlist_with_videos, user: admin)
     VideoImportWorker.expects(:perform_async).with(playlist.id).once.returns(playlist.videos)
 
-    put :update, params: { id: playlist.id.to_s, format: :json }
+    put playlist_url(id: playlist.id, format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -417,12 +419,12 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Admin: should update playlist for a different user' do
     host = create_user(role_titles: [:host])
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     playlist = create(:playlist, user: host)
     VideoImportWorker.expects(:perform_async).with(playlist.id).once.returns(playlist.videos)
 
-    put :update, params: { id: playlist.id.to_s, format: :json }
+    put playlist_url(id: playlist.id, format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -432,9 +434,9 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Admin: update should handle playlist not found' do
-    login_as_admin
+    authenticate_as_admin
 
-    put :update, params: { id: 'nope', format: :json }
+    put playlist_url(id: 'nope', format: :json)
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -444,12 +446,12 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Admin: update should handle exception' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     playlist = create(:playlist, user: admin)
     VideoImportWorker.expects(:perform_async).with(playlist.id).raises(Exception.new('Random Exception'))
 
-    put :update, params: { id: playlist.id.to_s, format: :json }
+    put playlist_url(id: playlist.id, format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -457,12 +459,12 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Host: should update playlist for itself' do
-    host = login_as_host
+    host = authenticate_as_host
 
     playlist = create(:playlist_with_videos, user: host)
     VideoImportWorker.expects(:perform_async).with(playlist.id).once.returns(playlist.videos)
 
-    put :update, params: { id: playlist.id.to_s, format: :json }
+    put playlist_url(id: playlist.id, format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -473,11 +475,11 @@ class PlaylistsControllerTest < ActionController::TestCase
 
   test 'Host: should not be able to update playlist for a different user' do
     host = create_user(role_titles: [:host])
-    login_as_host
+    authenticate_as_host
 
     playlist = create(:playlist, user: host)
 
-    put :update, params: { id: playlist.id.to_s, format: :json }
+    put playlist_url(id: playlist.id, format: :json)
     assert_response :unauthorized
 
     results = JSON.parse(response.body)
@@ -485,9 +487,9 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Host: update should handle playlist not found' do
-    login_as_host
+    authenticate_as_host
 
-    put :update, params: { id: 'nope', format: :json }
+    put playlist_url(id: 'whatever', format: :json)
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -497,12 +499,12 @@ class PlaylistsControllerTest < ActionController::TestCase
   end
 
   test 'Host: update should handle exception' do
-    host = login_as_host
+    host = authenticate_as_host
 
     playlist = create(:playlist, user: host)
     VideoImportWorker.expects(:perform_async).with(playlist.id).raises(Exception.new('Random Exception'))
 
-    put :update, params: { id: playlist.id.to_s, format: :json }
+    put playlist_url(id: playlist.id, format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -512,7 +514,7 @@ class PlaylistsControllerTest < ActionController::TestCase
   test 'Guest: update should get redirected to login' do
     playlist = create(:playlist)
 
-    put :update, params: { id: playlist.id.to_s, format: :json }
-    assert_redirected_to  '/users/sign_in'
+    put playlist_url(id: playlist.id, format: :json)
+    assert_response :unauthorized
   end
 end

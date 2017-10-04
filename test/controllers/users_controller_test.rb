@@ -1,4 +1,6 @@
-class UsersControllerTest < ActionController::TestCase
+require 'test_helper'
+
+class UsersControllerTest < ActionDispatch::IntegrationTest
   ##
   # Routes
   ##
@@ -15,9 +17,9 @@ class UsersControllerTest < ActionController::TestCase
   ##
   test 'Admin: should show the requires auth page' do
     admin = create_user(role_titles: [:admin], requires_auth: true)
-    login_as(admin)
+    authenticate_as(admin)
 
-    get :requires_auth, params: { id: admin.id.to_s }
+    get requires_auth_user_url(id: admin.id)
 
     assert_response :success
     assert_template :requires_auth
@@ -25,9 +27,9 @@ class UsersControllerTest < ActionController::TestCase
 
   test 'Admin: should not show auth page when requires_auth is false' do
     admin = create_user(role_titles: [:admin], requires_auth: false)
-    login_as(admin)
+    authenticate_as(admin)
 
-    get :requires_auth, params: { id: admin.id.to_s }
+    get requires_auth_user_url(id: admin.id)
 
     assert_redirected_to '/'
   end
@@ -40,12 +42,12 @@ class UsersControllerTest < ActionController::TestCase
     User.where('id != ?', SYSTEM_ADMIN_ID).delete_all
 
     admin = create_user(role_titles: [:admin])
-    login_as(admin)
+    authenticate_as(admin)
 
     u1 = create(:user)
     u2 = create(:user)
 
-    get :index, params: { format: :json }
+    get users_url(format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -67,11 +69,11 @@ class UsersControllerTest < ActionController::TestCase
 
     # Counts as first user (hence 11 later on)
     admin = create_user(role_titles: [:admin])
-    login_as(admin)
+    authenticate_as(admin)
 
     users = 10.times.map { create(:user) }
 
-    get :index, params: { format: :json, q: { s: 'id asc'}, per_page: '3', page: '2' }
+    get users_url(format: :json), params: { q: { s: 'id asc'}, per_page: '3', page: '2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -96,11 +98,11 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Admin: cannot set page < 1' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     p1 = create(:user)
 
-    get :index, params: { format: :json, per_page: '-1', page: '-2' }
+    get users_url(format: :json), params: { per_page: '-1', page: '-2' }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -110,9 +112,9 @@ class UsersControllerTest < ActionController::TestCase
 
   test 'Admin: index should handle an exception' do
     User.stubs(:without_system_admin).raises(Exception.new("Random Exception"))
-    login_as_admin
+    authenticate_as_admin
 
-    get :index, params: { format: :json }
+    get users_url(format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -120,11 +122,11 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Host : cannot access index' do
-    login_as_host
+    authenticate_as_host
 
     user = create(:user)
 
-    get :index, params: { format: :json }
+    get users_url(format: :json)
     assert_response :unauthorized
 
     results = JSON.parse(response.body)
@@ -132,19 +134,19 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Guest: index should get redirected to login' do
-    get :index, params: { format: :json }
-    assert_redirected_to  '/users/sign_in'
+    get users_url(format: :json)
+    assert_response :unauthorized
   end
 
   ##
   # Show
   ##
   test 'Admin: should get own user' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     u1 = create(:user)
 
-    get :show, params: { id: u1.id.to_s, format: :json }
+    get user_url(id: u1.id, format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -155,11 +157,11 @@ class UsersControllerTest < ActionController::TestCase
 
   test 'Admin: should get another user' do
     host = create_user(role_titles: [:host])
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     u = create(:user)
 
-    get :show, params: { id: u.id.to_s, format: :json }
+    get user_url(id: u.id, format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -169,9 +171,9 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Admin: should not find nonexistant user' do
-    login_as_admin
+    authenticate_as_admin
 
-    get :show, params: { id: 'nope', format: :json }
+    get user_url(id: 'nope', format: :json)
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -181,10 +183,10 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Admin: user should handle an exception' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
     User.stubs(:find).raises(Exception.new("Random Exception"))
 
-    get :show, params: { id: 'whatever', format: :json }
+    get user_url(id: 'whatever', format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -192,9 +194,9 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Host: should get own user' do
-    host = login_as_host
+    host = authenticate_as_host
 
-    get :show, params: { id: host.id.to_s, format: :json }
+    get user_url(id: host.id, format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -206,11 +208,11 @@ class UsersControllerTest < ActionController::TestCase
 
   test 'Host: should get another user' do
     user = create_user(role_titles: [:host])
-    host = login_as_host
+    host = authenticate_as_host
 
     u = create(:user, role_titles: [:admin])
 
-    get :show, params: { id: u.id.to_s, format: :json }
+    get user_url(id: u.id, format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -220,9 +222,9 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Host: should not find nonexistant user' do
-    login_as_host
+    authenticate_as_host
 
-    get :show, params: { id: 'nope', format: :json }
+    get user_url(id: 'nope', format: :json)
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -232,10 +234,10 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Host: user should handle an exception' do
-    host = login_as_host
+    host = authenticate_as_host
     User.stubs(:find).raises(Exception.new("Random Exception"))
 
-    get :show, params: { id: 'whatever', format: :json }
+    get user_url(id: 'whatever', format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -243,8 +245,8 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Guest: user should get redirected to login' do
-    get :index, params: { format: :json }
-    assert_redirected_to  '/users/sign_in'
+    get users_url(format: :json)
+    assert_response :unauthorized
   end
 
   ##
@@ -255,7 +257,7 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Admin: can update another user' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
     user = create_user(role_titles: [:host])
 
     user = create(:user, email: 'original@email.com', role_titles: [:admin], name: 'Original Name', requires_auth: true)
@@ -266,7 +268,7 @@ class UsersControllerTest < ActionController::TestCase
       change_roles: 'true',
       role_titles: ['host']
     }
-    put :update, params: { id: user.id.to_s, user: user_params, format: :json }
+    put user_url(id: user.id, format: :json), params: { user: user_params }
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -282,7 +284,7 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Admin: update should fail validation' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
     user = create(:user)
     user_params = {
       name: '',
@@ -290,7 +292,7 @@ class UsersControllerTest < ActionController::TestCase
       requires_auth: '',
       change_roles: 'true'
     }
-    put :update, params: { id: user.id.to_s, user: user_params, format: :json }
+    put user_url(id: user.id, format: :json), params: { user: user_params }
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -312,9 +314,9 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Admin: update should handle user not found' do
-    login_as_admin
+    authenticate_as_admin
 
-    put :update, params: { id: 'nope', format: :json }
+    put user_url(id: 'nope', format: :json)
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -324,11 +326,11 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Admin: update should handle exception' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     User.stubs(:find).raises(Exception.new("Random Exception"))
 
-    put :update, params: { id: 'whatever', format: :json }
+    put user_url(id: 'whatever', format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -336,9 +338,9 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Host: cannot update users' do
-    login_as_host
+    authenticate_as_host
 
-    put :update, params: { id: 'whatever', user: {}, format: :json }
+    put user_url(id: 'whatever', format: :json), params: { user: {}}
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -348,19 +350,19 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Guest: update should get redirected to login' do
-    put :update, params: { id: 'whatever', format: :json }
-    assert_redirected_to  '/users/sign_in'
+    put user_url(id: 'whatever', format: :json)
+    assert_response :unauthorized
   end
 
   ##
   # Destroy
   ##
   test 'Admin: can delete a user' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     user = create(:user)
 
-    delete :destroy, params: { id: user.id.to_s, format: :json }
+    delete user_url(id: user.id, format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -374,9 +376,9 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Admin: destroy should handle user not found' do
-    login_as_admin
+    authenticate_as_admin
 
-    delete :destroy, params: { id: 'nope', format: :json }
+    delete user_url(id: 'nope', format: :json)
     assert_response :not_found
 
     results = JSON.parse(response.body)
@@ -386,11 +388,11 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Admin: destroy should handle exception' do
-    admin = login_as_admin
+    admin = authenticate_as_admin
 
     User.stubs(:find).raises(Exception.new("Random Exception"))
 
-    delete :destroy, params: { id: 'whatever', format: :json }
+    delete user_url(id: 'whatever', format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -398,10 +400,10 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'Host: cannot destroy users' do
-    login_as_host
+    authenticate_as_host
     user = create(:user)
 
-    delete :destroy, params: { id: user.id.to_s, user: {}, format: :json }
+    delete user_url(id: user.id, format: :json)
     assert_response :unauthorized
 
     results = JSON.parse(response.body)
@@ -411,7 +413,7 @@ class UsersControllerTest < ActionController::TestCase
   test 'Guest: destroy should get redirected to login' do
     user = create(:user)
 
-    delete :destroy, params: { id: user.id.to_s, format: :json }
-    assert_redirected_to  '/users/sign_in'
+    delete user_url(id: user.id, format: :json)
+    assert_response :unauthorized
   end
 end

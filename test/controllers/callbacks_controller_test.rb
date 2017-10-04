@@ -1,4 +1,6 @@
-class CallbacksControllerTest < ActionController::TestCase
+require 'test_helper'
+
+class CallbacksControllerTest < ActionDispatch::IntegrationTest
   ##
   # Routes
   ##
