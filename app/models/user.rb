@@ -58,13 +58,14 @@ class User < ActiveRecord::Base
   end
 
   def role_titles
-    @role_titles || role_symbols
+    (@role_titles || role_symbols).collect(&:to_sym)
   end
 
   # Accepts one or more roles
   # has_role(:admin)
   # has_role(:admin, :host)
   def has_role(*roles)
+    # Must find at least one of roles to count
     (role_titles & roles.map(&:to_sym)).present?
   end
   alias_method :has_roles, :has_role
@@ -76,30 +77,8 @@ class User < ActiveRecord::Base
     }.merge(options))
   end
 
-  def update_roles
-    # Wipe out any existing roles
-    roles.destroy_all
-    roles.reload
-
-    unless requires_auth
-      self.role_titles ||= []
-      self.role_titles.each do |title|
-        next if !Authorization.current_user.try(:is_admin) && title == 'admin'
-        self.roles.build(title: title)
-      end
-    end
-  end
-
   def is_admin
-    roles.any?{|r| r.title == "admin"}
-  end
-
-  def deliver_authorized_email
-    UserMailer.authorized_email(self).deliver_now!
-  end
-
-  def deliver_registered_user_email
-    UserMailer.registered_user(self).deliver_now!
+    role_symbols.any?{|r| r == :admin}
   end
 
   def get_token
@@ -107,11 +86,18 @@ class User < ActiveRecord::Base
     token
   end
 
+  # This won't just return if we're out of date, it will
+  # also get a new token if time is out. Will only ever
+  # return true if we can't get a new token
   def token_expired?(new_time = nil)
     expired = Time.at(expires_at) < Time.now rescue true
     if expired
-      get_refresh_token
-      expired = Time.at(read_attribute(:expires_at)) < Time.now rescue true
+      begin
+        get_refresh_token
+        expired = Time.at(read_attribute(:expires_at)) < Time.now
+      rescue Exception
+        expired = true
+      end
     end
     expired
   end
@@ -177,5 +163,28 @@ class User < ActiveRecord::Base
 
     update_attributes!(importing_playlists: false)
     playlists
+  end
+
+protected
+  def deliver_authorized_email
+    UserMailer.authorized_email(self).deliver_now!
+  end
+
+  def deliver_registered_user_email
+    UserMailer.registered_user(self).deliver_now!
+  end
+
+  def update_roles
+    # Wipe out any existing roles
+    roles.destroy_all
+    roles.reload
+
+    unless requires_auth
+      self.role_titles ||= []
+      self.role_titles.each do |title|
+        next if !Authorization.current_user.try(:is_admin) && title.to_sym == :admin
+        self.roles.build(title: title)
+      end
+    end
   end
 end

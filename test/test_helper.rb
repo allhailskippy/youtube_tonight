@@ -4,7 +4,11 @@ require 'rails/test_help'
 require 'sidekiq/testing'
 require 'mocha/mini_test'
 require 'minitest/retry'
+require 'webmock/rspec'
+require 'webmock/minitest'
+
 Minitest::Retry.use!(verbose: false, retry_count: 5)
+WebMock.disable_net_connect!(allow_localhost: true)
 
 ['helpers'].each do |lib|
   Dir["#{File.dirname(__FILE__)}/#{lib}/**/*.rb"].each {|f| require f}

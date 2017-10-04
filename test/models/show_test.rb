@@ -107,8 +107,12 @@ class ShowTest < ActiveSupport::TestCase
     show = create(:show)
     
     jshow = JSON.parse(show.to_json)
-    assert jshow.keys.include?("users")
-    assert jshow.keys.include?("video_count")
-    assert jshow.keys.include?("hosts")
+    keys = [
+      "id", "air_date", "title", "creator_id", "updater_id", "created_at",
+      "updated_at", "deleted_at", "version", "video_count", "hosts", "users"
+    ]
+    keys.each do |key|
+      assert jshow.keys.include?(key)
+    end
   end
 end

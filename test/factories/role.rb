@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :role do
     association :user
-    title 'admin'
+    sequence(:title) {|n| "role#{n}" }
   end
 end

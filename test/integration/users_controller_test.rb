@@ -208,16 +208,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test 'Host: should get another user' do
     user = create_user(role_titles: [:host])
+    u =  create(:user, role_titles: [:admin])
     host = authenticate_as_host
-
-    u = create(:user, role_titles: [:admin])
 
     get user_url(id: u.id, format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
     assert_not_empty results
-
     assert_equal JSON.parse(u.to_json), results["data"]
   end
 
