@@ -11,19 +11,22 @@ Minitest::Retry.use!(verbose: false, retry_count: 5)
 end
 
 class ActiveSupport::TestCase
-  fixtures :all
-
-  # Add more helper methods to be used by all tests here...
-  include Devise::Test::ControllerHelpers
   include FactoryGirl::Syntax::Methods
-  include Permissions
-
-  def create_user(options = {})
-    create(:user, options)
-  end
 
   def setup
     Authorization.current_user = User.find(SYSTEM_ADMIN_ID)
     User.stamper = Authorization.current_user
+  end
+end
+
+class ActionDispatch::IntegrationTest
+  fixtures :all
+
+  # Add more helper methods to be used by all tests here...
+  include Devise::Test::IntegrationHelpers
+  include Permissions
+
+  def create_user(options = {})
+    create(:user, options)
   end
 end

@@ -5,12 +5,6 @@ class Playlist < ActiveRecord::Base
   belongs_to :user
   has_many :videos, dependent: :destroy, as: :parent
 
-  # == Class Methods ========================================================
-  # Used for definining websocket events
-  def self.events
-    [:updated]
-  end
-
   # == Instance Methods =====================================================
   def import_videos
     update_attributes!(importing_videos: true)
