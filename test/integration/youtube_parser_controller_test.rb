@@ -1,4 +1,6 @@
-class YoutubeParserControllerTest < ActionController::TestCase
+require 'test_helper'
+
+class YoutubeParserControllerTest < ActionDispatch::IntegrationTest
   ##
   # Routes
   ##
@@ -32,9 +34,9 @@ class YoutubeParserControllerTest < ActionController::TestCase
   test 'Admin: should get index' do
     stub_get_video_info
 
-    login_as_admin
+    authenticate_as_admin
 
-    get :index, format: :json
+    get youtube_parser_url(format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -44,9 +46,9 @@ class YoutubeParserControllerTest < ActionController::TestCase
   test 'Admin: should handle exception' do
     YoutubeApi.stubs(:get_video_info).raises(Exception.new("Random Exception"))
 
-    login_as_admin
+    authenticate_as_admin
 
-    get :index, format: :json
+    get youtube_parser_url(format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -56,9 +58,9 @@ class YoutubeParserControllerTest < ActionController::TestCase
   test 'Host: should get index as html' do
     stub_get_video_info
 
-    login_as_host
+    authenticate_as_host
 
-    get :index, format: :json
+    get youtube_parser_url(format: :json)
     assert_response :success
 
     results = JSON.parse(response.body)
@@ -68,9 +70,9 @@ class YoutubeParserControllerTest < ActionController::TestCase
   test 'Host: should handle exception' do
     YoutubeApi.stubs(:get_video_info).raises(Exception.new("Random Exception"))
 
-    login_as_host
+    authenticate_as_host
 
-    get :index, format: :json
+    get youtube_parser_url(format: :json)
     assert_response :unprocessable_entity
 
     results = JSON.parse(response.body)
@@ -78,7 +80,7 @@ class YoutubeParserControllerTest < ActionController::TestCase
   end
 
   test 'Guest: should get index as html' do
-    get :index, format: :json
-    assert_redirected_to  '/users/sign_in'
+    get youtube_parser_url(format: :json)
+    assert_response :unauthorized
   end
 end

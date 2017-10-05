@@ -98,7 +98,7 @@ class YoutubeApi
         video_count: playlist[:video_count],
         description: playlist[:description],
         thumbnails: playlist[:thumbnails]
-      }
+      }.with_indifferent_access
     end
     ret
   end
@@ -142,7 +142,7 @@ class YoutubeApi
             channel_id: video.channel_id,
             channel_title: video.channel_title,
             description: video.description
-          }
+          }.with_indifferent_access
         end
 
         self.get_duration(video_ids.join(','), user).each do |video_id, duration|

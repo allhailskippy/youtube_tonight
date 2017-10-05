@@ -1,4 +1,6 @@
 class Show < ActiveRecord::Base
+  model_stamper
+
   # == Relationships ========================================================
   has_many :videos, dependent: :destroy, as: :parent
   has_many :show_users

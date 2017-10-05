@@ -1,4 +1,6 @@
 class Role < ActiveRecord::Base
+  model_stamper
+
   # == Relationships ========================================================
   belongs_to :user
 
