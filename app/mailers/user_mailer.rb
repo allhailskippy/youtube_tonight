@@ -1,6 +1,4 @@
-class UserMailer < ActionMailer::Base
-  default from: "YouTube Tonight <yttonight@gmail.com>"
-
+class UserMailer < ApplicationMailer
   def authorized_email(user)
     @user = user
     mail(to: @user.email, subject: "Huzzah! Your YouTube Tonight account has been approved!")
