@@ -128,40 +128,43 @@ class User < ActiveRecord::Base
   def import_playlists
     update_attributes!(importing_playlists: true)
 
-    # Get the list of playlists from YouTube
-    yt_playlists = YoutubeApi.get_playlists(self)
+    begin
+      # Get the list of playlists from YouTube
+      yt_playlists = YoutubeApi.get_playlists(self)
 
-    # Clean out any playlists that no longer exist
-    new_ids = yt_playlists.values.collect{|p| p[:playlist_id] }
-    current_ids = playlists.collect(&:api_playlist_id)
-    playlists.where(api_playlist_id: (current_ids - new_ids)).destroy_all
-    # Create/update existing playlists
-    yt_playlists.each do |list, details|
-      playlist = Playlist
-        .where(user_id: id, api_playlist_id: details[:playlist_id])
-        .first_or_initialize(
-          user_id: id,
-          api_playlist_id: details[:playlist_id],
-        )
-      playlist.api_title = details[:title]
-      playlist.api_description = details[:description]
-      %w(default medium high standard maxres).each do |size|
-        %w(url width height).each do |type|
-          playlist.send("api_thumbnail_#{size}_#{type}=", details[:thumbnails].try(size.to_sym).try(type.to_sym))
+      # Clean out any playlists that no longer exist
+      new_ids = yt_playlists.values.collect{|p| p[:playlist_id] }
+      current_ids = playlists.collect(&:api_playlist_id)
+      playlists.where(api_playlist_id: (current_ids - new_ids)).destroy_all
+      # Create/update existing playlists
+      yt_playlists.each do |list, details|
+        playlist = Playlist
+          .where(user_id: id, api_playlist_id: details[:playlist_id])
+          .first_or_initialize(
+            user_id: id,
+            api_playlist_id: details[:playlist_id],
+          )
+        playlist.api_title = details[:title]
+        playlist.api_description = details[:description]
+        %w(default medium high standard maxres).each do |size|
+          current_size = details[:thumbnails].try(size.to_sym)
+          %w(url width height).each do |type|
+            playlist.send("api_thumbnail_#{size}_#{type}=", current_size.try(type.to_sym))
+          end
         end
+
+        playlist.save! if playlist.changed?
       end
-      playlist.creator_id = id
-      playlist.updater_id = id
 
-      playlist.save! if playlist.changed?
+      playlists.reload
+      playlists.each do |playlist|
+        VideoImportWorker.perform_async(playlist.id)
+      end
+    rescue Exception => e
+      NewRelic::Agent.notice_error(e)
+    ensure
+      update_attributes!(importing_playlists: false)
     end
-
-    playlists.reload
-    playlists.each do |playlist|
-      VideoImportWorker.perform_async(playlist.id)
-    end
-
-    update_attributes!(importing_playlists: false)
     playlists
   end
 

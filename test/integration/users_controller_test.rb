@@ -251,7 +251,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # Update
   ##
   test 'Admin: should not update own user' do
-    skip 'Fix this in TID-102'
+    skip 'TODO: Fix this in TID-102'
   end
 
   test 'Admin: can update another user' do

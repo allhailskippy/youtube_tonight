@@ -18,7 +18,7 @@ class UserTest < ActiveSupport::TestCase
     User.stamper = stamp
     user = create(:user)
 
-    assert_equal stamp, user.creator 
+    assert_equal stamp, user.creator
     assert_equal stamp, user.updater
   end
 
@@ -74,14 +74,14 @@ class UserTest < ActiveSupport::TestCase
     assert !user.valid?
     assert_equal ["can't be blank"], user.errors.messages[:name]
     assert_equal ["can't be blank"], user.errors.messages[:email]
-  
+
     # On update
     user = create(:user)
     user.role_titles = []
     user.requires_auth = false
     assert !user.valid?
     assert_equal ["must be selected"], user.errors.messages[:role_titles]
-  
+
     user.requires_auth = true
     assert user.valid?
     assert user.errors.messages[:role_titles].blank?
@@ -148,19 +148,19 @@ class UserTest < ActiveSupport::TestCase
     User.any_instance.stubs(:import_playlists)
     User.any_instance.stubs(:deliver_registered_user_email)
 
-    auth = mock()
-    auth.stubs(:provider).returns('google_oauth2')
-    info = mock()
-    info.stubs(:email).returns('test@test.com')
-    info.stubs(:name).returns('test name')
-    info.stubs(:image).returns('http://test.com/thumbnail.gif')
-    auth.stubs(:info).returns(info)
-    cred = mock()
-    cred.stubs(:token).returns('abcd1234')
-    cred.stubs(:refresh_token).returns('qwerty5678')
-    cred.stubs(:expires_at).returns(987654321)
-    auth.stubs(:credentials).returns(cred)
-
+    auth = stub(
+      provider: 'google_oauth2',
+      info: stub(
+        email: 'test@test.com',
+        name: 'test name',
+        image: 'http://test.com/thumbnail.gif'
+      ),
+      credentials: stub(
+        token: 'abcd1234',
+        refresh_token: 'qwerty5678',
+        expires_at: 987654321
+      )
+    )
     user = User.from_omniauth(auth)
 
     assert_equal 'google_oauth2', user.provider
@@ -286,8 +286,207 @@ class UserTest < ActiveSupport::TestCase
     assert_equal expected_time.to_i, user.expires_at
   end
 
+  def fake_playlists
+    {
+      playlist1: {
+        playlist_id: 'abcd1234',
+        title: 'test title',
+        description: 'this is a description for a playlist',
+        thumbnails: stub(
+          default: stub(url: 'http://test.com/default.gif', width: 120, height: 90),
+          medium: stub(url: 'http://test.com/medium.gif', width: 320, height: 180),
+          high: stub(url: 'http://test.com/high.gif', width: 480, height: 360),
+          standard: stub(url: 'http://test.com/standard.gif', width: 640, height: 480),
+          maxres: stub(url: 'http://test.com/maxres.gif', width: 1280, height: 720)
+        )
+      }, playlist2: {
+        playlist_id: 'qwerty12345',
+        title: 'test title 2',
+        description: 'this is another description for a playlist',
+        thumbnails: stub(
+          default: stub(url: 'http://test.com/default2.gif', width: 120, height: 90),
+          medium: stub(url: 'http://test.com/medium2.gif', width: 320, height: 180),
+          high: stub(url: 'http://test.com/high2.gif', width: 480, height: 360),
+          standard: stub(url: 'http://test.com/standard2.gif', width: 640, height: 480),
+          maxres: stub(url: 'http://test.com/maxres2.gif', width: 1280, height: 720)
+        )
+      }
+    }
+  end
+
   test 'imports playlists' do
-    skip 'TODO'
+    user = create(:user)
+    User.stamper = user
+
+    YoutubeApi.expects(:get_playlists).with(user).returns(fake_playlists)
+    VideoImportWorker.expects(:perform_async).twice
+
+    assert_difference 'user.playlists.count', 2 do
+      user.import_playlists
+    end
+
+    # Assigns correct values
+    playlist = Playlist.find_by_api_playlist_id('abcd1234')
+    assert_equal user.id, playlist.user_id
+    assert_equal 'abcd1234', playlist.api_playlist_id
+    assert_equal 'test title', playlist.api_title
+    assert_equal 'http://test.com/default.gif', playlist.api_thumbnail_default_url
+    assert_equal 120, playlist.api_thumbnail_default_width
+    assert_equal 90, playlist.api_thumbnail_default_height
+    assert_equal 'http://test.com/medium.gif', playlist.api_thumbnail_medium_url
+    assert_equal 320, playlist.api_thumbnail_medium_width
+    assert_equal 180, playlist.api_thumbnail_medium_height
+    assert_equal 'http://test.com/high.gif', playlist.api_thumbnail_high_url
+    assert_equal 480, playlist.api_thumbnail_high_width
+    assert_equal 360, playlist.api_thumbnail_high_height
+    assert_equal 'http://test.com/standard.gif', playlist.api_thumbnail_standard_url
+    assert_equal 640, playlist.api_thumbnail_standard_width
+    assert_equal 480, playlist.api_thumbnail_standard_height
+    assert_equal 'http://test.com/maxres.gif', playlist.api_thumbnail_maxres_url
+    assert_equal 1280, playlist.api_thumbnail_maxres_width
+    assert_equal 720, playlist.api_thumbnail_maxres_height
+    assert_equal user.id, playlist.creator_id
+    assert_equal user.id, playlist.updater_id
+
+    playlist = Playlist.find_by_api_playlist_id('qwerty12345')
+    assert_equal user.id, playlist.user_id
+    assert_equal 'qwerty12345', playlist.api_playlist_id
+    assert_equal 'test title 2', playlist.api_title
+    assert_equal 'http://test.com/default2.gif', playlist.api_thumbnail_default_url
+    assert_equal 120, playlist.api_thumbnail_default_width
+    assert_equal 90, playlist.api_thumbnail_default_height
+    assert_equal 'http://test.com/medium2.gif', playlist.api_thumbnail_medium_url
+    assert_equal 320, playlist.api_thumbnail_medium_width
+    assert_equal 180, playlist.api_thumbnail_medium_height
+    assert_equal 'http://test.com/high2.gif', playlist.api_thumbnail_high_url
+    assert_equal 480, playlist.api_thumbnail_high_width
+    assert_equal 360, playlist.api_thumbnail_high_height
+    assert_equal 'http://test.com/standard2.gif', playlist.api_thumbnail_standard_url
+    assert_equal 640, playlist.api_thumbnail_standard_width
+    assert_equal 480, playlist.api_thumbnail_standard_height
+    assert_equal 'http://test.com/maxres2.gif', playlist.api_thumbnail_maxres_url
+    assert_equal 1280, playlist.api_thumbnail_maxres_width
+    assert_equal 720, playlist.api_thumbnail_maxres_height
+    assert_equal user.id, playlist.creator_id
+    assert_equal user.id, playlist.updater_id
+
+    user.reload
+    assert !user.importing_playlists
+  end
+
+  test 'imports new videos and cleans out old playlists' do
+    user = create(:user)
+    playlist = create(:playlist, user: user)
+
+    YoutubeApi.expects(:get_playlists).with(user).returns(fake_playlists)
+    VideoImportWorker.expects(:perform_async).twice
+
+    # Adds 2, takes away 1
+    assert_difference 'user.playlists.count', 1 do
+      user.import_playlists
+    end
+
+    assert Playlist.exists?(api_playlist_id: 'abcd1234')
+    assert Playlist.exists?(api_playlist_id: 'qwerty12345')
+    assert !Playlist.exists?(playlist.id)
+
+    user.reload
+    assert !user.importing_playlists
+  end
+
+  test 'updates existing playlists' do
+    user = create(:user)
+    User.stamper = user
+
+    playlist1 = create(:playlist, user: user, api_playlist_id: 'abcd1234', api_title: 'original title')
+    playlist2 = create(:playlist, user: user, api_playlist_id: 'qwerty12345', api_title: 'original title 2')
+
+    YoutubeApi.expects(:get_playlists).with(user).returns(fake_playlists)
+    VideoImportWorker.expects(:perform_async).twice
+
+    assert_no_difference 'user.playlists.count' do
+      user.import_playlists
+    end
+
+    playlist = Playlist.find(playlist1.id)
+    assert_equal user.id, playlist.user_id
+    assert_equal 'abcd1234', playlist.api_playlist_id
+    assert_equal 'test title', playlist.api_title
+    assert_equal 'http://test.com/default.gif', playlist.api_thumbnail_default_url
+    assert_equal 120, playlist.api_thumbnail_default_width
+    assert_equal 90, playlist.api_thumbnail_default_height
+    assert_equal 'http://test.com/medium.gif', playlist.api_thumbnail_medium_url
+    assert_equal 320, playlist.api_thumbnail_medium_width
+    assert_equal 180, playlist.api_thumbnail_medium_height
+    assert_equal 'http://test.com/high.gif', playlist.api_thumbnail_high_url
+    assert_equal 480, playlist.api_thumbnail_high_width
+    assert_equal 360, playlist.api_thumbnail_high_height
+    assert_equal 'http://test.com/standard.gif', playlist.api_thumbnail_standard_url
+    assert_equal 640, playlist.api_thumbnail_standard_width
+    assert_equal 480, playlist.api_thumbnail_standard_height
+    assert_equal 'http://test.com/maxres.gif', playlist.api_thumbnail_maxres_url
+    assert_equal 1280, playlist.api_thumbnail_maxres_width
+    assert_equal 720, playlist.api_thumbnail_maxres_height
+    assert_equal user.id, playlist.creator_id
+    assert_equal user.id, playlist.updater_id
+
+    playlist = Playlist.find(playlist2.id)
+    assert_equal user.id, playlist.user_id
+    assert_equal 'qwerty12345', playlist.api_playlist_id
+    assert_equal 'test title 2', playlist.api_title
+    assert_equal 'http://test.com/default2.gif', playlist.api_thumbnail_default_url
+    assert_equal 120, playlist.api_thumbnail_default_width
+    assert_equal 90, playlist.api_thumbnail_default_height
+    assert_equal 'http://test.com/medium2.gif', playlist.api_thumbnail_medium_url
+    assert_equal 320, playlist.api_thumbnail_medium_width
+    assert_equal 180, playlist.api_thumbnail_medium_height
+    assert_equal 'http://test.com/high2.gif', playlist.api_thumbnail_high_url
+    assert_equal 480, playlist.api_thumbnail_high_width
+    assert_equal 360, playlist.api_thumbnail_high_height
+    assert_equal 'http://test.com/standard2.gif', playlist.api_thumbnail_standard_url
+    assert_equal 640, playlist.api_thumbnail_standard_width
+    assert_equal 480, playlist.api_thumbnail_standard_height
+    assert_equal 'http://test.com/maxres2.gif', playlist.api_thumbnail_maxres_url
+    assert_equal 1280, playlist.api_thumbnail_maxres_width
+    assert_equal 720, playlist.api_thumbnail_maxres_height
+    assert_equal user.id, playlist.creator_id
+    assert_equal user.id, playlist.updater_id
+
+    user.reload
+    assert !user.importing_playlists
+  end
+
+  test 'does not save playlists that have not changed' do
+    user = create(:user)
+    User.stamper = user
+
+    YoutubeApi.expects(:get_playlists).with(user).returns(fake_playlists).twice
+    VideoImportWorker.expects(:perform_async).times(4)
+
+    # Import them initially
+    user.import_playlists
+
+    Playlist.any_instance.expects(:save!).never
+    assert_no_difference 'user.playlists.count' do
+      user.import_playlists
+    end
+
+    user.reload
+    assert !user.importing_playlists
+  end
+
+  test 'imports playlist call still resets importing flag on exeption' do
+    user = create(:user)
+
+    YoutubeApi.expects(:get_playlists).raises(Exception.new('whoops'))
+    VideoImportWorker.expects(:perform_async).never
+
+    assert_no_difference('user.playlists.count') do
+      user.import_playlists
+    end
+
+    user.reload
+    assert !user.importing_playlists
   end
 
   #############################################################################

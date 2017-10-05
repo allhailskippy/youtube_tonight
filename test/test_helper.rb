@@ -15,6 +15,8 @@ WebMock.disable_net_connect!(allow_localhost: true)
 end
 
 class ActiveSupport::TestCase
+  fixtures :all
+
   include FactoryGirl::Syntax::Methods
 
   def setup
@@ -24,7 +26,6 @@ class ActiveSupport::TestCase
 end
 
 class ActionDispatch::IntegrationTest
-  fixtures :all
 
   # Add more helper methods to be used by all tests here...
   include Devise::Test::IntegrationHelpers
