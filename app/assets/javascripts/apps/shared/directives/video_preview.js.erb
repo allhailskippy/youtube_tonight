@@ -96,6 +96,9 @@ var VideoPreview = function(
             'onStateChange': function(e) {
               // We're playing!
               if(e.data == YT.PlayerState.PLAYING) {
+                if($scope.currentState && $scope.currentState.playing == true) {
+                  return true;
+                }
                 $scope.currentState.playing = true;
 
                 // Mute if requested
