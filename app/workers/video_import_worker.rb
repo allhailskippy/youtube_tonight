@@ -1,6 +1,6 @@
 class VideoImportWorker
   include Sidekiq::Worker
-  sidekiq_options :queue => :playlists
+  sidekiq_options :queue => :default
 
   def perform(playlist_id)
     begin
