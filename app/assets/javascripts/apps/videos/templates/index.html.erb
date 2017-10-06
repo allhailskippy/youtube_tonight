@@ -14,12 +14,6 @@
           ></a>
         </span>
       </h2>
-      <button
-        ng-click="addVideo()"
-        id="add-video"
-        class="btn btn-lg btn-primary"
-        ng-disabled="shouldShowForm()"
-      >Add Video</button>
     </div>
     <br />
     <div class="text-center">
@@ -84,6 +78,14 @@
   </div>
   <div class="col-md-9 col-md-offset-3 main" ng-show="!shouldShowForm()">
     <div class="row">
+      <div class="pull-left">
+        <button
+          ng-click="addVideo()"
+          id="add-video"
+          class="btn btn-lg btn-primary"
+          ng-disabled="shouldShowForm()"
+        >Add Video</button>
+      </div>
       <div class="pull-right">
         <button
           id="launch_broadcast"

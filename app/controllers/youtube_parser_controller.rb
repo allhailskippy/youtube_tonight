@@ -4,7 +4,7 @@ class YoutubeParserController < ApplicationController
     respond_to do |format|
       format.json do
         authorize(:youtube_parser, :index?)
-        yt_info = YoutubeApi.get_video_info(params[:v])
+        yt_info = YoutubeApi.get_video_info(params[:v], current_user)
         render :json => { :data => yt_info }
       end
     end
