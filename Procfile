@@ -1,2 +1,2 @@
 web: bundle exec puma -C config/puma.rb
-sidekiq: bundle exec sidekiq -c 2 -q default
+sidekiq: bundle exec sidekiq -C config/sidekiq.yml
