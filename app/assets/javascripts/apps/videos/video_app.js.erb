@@ -16,13 +16,18 @@ var routesConfig = function($routeProvider) {
   when('/shows/:show_id/videos', {
     controller: 'VideosIndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/index.html") %>',
-    permission: 'videos.index',
-    menu: 'shows'
+    permission: 'video.index',
+    menu: 'shows',
+    resolve: {
+      show_data: ['$route', 'Show', function($route, Show) {
+        return Show.find($route.current.params.show_id);
+      }]
+    }
   }).
   when('/playlists/:playlist_id/videos', {
     controller: 'VideosPlaylistIndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/playlist_index.html") %>',
-    permission: 'videos.index',
+    permission: 'video.index',
     menu: 'playlists',
     data: {
       userPath: false
@@ -36,7 +41,7 @@ var routesConfig = function($routeProvider) {
   when('/users/:user_id/playlists/:playlist_id/videos', {
     controller: 'VideosPlaylistIndexCtrl',
     templateUrl: '<%= asset_path("apps/videos/templates/playlist_index.html") %>',
-    permission: 'videos.index',
+    permission: 'video.index',
     menu: 'playlists',
     data: {
       userPath: true

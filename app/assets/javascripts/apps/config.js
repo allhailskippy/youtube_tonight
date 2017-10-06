@@ -13,7 +13,10 @@
    *   - `currentUser`
    *   - `auth`
    */
-  var runFunc = function($rootScope, $http, $routeParams, $location, $window, CurrentUser, UserInfo, Auth, User) {
+  var runFunc = function(
+    $rootScope, $http, $routeParams, $location, $window,
+    CurrentUser, UserInfo, Auth, User, ActionCableConfig, ApplicationConstants
+  ) {
     $rootScope.$location = $location;
     $rootScope.$routeParams = $routeParams;
 
@@ -29,6 +32,8 @@
     });
 
     $rootScope.$on('$routeChangeStart', function(scope, next, current) {
+      ActionCableConfig.wsUri = ApplicationConstants.WEBSOCKET_URL;
+
       // Users awaiting authorization get sent to the requires_auth page
       if($rootScope.currentUser.requires_auth) {
         scope.preventDefault();
@@ -61,6 +66,9 @@
       }
     });
   };
-  runFunc.$inject = ['$rootScope', '$http', '$routeParams', '$location', '$window', 'CurrentUser', 'UserInfo', 'Auth', 'User'];
+  runFunc.$inject = [
+    '$rootScope', '$http', '$routeParams', '$location', '$window',
+    'CurrentUser', 'UserInfo', 'Auth', 'User', 'ActionCableConfig', 'ApplicationConstants'
+  ];
   angular.module('YTBroadcastApp').run(runFunc);
 })();

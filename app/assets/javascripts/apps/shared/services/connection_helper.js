@@ -14,30 +14,20 @@
 (function() {
 'use strict';
 
-var ConnectionHelper = function(ApplicationConstants) {
+var ConnectionHelper = function(
+  ApplicationConstants, ActionCableChannel, ActionCableSocketWrangler
+) {
   var self = this;
 
-  self.dispatcher = null;
   self.channel = null;
   self.playerIds = {};
-  self.registeredPlayers = {};
 
-  self.broadcastReady = function(broadcastId) {
-    return self.registeredPlayers[broadcastId] > 0;
+  self.wrangler = function() {
+    return ActionCableSocketWrangler;
   };
 
-  self.getChannel = function(channel_name, dispatcher) {
-    dispatcher = dispatcher || self.getDispatcher();
-    self.channel = self.channel
-      || self.newChannel(channel_name, dispatcher);
-    return self.channel;
-  };
-
-  self.getDispatcher = function() {
-    self.dispatcher = self.dispatcher
-      || self.newDispatcher();
-
-    return self.dispatcher;
+  self.newConsumer = function(channelName, data) {
+    return new ActionCableChannel(channelName, data)
   };
 
   // Can have many players, but only one per base, per page
@@ -47,43 +37,43 @@ var ConnectionHelper = function(ApplicationConstants) {
     return self.playerIds[base];
   }
 
-  self.newChannel = function(channel_name, dispatcher) {
-    return dispatcher.subscribe(channel_name);
-  };
+  self.registeredPlayers = {};
 
-  self.newDispatcher = function() {
-    var dispatcher = new WebSocketRails(ApplicationConstants.WEBSOCKET_URL);
-    return dispatcher;
-  };
-
-  self.registeredPlayerCheck = function(dispatcher, channel) {
-    // Reset players
+  self.monitorBroadcasts = function(broadcastId) {
     self.registeredPlayers = {};
-
-    dispatcher = dispatcher || getDispatcher();
-    channel = channel || getChannel('video_player', dispatcher);
-
-    // See who's alive, this will get picked
-    // up on the video-show directive
-    dispatcher.trigger('video_player.registered_check', {});
-
-    channel.bind('registered', function(message) {
-      var count = self.registeredPlayers[message.player_id]  || 0;
-      self.registeredPlayers[message.player_id] = count + 1;
-    });
-
-    channel.bind('unregistered', function(message) {
-      var count = self.registeredPlayers[message.player_id] || 0;
-
-      // Don't let count dip < 0
-      if(count > 0) {
-        self.registeredPlayers[message.player_id] = count - 1;
+    var consumer = self.newConsumer('VideoPlayerChannel', { player_id: 'monitor', broadcast_id: broadcastId });
+    consumer.subscribe(function(response) {
+      var message = response.message;
+      switch(response.action) {
+        case 'registered':
+          self.registeredPlayers[message.broadcast_id] = self.registeredPlayers[message.broadcast_id] || []
+          if(self.registeredPlayers[message.broadcast_id].indexOf(message.player_id) < 0) {
+            self.registeredPlayers[message.broadcast_id].push(message.player_id);
+          }
+          break;
+        case 'unregistered':
+          var n = self.registeredPlayers[message.broadcast_id].indexOf(message.player_id);
+          self.registeredPlayers[message.broadcast_id].splice(n, 1);
+          break;
       }
     });
-  }
+    consumer.onConfirmSubscription(function() {
+      consumer.send({
+        player_id: 'monitor',
+        broadcast_id: broadcastId
+      }, 'registered_check');
+    });
+  };
+
+  self.broadcastReady = function(broadcastId) {
+    self.registeredPlayers[broadcastId] = self.registeredPlayers[broadcastId] || []
+    return self.registeredPlayers[broadcastId].length > 0;
+  };
 };
 
-ConnectionHelper.$inject = ['ApplicationConstants'];
+ConnectionHelper.$inject = [
+  'ApplicationConstants', 'ActionCableChannel', 'ActionCableSocketWrangler'
+];
 
 angular.module('shared')
        .service('ConnectionHelper', ConnectionHelper);

@@ -1,12 +1,11 @@
 source 'https://rubygems.org'
-ruby "2.2.3"
+source 'http://gems.github.com'
+ruby "2.3.5"
 
-group :production do
-  gem 'thin'
-end
+gem 'puma'
 
 gem 'rails_12factor'
-gem 'rails', '4.2.9'
+gem 'rails', '5.0.6'
 gem 'test-unit'
 gem 'bundler', '>= 1.8.4'
 
@@ -22,7 +21,7 @@ gem 'iso8601'
 gem 'delayed_job_active_record'
 gem 'eventmachine', '1.0.9.1'
 gem 'newrelic_rpm'
-gem 'sendgrid-ruby'
+gem 'sendgrid-ruby', '~> 5.0', git: 'https://github.com/allhailskippy/sendgrid-ruby.git', branch: 'rails-5'
 gem 'sidekiq'
 gem 'sidekiq-failures'
 gem 'ruby_parser'
@@ -30,8 +29,6 @@ gem 'ruby_parser'
 # Javascript gems
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
-gem 'faye-websocket', '0.7.5'
-gem 'websocket-rails', :git => 'https://github.com/websocket-rails/websocket-rails.git', :branch => 'master'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-bootstrap'
@@ -43,9 +40,9 @@ gem 'ng-rails-csrf'
 
 # Permission Gems
 gem 'devise'
-gem 'declarative_authorization', :git => 'https://github.com/stffn/declarative_authorization.git'
+gem 'pundit'
 gem 'omniauth-google-oauth2'
-gem 'userstamp', :git => 'https://github.com/kimkong/userstamp.git'
+gem 'userstamp', git: 'https://github.com/allhailskippy/userstamp.git', branch: 'rails-5'
 
 # APIs
 gem 'google-api-client', '0.11'
@@ -64,11 +61,13 @@ group :test do
   gem 'capybara'
   gem 'selenium-webdriver'
   gem 'poltergeist'
-  gem 'phantomjs', :require => 'phantomjs/poltergeist'
+  gem 'phantomjs', require: 'phantomjs/poltergeist'
   gem 'simplecov', require: false
   gem 'simplecov-rcov', require: false
   gem 'database_cleaner'
   gem 'site_prism'
+  gem 'rails-controller-testing'
+  gem 'minitest-retry'
 end
 
 group :development, :test do

@@ -1,19 +1,16 @@
 class VideosController < ApplicationController
-  before_filter :set_class_variables
-
-  # GET /videos
   # GET /videos.json
   def index
     respond_to do |format|
-      format.html
       format.json do
         params[:q] ||= {}
-        params[:q][:user_id_eq] = current_user.id if params[:q][:user_id_eq].blank?
         params[:q][:s] ||= 'id desc'
-        params[:per_page] ||= 10
-        params[:page] ||= 1
-        # Prevent page from being 0 or lower
-        params[:page] = params[:page].to_i < 1 ? 1 : params[:page]
+        params[:per_page] ||= '10'
+        params[:page] ||= '1'
+
+        # Prevent pagination from being 0 or lower
+        params[:page] = params[:page].to_i < 1 ? '1' : params[:page]
+        params[:per_page] = params[:per_page].to_i < 1 ? '1' : params[:per_page]
 
         search = scoped.search(params[:q])
         videos = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
@@ -24,7 +21,7 @@ class VideosController < ApplicationController
           total: videos.total_entries,
           total_pages: videos.total_pages,
           offset: videos.offset,
-          data: videos.as_json(Video.as_json_hash)
+          data: videos
         }
       end
     end
@@ -33,22 +30,11 @@ class VideosController < ApplicationController
   # GET /videos/:id.json
   def show
     respond_to do |format|
-      begin
-        video = Video.with_permissions_to(:read).find(params[:id])
-        format.json do
-          render json: { data: video.as_json }
-        end
-      rescue ActiveRecord::RecordNotFound
-        format.json do
-          render json: { errors: 'Not Found' },
-                 status: :unprocessable_entity
-        end
-      rescue Exception => e
-        NewRelic::Agent.notice_error(e)
-        format.json do
-          render json: { errors: e.to_s },
-                 status: :unprocessable_entity
-        end
+      format.json do
+        video = scoped.find(params[:id])
+        authorize(video, :show?)
+
+        render json: { data: video}
       end
     end
   end
@@ -56,46 +42,26 @@ class VideosController < ApplicationController
   # POST /videos.json
   def create
     respond_to do |format|
-      begin
+      format.json do
         video = scoped.build(video_params)
-        permitted_to!(:create, video)
+        authorize(video, :create?)
         video.save!
 
-        format.json do
-          render json: video.as_json
-        end
-      rescue ActiveRecord::RecordInvalid
-        format.json do
-          render json: { errors: video.errors, full_errors: video.errors.full_messages },
-                 status: :unprocessable_entity
-        end
+        render json: { data: video }
       end
     end
   end
 
   # PUT /videos/:id.json
   def update
-    video = scoped.find(params[:id])
-
     respond_to do |format|
-      begin
-        permitted_to!(:update, video)
-        video.update_attributes!(video_params)
+      format.json do
+        video = scoped.find(params[:id])
+        video.assign_attributes(video_params)
+        authorize(video, :update?)
+        video.save!
 
-        format.json do
-          render json: video.as_json
-        end
-      rescue ActiveRecord::RecordInvalid
-        format.json do
-          render json: { errors: video.errors, full_errors: video.errors.full_messages },
-                 status: :unprocessable_entity
-        end
-      rescue Exception => e
-        NewRelic::Agent.notice_error(e)
-        format.json do
-          render json: { errors: e.to_s },
-                 status: :unprocessable_entity
-        end
+        render json: { data: video }
       end
     end
   end
@@ -103,43 +69,26 @@ class VideosController < ApplicationController
   # DELETE /videos/:id
   def destroy
     respond_to do |format|
-      begin
+      format.json do
         video = scoped.find(params[:id])
-        permitted_to!(:delete, video)
+        authorize(video, :destroy?)
         video.destroy
 
-        format.json do
-          render json: { :status => :ok }
-        end
-      rescue Exception => e
-        NewRelic::Agent.notice_error(e)
-        format.json do
-          render json: { :errors => [e.to_s] },
-                 status: :unprocessable_entity
-        end
+        render json: { data: {} }
       end
     end
   end
 
 private
   def scoped
-    if @parent
-      @parent.videos
-    else
-      Video.with_permissions_to(:read).all
-    end
-  end
-
-  # Class Variables
-  def set_class_variables
-    params[:q] ||= {}
-
-    @parent = nil
-    if params[:show_id].present?
-      @parent = Show.with_permissions_to(:read).find(params[:show_id])
+    parent = if params[:show_id].present?
+      policy_scope(Show).find(params[:show_id])
     elsif params[:playlist_id].present?
-      @parent = Playlist.with_permissions_to(:read).find(params[:playlist_id])
+      policy_scope(Playlist).find(params[:playlist_id])
+    else
+      raise ParentException
     end
+    parent.videos
   end
 
   def video_params

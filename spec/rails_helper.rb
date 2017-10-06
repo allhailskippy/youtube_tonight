@@ -34,11 +34,13 @@ require 'capybara/rspec'
 require 'capybara/rails'
 require 'capybara/poltergeist'
 require 'sidekiq/testing'
-require 'declarative_authorization/maintenance'
+Sidekiq::Testing.fake!
+
 require 'selenium-webdriver'
 require 'site_prism'
 
 require_relative 'helpers/spec_helpers.rb'
+require_relative 'helpers/google_api_stubs.rb'
 
 # Require libraries
 ['support', 'pages', 'features/shared'].each do |lib|
@@ -80,7 +82,9 @@ else
   end
   Capybara.javascript_driver = :poltergeist
 end
+Capybara.server = :puma
 Capybara.server_port = 12345
+Capybara.default_max_wait_time = 4
 
 WebMock.disable_net_connect!(allow_localhost: true)
 ActiveRecord::Migration.maintain_test_schema!
@@ -91,14 +95,14 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
   config.include FactoryGirl::Syntax::Methods
-  config.include Authorization::Maintenance
   config.include SpecHelpers
   config.include Warden::Test::Helpers
+  config.include Authorization::Maintenance
 
   # Setting up rspec retry because we get some false negatives sometimes
-  config.verbose_retry = true
-  config.display_try_failure_messages = true
-  config.default_retry_count = 5 if ENV['RETRY'].present?
+  config.verbose_retry = false
+  config.display_try_failure_messages = false
+  config.default_retry_count = 5
   config.global_fixtures = :all
 
   config.before(:suite) do
@@ -107,6 +111,7 @@ RSpec.configure do |config|
 
   config.before(:each) do
     Authorization.current_user = User.find(SYSTEM_ADMIN_ID)
+    Sidekiq::Worker.clear_all
   end
 
   config.around do |example|

@@ -37,11 +37,9 @@ shared_examples "the video playlist index page" do
     let(:playlist_info ) { @page.playlist_info }
   end
 
-  it 'starts the preview' do
-    row = @page.find_row(playlist.videos.first)
-    row.preview_start.click
-    wait_for_angular_requests_to_finish
-    expect(row.preview_start['disabled']).to be_truthy
+  it_should_behave_like "preview_player" do
+    let(:video1) { playlist.videos.first }
+    let(:video2) { playlist.videos.second }
   end
 end
 

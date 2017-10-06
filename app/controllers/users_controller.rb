@@ -1,24 +1,38 @@
 class UsersController < ApplicationController
+  # GET /users/:id/requires_auth
   def requires_auth
     @user = User.find(params[:id])
+    authorize(@user, :requires_auth?)
+
     redirect_to root_path unless @user.requires_auth
   end
 
-  # GET /users
   # GET /users.json
   def index
     respond_to do |format|
-      format.html
       format.json do
         params[:q] ||= {}
         params[:q][:s] ||= 'id desc'
         params[:per_page] ||= 100000
         params[:page] ||= 1
 
-        search = User.without_system_admin.with_permissions_to(:read).search(params[:q])
+        # Prevent pagination from being 0 or lower
+        params[:page] = params[:page].to_i < 1 ? '1' : params[:page]
+        params[:per_page] = params[:per_page].to_i < 1 ? '1' : params[:per_page]
+
+        authorize(:user, :index?)
+
+        search = policy_scope(User).search(params[:q])
         users = search.result.paginate(:page => params[:page], :per_page => params[:per_page])
 
-        render json: { data: users.as_json(User.as_json_hash) }
+        render json: {
+          page: params[:page],
+          per_page: params[:per_page],
+          total: users.total_entries,
+          total_pages: users.total_pages,
+          offset: users.offset,
+          data: users
+        }
       end
     end
   end
@@ -26,47 +40,27 @@ class UsersController < ApplicationController
   # GET /users/:id.json
   def show
     respond_to do |format|
-      begin
-        user = User.with_permissions_to(:show).find(params[:id])
-        format.json do
-          render json: { data: user.as_json(User.as_json_hash) }
-        end
-      rescue ActiveRecord::RecordNotFound
-        format.json do
-          render json: { errors: 'Not Found' },
-                 status: :unprocessable_entity
-        end
-      rescue Exception => e
-        NewRelic::Agent.notice_error(e)
-        format.json do
-          render json: { errors: e.to_s },
-                 status: :unprocessable_entity
-        end
+      format.json do
+        user = User.find(params[:id])
+        authorize(user, :show?)
+
+        render json: { data: user }
       end
     end
   end
 
   # PUT /users/:id.json
   def update
-    user = scoped.find(params[:id])
     respond_to do |format|
-      begin
-        permitted_to!(:update, user)
+      format.json do
+        user = User.find(params[:id])
+        authorize(user, :update?)
         user.update_attributes!(user_params)
-        format.json do
-          render json: user.as_json
-        end
-      rescue ActiveRecord::RecordInvalid
-        format.json do
-          render json: { errors: user.errors, full_errors: user.errors.full_messages },
-                 status: :unprocessable_entity
-        end
-      rescue Exception => e
-        NewRelic::Agent.notice_error(e)
-        format.json do
-          render json: { errors: e.to_s },
-                 status: :unprocessable_entity
-        end
+
+        # Gets rid of user/hosts cache values
+        user = User.find(user.id)
+
+        render json: { data: user }
       end
     end
   end
@@ -74,29 +68,17 @@ class UsersController < ApplicationController
   # DELETE /users/:id
   def destroy
     respond_to do |format|
-      begin
-        user = scoped.find(params[:id])
-        permitted_to!(:delete, user)
+      format.json do
+        user = User.find(params[:id])
+        authorize(user, :destroy?)
         user.destroy
 
-        format.json do
-          render json: { :status => :ok }
-        end
-      rescue Exception => e
-        NewRelic::Agent.notice_error(e)
-        format.json do
-          render json: { :errors => [e.to_s] },
-                 status: :unprocessable_entity
-        end
+        render json: { data: {} }
       end
     end
   end
 
 private
-  def scoped
-    User.with_permissions_to(:read).all
-  end
-
   def user_params
     params.fetch(:user, {}).permit(
       :id,

@@ -11,4 +11,10 @@ WebsocketRails::EventMap.describe do
       subscribe e, "video_player##{e}"
     end
   end
+
+  namespace :playlist_events do
+    Playlist.events.each do |e|
+      subscribe e, "playlist_events##{e}"
+    end
+  end
 end

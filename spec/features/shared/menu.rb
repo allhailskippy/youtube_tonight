@@ -9,7 +9,7 @@ shared_examples 'admin menu' do
     expect(menu.shows['href']).to end_with('/#/shows')
     expect(menu.playlists.text).to eq('Playlists')
     expect(menu.playlists['href']).to end_with('/#/playlists')
-    expect(menu.logout.text).to eq('Logout')
+    expect(menu.logout.text).to eq('Sign Out')
     expect(menu.logout['href']).to end_with('/users/sign_out')
     expect(menu.logout['data-method']).to end_with('delete')
   end
@@ -46,7 +46,7 @@ shared_examples 'host menu' do
     expect(menu.shows['href']).to end_with('/#/shows')
     expect(menu.playlists.text).to eq('Playlists')
     expect(menu.playlists['href']).to end_with('/#/playlists')
-    expect(menu.logout.text).to eq('Logout')
+    expect(menu.logout.text).to eq('Sign Out')
     expect(menu.logout['href']).to end_with('/users/sign_out')
     expect(menu.logout['data-method']).to end_with('delete')
     using_wait_time(0) do
@@ -77,7 +77,7 @@ shared_examples 'guest menu' do
   it 'has the right menu options' do
     expect(menu.home.text).to eq('YouTube Tonight')
     expect(menu.home['href']).to end_with('/users/sign_in')
-    expect(menu.login.text).to eq('Login')
+    expect(menu.login.text).to eq('Sign In')
     expect(menu.login['href']).to end_with('/users/sign_in')
 
     using_wait_time(0) do

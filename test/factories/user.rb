@@ -10,5 +10,6 @@ FactoryGirl.define do
     importing_playlists false
     change_roles true
     role_titles { ['admin'] }
+    skip_playlist_import true
   end
 end

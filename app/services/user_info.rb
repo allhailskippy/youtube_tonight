@@ -1,13 +1,8 @@
 class UserInfo
-  include ActionView::Helpers::AssetTagHelper
-  include ERB::Util
-  include Rails.application.routes.url_helpers
-
   @current_user = nil;
 
   def initialize(user = nil)
     @current_user = user
-    @auth_engine = Authorization::Engine.new
   end
 
   def user_info
@@ -26,24 +21,25 @@ class UserInfo
 private
 
   def auth_rules
-    privileges = @auth_engine.privileges_reader.privilege_hierarchy.inject({}) do |r, (k,v)|
-      r[k] = v.flatten.compact
-      r
+    privileges = [
+      :callback,
+      :current_user,
+      :user,
+      :devise_session,
+      :app,
+      :youtube_parser,
+      :broadcast,
+      :show,
+      :playlist,
+      :video
+    ]
+    privileges.inject({}) do |acc, priv|
+      policy = Pundit.policy(@current_user, priv)
+      acc[priv] = policy.attrs.map do |attr|
+        allowed = policy.public_send(attr) rescue false
+        allowed ? attr : nil
+      end.compact.map{|a| a.to_s.gsub(/\?$/,'') }
+      acc
     end
-
-    all_user_role_symbols = @auth_engine.roles_with_hierarchy_for(@current_user)
-
-    auth_rules = @auth_engine.auth_rules_reader.auth_rules.inject({}) do |rules, rule|
-      if (all_user_role_symbols.include? rule.role)
-        key = rule.contexts.to_a[0].to_s.camelize(:lower)
-        permissions = rule.privileges.map do |el|
-          privileges.keys.include?(el) ? privileges[el] : el
-        end
-        rules[key] ||= []
-        (rules[key] += permissions.flatten).uniq!
-      end
-      rules
-    end
-    auth_rules
   end
 end

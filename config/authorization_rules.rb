@@ -16,8 +16,8 @@ authorization do
   role :host do
     includes :guest
 
-    has_permission_on :users, :to => [:update, :requires_auth]
-    has_permission_on :users, to: :show do
+    has_permission_on :users, :to => [:show, :requires_auth]
+    has_permission_on :users, to: [:update, :import_playlists] do
       if_attribute id: is { user.id }
     end
     has_permission_on :shows do
@@ -31,9 +31,24 @@ authorization do
       if_attribute :user => is {user}
     end
     has_permission_on :videos do
+      to :read
+      if_attribute parent_type: 'Show' do
+        if_attributes parent: { users: contains { user } }
+      end
+
+      if_attribute parent_type: 'Playlist' do
+        if_attribute parent: { user: is { user } }
+      end
+    end
+    has_permission_on :videos do
       to :manage
-#      if_attribute :parent_type => 'Show'
-#      if_attribute :parent => { :user => is {user} }
+      if_attribute parent_type: 'Show' do
+        if_attribute creator: is { user }
+      end
+
+      if_attribute parent_type: 'Playlist' do
+        if_attribute parent: { user: is { user } }
+      end
     end
   end
 
@@ -43,6 +58,7 @@ authorization do
 
     has_permission_on :youtube_parser, :to => :read
     has_permission_on :broadcasts, :to => :read
+    has_permission_on :users, to: :import_playlists
 
     %w(users shows playlists videos).each do |controller|
       has_permission_on controller.to_sym, to: :manage

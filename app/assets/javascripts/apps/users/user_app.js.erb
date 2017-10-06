@@ -14,13 +14,13 @@ var routesConfig = function($routeProvider) {
   when('/users', {
     controller: 'UsersIndexCtrl',
     templateUrl: '<%= asset_path("apps/users/templates/index.html") %>',
-    permission: 'users.index',
+    permission: 'user.index',
     menu: 'users'
   }).
   when('/users/:id/edit', {
     controller: 'UsersFormCtrl',
     templateUrl: '<%= asset_path("apps/users/templates/form.html") %>',
-    permission: 'users.update',
+    permission: 'user.update',
     menu: 'users',
     resolve: {
       user_data: ['$route', 'User', function($route, User) {

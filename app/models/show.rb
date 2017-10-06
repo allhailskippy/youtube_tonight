@@ -1,47 +1,47 @@
 class Show < ActiveRecord::Base
-  attr_accessor :video_count
+  model_stamper
 
-  ##
-  # Validations
-  #
+  # == Relationships ========================================================
+  has_many :videos, dependent: :destroy, as: :parent
+  has_many :show_users
+  has_many :users, through: :show_users
+
+  # == Validations ==========================================================
   validates :title, presence: true
   validates :air_date, date: { :after_or_equal_to => Date.today }, on: :create
   validates :air_date, date: true, on: :update
   validates :hosts, presence: { message: 'must be selected' }
 
-  ##
-  # Relationships
-  #
-  has_many :videos, dependent: :destroy, as: :parent
-  has_many :show_users
-  has_many :users, through: :show_users
-
-  ##
-  # Hooks
-  #
-
-  ##
-  # Methods
-  #
-  def self.as_json_hash
-    {
-      include: :users,
-      methods: [:video_count, :hosts]
-    }
-  end
-
+  # == Instance Methods =====================================================
   def hosts
-    @hosts || users.collect(&:id).join(',')
+    @hosts || users.collect(&:id).sort.join(',')
   end
 
-  # Deal with hosts if passed in this way
   def hosts=(ids)
     @hosts = ids
 
-    # Wipe out any existing roles
-    users.destroy_all
-    users.reload
+    current_ids = users.collect{|u| u.id.to_s}
+    new_ids = ids.split(',')
 
-    users << User.where('id in (?)', ids.split(',')).all
+    to_clear = (current_ids - new_ids)
+    if to_clear.present?
+      show_users.where(show_id: id, user_id: to_clear).destroy_all
+    end
+
+    to_add = (new_ids - current_ids)
+    if to_add.present?
+      users << User.where('id in (?)', to_add).all
+    end
+  end
+
+  def video_count
+    videos.size
+  end
+
+  def as_json(options = {})
+    super({
+      include: :users,
+      methods: [:video_count, :hosts]
+    }.merge(options))
   end
 end

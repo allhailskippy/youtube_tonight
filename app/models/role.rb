@@ -1,11 +1,9 @@
 class Role < ActiveRecord::Base
-  ##
-  # Validations
-  #
-  validates :title, :presence => true, :uniqueness => {:scope => :user_id}
+  model_stamper
 
-  ##
-  # Relationships
-  #
+  # == Relationships ========================================================
   belongs_to :user
+
+  # == Validations ==========================================================
+  validates :title, :presence => true, :uniqueness => {:scope => :user_id}
 end

@@ -46,7 +46,8 @@ var Playlist = function(PlaylistApi) {
       });
 
       var params = {
-        playlist: saveData
+        playlist: saveData,
+        user_id: playlist.user_id
       };
 
       // Different calls for new vs existing
@@ -60,7 +61,6 @@ var Playlist = function(PlaylistApi) {
 
     playlist.importPlaylists = function() {
       var params = {
-        id: playlist.id,
         user_id: playlist.user_id
       };
       return playlist.save(params);

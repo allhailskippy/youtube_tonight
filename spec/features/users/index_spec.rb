@@ -21,7 +21,7 @@ describe 'Admin User: /#/users', js: true, type: :feature do
   end
 
   it 'gets the index' do
-    expect(@page.user_rows.length).to eq(4)
+    expect(@page.user_rows.length).to eq(5)
 
     @page.user_rows.each do |ur|
       user = User.find(ur.user_id.text.to_i)
@@ -153,6 +153,28 @@ describe 'Admin User: /#/users', js: true, type: :feature do
         expect(host2.requires_auth).to eq(true)
         expected = row.sec_actions.authorize['ng-click']
         expect(expected).to eq('authorize(user)')
+      end
+
+      it 'sends mail when authorizing a user ' do
+        deliveries = ActionMailer::Base.deliveries
+        delivery_count = deliveries.count
+
+        # Authorize
+        row = @page.find_row(host2)
+        row.sec_actions.authorize.click()
+        wait_for_angular_requests_to_finish
+
+        expect(deliveries.count).to eq(delivery_count + 1)
+
+
+        delivery = deliveries.last
+
+        expect(delivery.to).to eq([host2.email])
+        expect(delivery.from).to eq(["yttonight@gmail.com"])
+        expect(delivery[:from].display_names).to eq(['YouTube Tonight'])
+        expect(delivery.subject).to eq("Huzzah! Your YouTube Tonight account has been approved!")
+        expect(delivery.body).to include("<h1>Welcome to YouTube Tonight, #{host2.name}</h1>")
+        expect(delivery.body).to include("<a href=\"http://example.com/\">Sign in here</a> to get started!")
       end
     end
 

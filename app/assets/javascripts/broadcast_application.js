@@ -17,4 +17,3 @@
 //= require angular
 //= require ng-rails-csrf
 //= require apps/broadcastapp.js
-//= require websocket_rails/main
