@@ -8,7 +8,7 @@ class YoutubeApi
     # Parse the query string from the video
     vp = Rack::Utils.parse_nested_query(URI.parse(video).query) rescue {}
 
-    search_results = {}
+    search_results = {}.with_indifferent_access
     # Add each result to the appropriate list, and then display the lists of
     # matching videos, channels, and playlists.
     search_response.items.each do |r|
@@ -168,13 +168,13 @@ class YoutubeApi
 
     lookup = client.list_videos('contentDetails', {id: video_ids })
 
-    ret = {}
+    ret = {}.with_indifferent_access
     lookup.items.each do |v|
       duration = v.content_details.duration
       ret[v.id] = {
         duration: duration,
         duration_seconds: ISO8601::Duration.new(duration).to_seconds
-      }
+      }.with_indifferent_access
     end
     ret
   end

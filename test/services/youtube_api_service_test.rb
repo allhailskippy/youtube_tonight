@@ -144,7 +144,7 @@ class YoutubeApiServiceTest < ActiveSupport::TestCase
         link: "https://www.youtube.com/v/abcd1234",
         duration: "PT6M4S",
         duration_seconds: 364.0
-      }, {
+      }.with_indifferent_access, {
         video_id: "aabbcc-12x",
         start_time: nil,
         end_time: nil,
@@ -159,7 +159,7 @@ class YoutubeApiServiceTest < ActiveSupport::TestCase
         link: "https://www.youtube.com/v/aabbcc-12x",
         duration: "PT5M",
         duration_seconds: 300.0
-      }
+      }.with_indifferent_access
     ]
     assert_equal expected, response
   end
@@ -734,6 +734,23 @@ class YoutubeApiServiceTest < ActiveSupport::TestCase
         duration_seconds: 253.0
       }.with_indifferent_access
     ]
+    assert_equal expected, response
+  end
+
+  test 'gets duration' do
+    stub_duration
+    user = create(:user)
+    response = YoutubeApi.get_duration("abcd1234,aabbcc-12x", user)
+    expected = {
+     "abcd1234": {
+       duration: "PT6M4S",
+       duration_seconds: 364.0
+      },
+      "aabbcc-12x": {
+        duration: "PT5M",
+        duration_seconds: 300.0
+      }
+    }.with_indifferent_access
     assert_equal expected, response
   end
 end
