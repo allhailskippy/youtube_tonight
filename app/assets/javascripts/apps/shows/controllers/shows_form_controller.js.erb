@@ -110,7 +110,6 @@ var ShowsFormCtrl = function(
     var newRecord = $scope.currentShow.isNewRecord();
 
     $scope.currentShow.save().then(function(response) {
-      Notice.setSuccesses(newRecord ? 'Successfully Created Show' : 'Successfully Updated Show');
       Show.resetCurrentShow();
 
       var show = Show.build(response.data);

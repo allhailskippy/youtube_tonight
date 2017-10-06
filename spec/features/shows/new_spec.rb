@@ -60,8 +60,6 @@ describe 'Admin User: /#/shows/new', js: true, type: :feature do
     @index_page.load
     wait_for_angular_requests_to_finish
 
-    expect(@index_page.notices.collect(&:text)).to include("Successfully Created Show")
-
     show = @index_page.find_show(new_show)
     expect(show.show_id.text).to eq(new_show.id.to_s)
     expect(show.title.text).to eq("New Show Title")
@@ -94,8 +92,6 @@ describe 'Admin User: /#/shows/new', js: true, type: :feature do
     @index_page = ShowsIndexPage.new
     @index_page.load
     wait_for_angular_requests_to_finish
-
-    expect(@index_page.notices.collect(&:text)).to include("Successfully Created Show")
 
     show = @index_page.find_show(new_show)
     expect(show.show_id.text).to eq(new_show.id.to_s)

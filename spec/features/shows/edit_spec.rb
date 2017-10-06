@@ -111,7 +111,6 @@ describe 'Admin User: /#/shows/:show_id/edit', js: true, type: :feature do
     # Check that it shows up on index after upate
     @index_page = ShowsIndexPage.new
     wait_for_angular_requests_to_finish
-    expect(@index_page.notices.collect(&:text)).to include("Successfully Updated Show")
 
     show = @index_page.find_show(edited_show)
     expect(show.show_id.text).to eq(edited_show.id.to_s)
