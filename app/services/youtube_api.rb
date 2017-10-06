@@ -1,5 +1,5 @@
 class YoutubeApi
-  def self.get_video_info(video, user = nil)
+  def self.get_video_info(video, user)
     client = get_service(user)
 
     # Call the search.list method to retrieve results matching the specified query term.
@@ -8,7 +8,7 @@ class YoutubeApi
     # Parse the query string from the video
     vp = Rack::Utils.parse_nested_query(URI.parse(video).query) rescue {}
 
-    search_results = {}
+    search_results = {}.with_indifferent_access
     # Add each result to the appropriate list, and then display the lists of
     # matching videos, channels, and playlists.
     search_response.items.each do |r|
@@ -40,12 +40,11 @@ class YoutubeApi
     search_results.values
   end
 
-  def self.get_playlists(user = nil)
-    user ||= Authorization.current_user
+  def self.get_playlists(user)
     client = get_service(user)
 
     # Get list of playlists
-    search_response = client.list_channels('contentDetails', mine: true, max_results: 50)
+    search_response = client.list_channels('contentDetails', mine: true)
 
     # This ugly mess of code grab select items from the channels related playlist
     # section, and associates it with the playlist id for use in video lookups
@@ -69,8 +68,12 @@ class YoutubeApi
     end
 
     # Get full list of playlists
+    next_page_token = nil
+
+    ret = {}
+
     loop do
-      search_response = client.list_playlists('snippet,contentDetails', mine: true, max_results: 50)
+      search_response = client.list_playlists('snippet,contentDetails', mine: true, max_results: 50, page_token: next_page_token)
       search_response.items.each do |item|
         playlist = {
           title: item.snippet.title,
@@ -85,16 +88,12 @@ class YoutubeApi
       break if next_page_token.blank?
     end
 
-    ret = {}
-
     playlists.each do |playlist_id, playlist|
       next_page_token = nil
-      results = []
-      title = playlist[:title]
-      ret[title] = {
+      ret[playlist_id] = {
         user_id: user.id,
         playlist_id: playlist_id,
-        title: title,
+        title: playlist[:title],
         video_count: playlist[:video_count],
         description: playlist[:description],
         thumbnails: playlist[:thumbnails]
@@ -103,7 +102,7 @@ class YoutubeApi
     ret
   end
 
-  def self.get_videos_for_playlist(playlist_id, user = nil)
+  def self.get_videos_for_playlist(playlist_id, user)
     client = get_service(user)
     next_page_token= nil
 
@@ -164,26 +163,25 @@ class YoutubeApi
   # Get the duration of a selected set of videos.
   # Passes in a list of video_ids to reduce the number
   # of API calls made
-  def self.get_duration(video_ids, user = nil)
+  def self.get_duration(video_ids, user)
     client = get_service(user)
 
     lookup = client.list_videos('contentDetails', {id: video_ids })
 
-    ret = {}
+    ret = {}.with_indifferent_access
     lookup.items.each do |v|
       duration = v.content_details.duration
       ret[v.id] = {
-        "duration" => duration,
-        "duration_seconds" => ISO8601::Duration.new(duration).to_seconds
-      }
+        duration: duration,
+        duration_seconds: ISO8601::Duration.new(duration).to_seconds
+      }.with_indifferent_access
     end
     ret
   end
 
   # Creates the client that facilitates communication between
   # this app and the YouTube API
-  def self.get_service(user = nil)
-    user ||= Authorization.current_user
+  def self.get_service(user)
     client = Google::Apis::YoutubeV3::YouTubeService.new
     client.authorization = Signet::OAuth2::Client.new(
       authorization_uri: 'https://accounts.google.com/o/oauth2/auth',

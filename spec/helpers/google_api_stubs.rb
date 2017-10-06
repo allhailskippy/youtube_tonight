@@ -17,7 +17,7 @@ def stub_playlists
       }]
     }
   }
-  stub_request(:get, "https://www.googleapis.com/youtube/v3/channels?maxResults=50&mine=true&part=contentDetails").
+  stub_request(:get, "https://www.googleapis.com/youtube/v3/channels?mine=true&part=contentDetails").
               to_return(status: 200, body: body, headers: { "content-type": "application/json; charset=UTF-8" })
 
   # Return hard coded playlists
@@ -129,6 +129,8 @@ def stub_playlists
       ]
     }
   }
+  stub_request(:get, "https://www.googleapis.com/youtube/v3/playlists?maxResults=50&mine=true&part=snippet,contentDetails").
+              to_return(status: 200, body: page1, headers: { "content-type": "application/json; charset=UTF-8" })
   page2 = %{
     {
       "kind": "youtube#playlistListResponse",
@@ -159,8 +161,7 @@ def stub_playlists
       ]
     }
   }
-  stub_request(:get, "https://www.googleapis.com/youtube/v3/playlists?maxResults=50&mine=true&part=snippet,contentDetails").
-              to_return(status: 200, body: page1, headers: { "content-type": "application/json; charset=UTF-8" }).times(1).then.
+  stub_request(:get, "https://www.googleapis.com/youtube/v3/playlists?maxResults=50&mine=true&pageToken=nextnextnext&part=snippet,contentDetails").
               to_return(status: 200, body: page2, headers: { "content-type": "application/json; charset=UTF-8" })
 end
 
