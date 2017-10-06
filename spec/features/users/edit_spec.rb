@@ -30,6 +30,22 @@ describe 'Admin User: /#/users/:user_id/edit', js: true, type: :feature do
         expect(errors).to include("Name can't be blank")
         expect(errors).to include("Email can't be blank")
       end
+
+      # TID-98
+      it 'Clears error messages between pages' do
+        @form.name.set('')
+        @form.actions.submit.click
+        wait_for_angular_requests_to_finish
+
+        errors = @page.errors.collect(&:text)
+        expect(errors).to include("Name can't be blank")
+
+        @page.menu.shows.click()
+        wait_for_angular_requests_to_finish
+
+        @page = ShowsIndexPage.new
+        expect(@page.errors).to be_blank
+      end
     end
 
     it 'submits the edit page for admin: requires auth checked' do
