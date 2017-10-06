@@ -516,4 +516,224 @@ class YoutubeApiServiceTest < ActiveSupport::TestCase
     assert_equal 1280, thumbnails.maxres.width
     assert_equal 720, thumbnails.maxres.height
   end
+
+  def stubs_videos_for_playlist
+    # Get page 1
+    body = %{
+      {
+        "kind": "youtube#playlistItemListResponse",
+        "nextPageToken": "nextpagetoken",
+        "pageInfo": {
+          "totalResults": 4476,
+          "resultsPerPage": 2
+        },
+        "items": [
+          {
+            "kind": "youtube#playlistItem",
+            "id": "videoid1",
+            "snippet": {
+              "publishedAt": "2017-10-05T19:13:47.000Z",
+              "channelId": "channelid1",
+              "title": "Video Title 1",
+              "description": "Video description 1",
+              "thumbnails": {
+                "default": { "url": "https://i.ytimg.com/vi/OLxNua1M0lk/default.jpg", "width": 120, "height": 90 },
+                "medium": { "url": "https://i.ytimg.com/vi/OLxNua1M0lk/mqdefault.jpg", "width": 320, "height": 180 },
+                "high": { "url": "https://i.ytimg.com/vi/OLxNua1M0lk/hqdefault.jpg", "width": 480, "height": 360 },
+                "standard": { "url": "https://i.ytimg.com/vi/OLxNua1M0lk/sddefault.jpg", "width": 640, "height": 480 }
+              },
+              "channelTitle": "Paul Mason",
+              "playlistId": "abcdefg",
+              "position": 0,
+              "resourceId": {
+                "kind": "youtube#video",
+                "videoId": "videoid1"
+              }
+            }
+          }, {
+            "kind": "youtube#playlistItem",
+            "id": "videoid2",
+            "snippet": {
+              "publishedAt": "2017-10-05T17:09:13.000Z",
+              "channelId": "channelid2",
+              "title": "Video Title 2",
+              "description": "Video description 2",
+              "thumbnails": {
+                "default": { "url": "https://i.ytimg.com/vi/VCrljh4cDt4/default.jpg", "width": 120, "height": 90 },
+                "medium": { "url": "https://i.ytimg.com/vi/VCrljh4cDt4/mqdefault.jpg", "width": 320, "height": 180 },
+                "high": { "url": "https://i.ytimg.com/vi/VCrljh4cDt4/hqdefault.jpg", "width": 480, "height": 360 },
+                "standard": { "url": "https://i.ytimg.com/vi/VCrljh4cDt4/sddefault.jpg", "width": 640, "height": 480 },
+                "maxres": { "url": "https://i.ytimg.com/vi/VCrljh4cDt4/maxresdefault.jpg", "width": 1280, "height": 720 }
+              },
+              "channelTitle": "Paul Mason",
+              "playlistId": "abcdeft",
+              "position": 1,
+              "resourceId": {
+                "kind": "youtube#video",
+                "videoId": "videoid2"
+              }
+            }
+          }
+        ]
+      }
+    }
+    stub_request(:get, "https://www.googleapis.com/youtube/v3/playlistItems?maxResults=50&part=snippet&playlistId=abcdefg").
+                 to_return(status: 200, body: body, headers: { "content-type": "application/json; charset=UTF-8" })
+
+    # Get more details about the videos
+    body = %{
+      {
+        "kind": "youtube#videoListResponse",
+        "pageInfo": {
+          "totalResults": 2,
+          "resultsPerPage": 2
+        },
+        "items": [
+          {
+            "kind": "youtube#video",
+            "id": "videoid1",
+            "contentDetails": {
+              "duration": "PT8M27S",
+              "dimension": "2d",
+              "definition": "hd",
+              "caption": "false",
+              "licensedContent": true,
+              "projection": "rectangular"
+            }
+          },{
+            "kind": "youtube#video",
+            "id": "videoid2",
+            "contentDetails": {
+              "duration": "PT4M4S",
+              "dimension": "2d",
+              "definition": "hd",
+              "caption": "false",
+              "licensedContent": true,
+              "projection": "rectangular"
+            }
+          }
+        ]
+      }
+    }    
+
+    stub_request(:get, "https://www.googleapis.com/youtube/v3/videos?id=videoid1,videoid2&part=contentDetails").
+                 to_return(status: 200, body: body, headers: { "content-type": "application/json; charset=UTF-8" })
+
+    # Get page 2
+    body = %{
+      {
+        "kind": "youtube#playlistItemListResponse",
+        "pageInfo": {
+          "totalResults": 4476,
+          "resultsPerPage": 2
+        },
+        "items": [
+          {
+            "kind": "youtube#playlistItem",
+            "id": "videoid3",
+            "snippet": {
+              "publishedAt": "2017-10-05T19:13:47.000Z",
+              "channelId": "channelid1",
+              "title": "Video Title 3",
+              "description": "Video description 3",
+              "thumbnails": {
+                "default": { "url": "https://i.ytimg.com/vi/OLxNua1M0lk/default.jpg", "width": 120, "height": 90 },
+                "medium": { "url": "https://i.ytimg.com/vi/OLxNua1M0lk/mqdefault.jpg", "width": 320, "height": 180 },
+                "high": { "url": "https://i.ytimg.com/vi/OLxNua1M0lk/hqdefault.jpg", "width": 480, "height": 360 },
+                "standard": { "url": "https://i.ytimg.com/vi/OLxNua1M0lk/sddefault.jpg", "width": 640, "height": 480 }
+              },
+              "channelTitle": "Paul Mason",
+              "playlistId": "abcdefg",
+              "position": 2,
+              "resourceId": {
+                "kind": "youtube#video",
+                "videoId": "videoid3"
+              }
+            }
+          }
+        ]
+      }
+    }
+    stub_request(:get, "https://www.googleapis.com/youtube/v3/playlistItems?maxResults=50&pageToken=nextpagetoken&part=snippet&playlistId=abcdefg").
+                 to_return(status: 200, body: body, headers: { "content-type": "application/json; charset=UTF-8" })
+
+    # Get more details about the videos
+    body = %{
+      {
+        "kind": "youtube#videoListResponse",
+        "pageInfo": {
+          "totalResults": 2,
+          "resultsPerPage": 2
+        },
+        "items": [
+          {
+            "kind": "youtube#video",
+            "id": "videoid3",
+            "contentDetails": {
+              "duration": "PT4M13S",
+              "dimension": "2d",
+              "definition": "hd",
+              "caption": "false",
+              "licensedContent": true,
+              "projection": "rectangular"
+            }
+          }
+        ]
+      }
+    }    
+
+    stub_request(:get, "https://www.googleapis.com/youtube/v3/videos?id=videoid3&part=contentDetails").
+                 to_return(status: 200, body: body, headers: { "content-type": "application/json; charset=UTF-8" })
+  end
+
+  test 'gets videos for a playlist' do
+    stubs_videos_for_playlist
+    user = create(:user)
+    playlist = create(:playlist, api_playlist_id: 'abcdefg', user: user)
+
+    response = YoutubeApi.get_videos_for_playlist(playlist.api_playlist_id, user)
+    expected = [
+      {
+        video_id: "videoid1",
+        title: "Video Title 1",
+        thumbnail_medium_url: "https://i.ytimg.com/vi/OLxNua1M0lk/mqdefault.jpg",
+        thumbnail_default_url: "https://i.ytimg.com/vi/OLxNua1M0lk/default.jpg",
+        thumbnail_high_url: "https://i.ytimg.com/vi/OLxNua1M0lk/hqdefault.jpg",
+        position: 0,
+        published_at: "Thu, 05 Oct 2017 19:13:47 +0000".to_datetime,
+        channel_id: "channelid1",
+        channel_title: "Paul Mason",
+        description: "Video description 1",
+        duration: "PT8M27S",
+        duration_seconds: 507.0
+      }.with_indifferent_access, {
+        video_id: "videoid2",
+        title: "Video Title 2",
+        thumbnail_medium_url: "https://i.ytimg.com/vi/VCrljh4cDt4/mqdefault.jpg",
+        thumbnail_default_url: "https://i.ytimg.com/vi/VCrljh4cDt4/default.jpg",
+        thumbnail_high_url: "https://i.ytimg.com/vi/VCrljh4cDt4/hqdefault.jpg",
+        position: 1,
+        published_at: "Thu, 05 Oct 2017 17:09:13 +0000".to_datetime,
+        channel_id: "channelid2",
+        channel_title: "Paul Mason",
+        description: "Video description 2",
+        duration: "PT4M4S",
+        duration_seconds: 244.0
+      }.with_indifferent_access, {
+        video_id: "videoid3",
+        title: "Video Title 3",
+        thumbnail_medium_url: "https://i.ytimg.com/vi/OLxNua1M0lk/mqdefault.jpg",
+        thumbnail_default_url: "https://i.ytimg.com/vi/OLxNua1M0lk/default.jpg",
+        thumbnail_high_url: "https://i.ytimg.com/vi/OLxNua1M0lk/hqdefault.jpg",
+        position: 2,
+        published_at: "Thu, 05 Oct 2017 19:13:47 +0000".to_datetime,
+        channel_id: "channelid1",
+        channel_title: "Paul Mason",
+        description: "Video description 3",
+        duration: "PT4M13S",
+        duration_seconds: 253.0
+      }.with_indifferent_access
+    ]
+    assert_equal expected, response
+  end
 end
