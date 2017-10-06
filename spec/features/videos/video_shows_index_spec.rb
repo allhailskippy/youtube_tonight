@@ -1052,6 +1052,35 @@ describe 'Admin User (requires auth): /#/shows/:show_id/videos', js: true, type:
   it_behaves_like "requires_auth"
 end
 
+describe "Admin User (deletes last video): /#/shows/:show_id/videos", js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:admin]) }
+  let(:show) { create(:show_with_videos, users: [current_user], video_count: 1) }
+
+  before do
+    sign_in(current_user)
+    @page = VideosShowsIndexPage.new
+    @page.load(show_id: show.id)
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  # TID-80
+  it 'shows add video form when last video is deleted' do
+    row = @page.find_row(show.videos.first)
+    expect(row.delete['ng-click']).to eq('destroy(video)')
+    accept_confirm("Are you sure you want to delete this video from the queue?\nThis cannot be undone.") do
+      row.delete.click
+    end
+    wait_for_angular_requests_to_finish
+    sleep 2
+
+    expect(@page.video_form).to_not be_nil
+
+    expect(@page.selected_video.cancel['disabled']).to be_truthy
+    expect(@page.selected_video.add_to_queue['disabled']).to be_truthy
+  end
+end
+
 # Check when accessing a host user
 describe 'Host User: /#/shows/:show_id/videos', js: true, type: :feature do
   let(:host) { create_user(role_titles: [:host]) }
@@ -1122,6 +1151,35 @@ describe 'Host User (requires auth): /#/shows/:show_id/videos', js: true, type: 
   end
 
   it_behaves_like "requires_auth"
+end
+
+describe "Admin User (deletes last video): /#/shows/:show_id/videos", js: true, type: :feature do
+  let(:current_user) { create_user(role_titles: [:host]) }
+  let(:show) { create(:show_with_videos, users: [current_user], video_count: 1) }
+
+  before do
+    sign_in(current_user)
+    @page = VideosShowsIndexPage.new
+    @page.load(show_id: show.id)
+    sleep 1
+    wait_for_angular_requests_to_finish
+  end
+
+  # TID-80
+  it 'shows add video form when last video is deleted' do
+    row = @page.find_row(show.videos.first)
+    expect(row.delete['ng-click']).to eq('destroy(video)')
+    accept_confirm("Are you sure you want to delete this video from the queue?\nThis cannot be undone.") do
+      row.delete.click
+    end
+    wait_for_angular_requests_to_finish
+    sleep 2
+
+    expect(@page.video_form).to_not be_nil
+
+    expect(@page.selected_video.cancel['disabled']).to be_truthy
+    expect(@page.selected_video.add_to_queue['disabled']).to be_truthy
+  end
 end
 
 # Check when accessing a non-logged in user
