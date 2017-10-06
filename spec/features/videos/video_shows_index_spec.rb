@@ -863,6 +863,29 @@ shared_examples "the video show index page" do
       expect(errors).to include("Title can't be blank")
       expect(errors).to include("Start At cannot be greater than End At")
     end
+
+    # TID-98
+    it 'Properly clears notices' do
+      row = @page.find_row(video1)
+      row.edit.click()
+      sleep 1
+
+      @page.video_form.title.set('')
+
+      row = @page.selected_video
+      row.update.click()
+      wait_for_angular_requests_to_finish
+
+      errors = @page.errors.collect(&:text)
+      expect(errors).to include("Title can't be blank")
+
+      # Hit the 'back' button
+      @page.back.click()
+      sleep 1
+
+      @page = ShowsIndexPage.new
+      expect(@page.errors).to be_blank
+    end
   end
 
   context 'show has no videos' do

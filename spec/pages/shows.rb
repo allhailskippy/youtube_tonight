@@ -3,6 +3,7 @@ class ShowsIndexPage < SitePrism::Page
   section :menu, MenuSection, "nav"
 
   elements :notices, "div[notices='notices'] .alert-success"
+  elements :errors, "div[notices='notices'] .alert-danger"
 
   element :shows, "#shows"
   element :create_show, ".create-show"
