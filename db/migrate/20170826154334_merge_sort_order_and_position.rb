@@ -1,4 +1,4 @@
-class MergeSortOrderAndPosition < ActiveRecord::Migration
+class MergeSortOrderAndPosition < ActiveRecord::Migration[4.2]
   def up
     sql = "UPDATE videos SET position=sort_order WHERE parent_type='Playlist'"
     execute(sql)

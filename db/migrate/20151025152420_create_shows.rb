@@ -1,4 +1,4 @@
-class CreateShows < ActiveRecord::Migration
+class CreateShows < ActiveRecord::Migration[4.2]
   def up
     create_table :shows do |t|
       t.date :air_date
