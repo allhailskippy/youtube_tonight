@@ -8,7 +8,7 @@
   "use strict";
 
 var UsersFormCtrl = function(
-  $scope, $location,
+  $rootScope, $scope, $location, $window,
   User, Notice,
   user_data
   ) {
@@ -17,6 +17,9 @@ var UsersFormCtrl = function(
    * Setup
    */
   $scope.user = User.build(user_data.data);
+  if($rootScope.currentUser.id == $scope.user.id) {
+    $window.location.href = '/#/unauthorized';
+  }
 
   // Handle error response from server side
   var handleErrors = function(response) {
@@ -46,7 +49,7 @@ var UsersFormCtrl = function(
 };
 
 UsersFormCtrl.$inject = [
-  '$scope', '$location',
+  '$rootScope', '$scope', '$location', '$window',
   'User', 'Notice',
   'user_data'
 ];

@@ -161,13 +161,27 @@ describe 'Admin User: /#/users/:user_id/edit', js: true, type: :feature do
       let(:active) { 'Users' }
     end
 
-    it 'test' do
+    it 'validation' do
       @form.actions.submit.click
       wait_for_angular_requests_to_finish
 
       errors = @page.errors.collect(&:text)
       expect(errors).to include("Roles must be selected")
     end
+  end
+
+  # TID-101
+  describe 'Edit own user' do
+    before do
+      preload if defined?(preload)
+      admin = create(:user, role_titles: [:admin])
+      sign_in(admin)
+      @page = UsersEditPage.new
+      @page.load(user_id: admin.id)
+      wait_for_angular_requests_to_finish
+    end
+
+    it_behaves_like "unauthorized"
   end
 end
 
