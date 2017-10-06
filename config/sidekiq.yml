@@ -3,9 +3,7 @@ development:
   :logfile: ./log/sidekiq_development.log
   :pidfile: tmp/pids/sidekiq.pid
 production:  
-  :concurrency: 5
-  :logfile: ./log/sidekiq_development.log
-  :pidfile: tmp/pids/sidekiq.pid
+  :concurrency: 2
 :queues:
   - default
   - playlists
