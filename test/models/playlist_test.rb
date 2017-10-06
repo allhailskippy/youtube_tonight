@@ -43,7 +43,7 @@ class PlaylistTest < ActiveSupport::TestCase
       'channel_title': 'test channel',
       'channel_id': 'testtesttest1',
       'position': 0
-    }.with_indifferent_access, {
+    }, {
       'video_id': 'abc124',
       'title': 'test video 2',
       'thumbnail_medium_url': 'http://test.com/medium2.gif',
@@ -54,7 +54,7 @@ class PlaylistTest < ActiveSupport::TestCase
       'channel_title': 'test channel',
       'channel_id': 'testtesttest1',
       'position': 1
-    }.with_indifferent_access]
+    }]
   end
 
   test 'imports videos' do
