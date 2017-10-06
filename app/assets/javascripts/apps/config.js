@@ -32,6 +32,9 @@
     });
 
     $rootScope.$on('$routeChangeStart', function(scope, next, current) {
+      console.log('---------');
+      console.log('websocket: ', ApplicationConstants.WEBSOCKET_URL);
+      console.log('----------');
       ActionCableConfig.wsUri = ApplicationConstants.WEBSOCKET_URL;
 
       // Users awaiting authorization get sent to the requires_auth page
