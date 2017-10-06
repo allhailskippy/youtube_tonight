@@ -1,4 +1,4 @@
-class AddThumbnailAndDescriptionToPlaylists < ActiveRecord::Migration
+class AddThumbnailAndDescriptionToPlaylists < ActiveRecord::Migration[4.2]
   def change
     add_column :playlists, :api_description, :text
     add_column :playlists, :api_thumbnail_default_url, :string

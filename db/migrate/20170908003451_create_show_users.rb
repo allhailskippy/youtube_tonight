@@ -1,4 +1,4 @@
-class CreateShowUsers < ActiveRecord::Migration
+class CreateShowUsers < ActiveRecord::Migration[4.2]
   def up
     Show.reset_column_information
 

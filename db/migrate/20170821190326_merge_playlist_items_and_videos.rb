@@ -1,4 +1,4 @@
-class MergePlaylistItemsAndVideos < ActiveRecord::Migration
+class MergePlaylistItemsAndVideos < ActiveRecord::Migration[4.2]
   def up
     rename_column :videos, :show_id, :parent_id
     add_column :videos, :parent_type, :string
