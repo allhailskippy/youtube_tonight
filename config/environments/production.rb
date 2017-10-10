@@ -88,8 +88,6 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Youtube
-  YOUTUBE_API_KEY = ENV['YOUTUBE_API_KEY']
-
   GOOGLE_CLIENT_ID = ENV['GOOGLE_CLIENT_ID']
   GOOGLE_CLIENT_SECRET = ENV['GOOGLE_CLIENT_SECRET']
 

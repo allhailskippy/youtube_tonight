@@ -56,7 +56,6 @@ Rails.application.configure do
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   # YouTube
-  YOUTUBE_API_KEY = ENV['YOUTUBE_API_KEY']
   GOOGLE_CLIENT_ID = ENV['GOOGLE_CLIENT_ID']
   GOOGLE_CLIENT_SECRET = ENV['GOOGLE_CLIENT_SECRET']
 

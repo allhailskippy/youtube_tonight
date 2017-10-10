@@ -54,7 +54,6 @@ Rails.application.configure do
   config.action_cable.allowed_request_origins = ['http://127.0.0.1:12345']
 
   # YouTube
-  YOUTUBE_API_KEY = 'YOUTUBE_API_KEY'
   GOOGLE_CLIENT_ID = 'GOOGLE_CLIENT_ID'
   GOOGLE_CLIENT_SECRET = 'GOOGLE_CLIENT_SECRET'
 
