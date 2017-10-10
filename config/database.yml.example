@@ -9,7 +9,7 @@ development: &development
   <<: *defaults
   host: localhost
   database: youtube_tonight
-  username: paul
+  username: 
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -18,11 +18,11 @@ test:
   <<: *defaults
   host: localhost
   database: youtube_tonight_test
-  username: paul
+  username: 
 
 production:
   <<: *defaults
-  database: d3l138uavd0hka
-  username: qdmxtwmyntlycz
-  password: a02e4ca609cc25ecfd624b2c667a5a6ba76b3c9b49fd560c5a1399415c43d5c9
-  host: ec2-174-129-218-106.compute-1.amazonaws.com
+  database:
+  username:
+  password:
+  host:
