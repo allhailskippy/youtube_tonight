@@ -1,261 +1,209 @@
-== Welcome to Rails
+== About Youtube Tonight Broadcaster
 
-Rails is a web-application framework that includes everything needed to create
-database-backed web applications according to the Model-View-Control pattern.
+Originally this app was going to be used to solve a technical issue for broadcasting YouTube videos. The idea being that several people would talk about specific YouTube videos as they're playing during a Google Hangout.
 
-This pattern splits the view (also called the presentation) into "dumb"
-templates that are primarily responsible for inserting pre-built data in between
-HTML tags. The model contains the "smart" domain objects (such as Account,
-Product, Person, Post) that holds all the business logic and knows how to
-persist themselves to a database. The controller handles the incoming requests
-(such as Save New Account, Update Product, Show Post) by manipulating the model
-and directing data to the view.
+The issue is that a Google+ Hangout does not display any YouTube videos played during the hangout when saving as a YouTube video. So any playback that happened would have to be spliced in manuall afterwards.
 
-In Rails, the model is handled by what's called an object-relational mapping
-layer entitled Active Record. This layer allows you to present the data from
-database rows as objects and embellish these data objects with business logic
-methods. You can read more about Active Record in
-link:files/vendor/rails/activerecord/README.html.
+This would have been far too much manual work, so I came up with a solution where all members of the hangout could add their own videos to an app, and that app would be capable of broadcasting its own video as another 'person' in the hangout.  Thus allowing the videos played to be recorded.
 
-The controller and view are handled by the Action Pack, which handles both
-layers by its two parts: Action View and Action Controller. These two layers
-are bundled in a single package due to their heavy interdependence. This is
-unlike the relationship between the Active Record and Action Pack that is much
-more separate. Each of these packages can be used independently outside of
-Rails. You can read more about Action Pack in
-link:files/vendor/rails/actionpack/README.html.
+It is still necessary to have a component that will connect the playing video to the screen, however this app solves the issue of multiple users managing videos, and having those videos broadcast to a remote browser.
 
+Unfortunately the project never fully materialized, but feel free to have a look over the code to get an idea of what I can do.
 
-== Getting Started
+=== General Design
 
-1. At the command prompt, create a new Rails application:
-       <tt>rails new myapp</tt> (where <tt>myapp</tt> is the application name)
+There are few core objects that work together to make this app work.
 
-2. Change directory to <tt>myapp</tt> and start the web server:
-       <tt>cd myapp; rails server</tt> (run with --help for options)
+* *User*: There are 2 types of users on this site; Admin and Host. Admin users have access to pretty much everything, while host users should only have access to shows they belong to, and playlists that are theirs. Devise[https://github.com/plataformatec/devise] is used for handling login/logout features and {cancancan}[https://github.com/CanCanCommunity/cancancan] is used for handling permissions.
 
-3. Go to http://localhost:3000/ and you'll see:
-       "Welcome aboard: You're riding Ruby on Rails!"
+* *Show*: This is how the videos to be shown are grouped. Each show should also have a defined list of people who will participate in the show, as well as an air date.
 
-4. Follow the guidelines to start developing your application. You can find
-the following resources handy:
+* *Playlist*: Pulled from YouTube and stored locally. YouTube removed the pagination from their playlists awhile back, so finding some videos from way back in time was pretty time consuming. Having them locally allows for the app to paginate these.
 
-* The Getting Started Guide: http://guides.rubyonrails.org/getting_started.html
-* Ruby on Rails Tutorial Book: http://www.railstutorial.org/
+* *Video*: This table uses multiple table inheritance (MTI). Videos can either belong to a Show or a Playlist.
 
+=== Expected Flow
 
-== Debugging Rails
+1. When a user who has not logged in to the site first arrives, they are taken to a sign in page. This uses Google's Oauth2 authentication.
+2. On a first successful login, the user is presented with a page that lets them know they will require authorization. 
+3. An email is sent out at this time to all admins letting them know a new user has logged in.
+4. The import process for that users playlists begin at this point as it can take some time before they are ready. This is done with Sidekiq (using Redis)
+5. Once an admin authorizes this user, another email goes out. This time to the person who signed in; letting them know they can now use the site.
+6. Users should visit the show they'd like to participate in and start adding videos to the queue. Preparing these in advance will make the show run smoother. Users can also control when they'd like the video to start and end, as well as being able to preview the videos ahead of time.
+7. Launch a broadcast window. There really only needs to be one of these open, but the app allows for multiple. Ideally this will be running on a seperate computer.
+8. From the video list, hit the broadcast button on the video you'd like to start playing. This will start the video on the broadcast window, as well as all of the preview windows for anyone who has the queue for the show open.
 
-Sometimes your application goes wrong. Fortunately there are a lot of tools that
-will help you debug it and get it back on the rails.
+=== Technical Features
 
-First area to check is the application log files. Have "tail -f" commands
-running on the server.log and development.log. Rails will automatically display
-debugging and runtime information to these files. Debugging info will also be
-shown in the browser on requests from 127.0.0.1.
+* *Ruby* *on* *Rails* *5* for the back end. Mostly used as a rest API, but does handle authentication/authorization of users as well as connecting with the Google (YouTube) API.
+* *AngularJS* *1.6* for the front end. Most of the logic is handled in the front end. Also has some front end authorization for restricting access to pages.
+* *Google* *YouTube* *v3* API integration
+* *Websockets* for handling the control of the video players. This allows near real time control of the player.
+* *Extensively* *tested* with model, controller and integration (Capybara) tests.
 
-You can also log your own messages directly into the log file from your code
-using the Ruby logger class from inside your controllers. Example:
+== How to set up the app
+=== Prerequisites
 
-  class WeblogController < ActionController::Base
-    def destroy
-      @weblog = Weblog.find(params[:id])
-      @weblog.destroy
-      logger.info("#{Time.now} Destroyed Weblog ID ##{@weblog.id}!")
-    end
-  end
+HEROKU
+  This app is designed to be run on Heroku. It's not 100% required, but it will
+  make installation and deployment simpler. You can create a new (free) app at
 
-The result will be a message in your log file along the lines of:
+    http://heroku.com
 
-  Mon Oct 08 14:22:29 +1000 2007 Destroyed Weblog ID #1!
+SENDGRID
+  This is used for sending mail. There is an add-on for heroku. Sendgrid
+  documentation can be found here: https://devcenter.heroku.com/articles/sendgrid
 
-More information on how to use the logger is at http://www.ruby-doc.org/core/
+*Please* *note*: If you are configuring this now, please be sure to record your api username and password as they are not available to read after account creation.
 
-Also, Ruby documentation can be found at http://www.ruby-lang.org/. There are
-several books available online as well:
+REDIS
+  A redis will need to be installed and running. To install this on a Mac, I
+  suggest using homebrew following these redis installation instructions:
 
-* Programming Ruby: http://www.ruby-doc.org/docs/ProgrammingRuby/ (Pickaxe)
-* Learn to Program: http://pine.fm/LearnToProgram/ (a beginners guide)
+    https://medium.com/@petehouston/install-and-config-redis-on-mac-os-x-via-homebrew-eb8df9a4f298
 
-These two books will bring you up to speed on the Ruby language and also on
-programming in general.
+  For production, I am using "Redis To Go" which is another heroku add-on.
 
+POSTGRES
+  I use the Postgres Database: add-on from Heroku:
+  
+    https://devcenter.heroku.com/articles/heroku-postgres-plans 
 
-== Debugger
+  The free version is limited to 10k rows, so for testing this out with a single
+  user, you should be ok as long as you don't have too many videos in playlists
+  as that's where a majority of the rows are currently coming from.
 
-Debugger support is available through the debugger command when you start your
-Mongrel or WEBrick server with --debugger. This means that you can break out of
-execution at any point in the code, investigate and change the model, and then,
-resume execution! You need to install ruby-debug to run the server in debugging
-mode. With gems, use <tt>sudo gem install ruby-debug</tt>. Example:
+GOOGLE API
+  You will need to ensure that you have a project created, and that the
+  "YouTube Data API v3" and the "Google+ API" are both enabled. This can
+  be done via the Google Console:
+  
+    https://console.developers.google.com 
 
-  class WeblogController < ActionController::Base
-    def index
-      @posts = Post.all
-      debugger
-    end
-  end
+  Be sure to whitelist your site here.
+  
+  If you're using the default settings locally, you will need to add
 
-So the controller will accept the action, run the first line, then present you
-with a IRB prompt in the server window. Here you can do things like:
+    http://localhost:5000 
 
-  >> @posts.inspect
-  => "[#<Post:0x14a6be8
-          @attributes={"title"=>nil, "body"=>nil, "id"=>"1"}>,
-       #<Post:0x14a6620
-          @attributes={"title"=>"Rails", "body"=>"Only ten..", "id"=>"2"}>]"
-  >> @posts.first.title = "hello from a debugger"
-  => "hello from a debugger"
+  You will also need to add the callback url
+  
+    http://localhost:5000/users/auth/google_oauth2/callback
+  
+  These values will change based on your production environments settings
 
-...and even better, you can examine how your runtime objects actually work:
+NewRelic
 
-  >> f = @posts.first
-  => #<Post:0x13630c4 @attributes={"title"=>nil, "body"=>nil, "id"=>"1"}>
-  >> f.
-  Display all 152 possibilities? (y or n)
+  This is used for monitoring the app and tracking any errors that occur.
+  Create your account at:
+    
+    http://newrelic.com
 
-Finally, when you're ready to resume execution, you can enter "cont".
+RVM
 
+  Ruby Version Manager (RVM).  Another not 100% mandatory, but highly
+  recommended app is RVM. Youtube Broadcaster uses ruby 2.3.5, so you can either
+  use RVM, or ensure that the ruby version is set to 2.3.5.
+ 
+  Install instructions:
+  
+    https://rvm.io/rvm/install
 
-== Console
+BUNDLER
 
-The console is a Ruby shell, which allows you to interact with your
-application's domain model. Here you'll have all parts of the application
-configured, just like it is when the application is running. You can inspect
-domain models, change values, and save to the database. Starting the script
-without arguments will launch it in the development environment.
+  This will allow you to install all necessary gems from the home directory.
+  Install with:
+    
+    gem install bundler
 
-To start the console, run <tt>rails console</tt> from the application
-directory.
+  Documentation can be found at:
 
-Options:
+    http://bundler.io
 
-* Passing the <tt>-s, --sandbox</tt> argument will rollback any modifications
-  made to the database.
-* Passing an environment name as an argument will load the corresponding
-  environment. Example: <tt>rails console production</tt>.
+=== Setup
 
-To reload your controllers and models after launching the console run
-<tt>reload!</tt>
+First things first, you'll need to clone the repository. Since you're reading this, it's likely that you are already on the appropriate github page, or already have a local copy. But just in case, the link is available from {the repository}[https://github.com/allhailskippy/youtube_tonight]
 
-More information about irb can be found at:
-link:http://www.rubycentral.org/pickaxe/irb.html
+Once cloned, you will need to configure the database. The file config/database.yml.example can be copied into config/database.yml and your values entered.
 
+Install Gems. From your home directory run:
+  bundle install
 
-== dbconsole
+Build DB structure
+  bundle exec rake db:migrate
 
-You can go to the command line of your database directly through <tt>rails
-dbconsole</tt>. You would be connected to the database with the credentials
-defined in database.yml. Starting the script without arguments will connect you
-to the development database. Passing an argument will connect you to a different
-database, like <tt>rails dbconsole production</tt>. Currently works for MySQL,
-PostgreSQL and SQLite 3.
+Initialize data
+  bundle exec rake db:seed
 
-== Description of Contents
+=== Environment Variables
 
-The default directory structure of a generated Ruby on Rails application:
+To keep sensitive data out of the repository, all environment specific values for a local setup are stored in a .env file. For production data, these settins are stored on heroku's site under {config vars}[https://devcenter.heroku.com/articles/config-vars].
 
-  |-- app
-  |   |-- assets
-  |   |   |-- images
-  |   |   |-- javascripts
-  |   |   `-- stylesheets
-  |   |-- controllers
-  |   |-- helpers
-  |   |-- mailers
-  |   |-- models
-  |   `-- views
-  |       `-- layouts
-  |-- config
-  |   |-- environments
-  |   |-- initializers
-  |   `-- locales
-  |-- db
-  |-- doc
-  |-- lib
-  |   |-- assets
-  |   `-- tasks
-  |-- log
-  |-- public
-  |-- script
-  |-- test
-  |   |-- fixtures
-  |   |-- functional
-  |   |-- integration
-  |   |-- performance
-  |   `-- unit
-  |-- tmp
-  |   `-- cache
-  |       `-- assets
-  `-- vendor
-      |-- assets
-      |   |-- javascripts
-      |   `-- stylesheets
-      `-- plugins
+You will need the following values defined:
 
-app
-  Holds all the code that's specific to this particular application.
+https://devcenter.heroku.com/articles/config-vars
 
-app/assets
-  Contains subdirectories for images, stylesheets, and JavaScript files.
+REDIS_URL
+  Will probably be redis://127.0.0.1:6379, but that will depend on your setup.
+  Will be (obviously) different in production.
 
-app/controllers
-  Holds controllers that should be named like weblogs_controller.rb for
-  automated URL mapping. All controllers should descend from
-  ApplicationController which itself descends from ActionController::Base.
+REDIS_PROVIDER
+  Hard code this to REDIS_URL
 
-app/models
-  Holds models that should be named like post.rb. Models descend from
-  ActiveRecord::Base by default.
+SENDGRID_USERNAME / SENDGRID_PASSWORD
+  This must be acquired during account creation. It does not seem to be available
+  in any way after that.  From what I can tell of their system, the username will
+  likely always be apikey, but please follow their documentation to be certain.
+  
+SYSTEM_ADMIN_ID
+  This was created during the initialize data portion. Should be the only user in the users table.
+  This SQL should be run in order to get the value for this entry:
 
-app/views
-  Holds the template files for the view that should be named like
-  weblogs/index.html.erb for the WeblogsController#index action. All views use
-  eRuby syntax by default.
+    SELECT id FROM users WHERE name='System Admin' AND email = 'noreply@youtubetonight.com';
 
-app/views/layouts
-  Holds the template files for layouts to be used with views. This models the
-  common header/footer method of wrapping views. In your views, define a layout
-  using the <tt>layout :default</tt> and create a file named default.html.erb.
-  Inside default.html.erb, call <% yield %> to render the view using this
-  layout.
+GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET
+  Both are available via the Google API console. Listed in the credentials section
+    
+    https://console.developers.google.com/apis/credentials
 
-app/helpers
-  Holds view helpers that should be named like weblogs_helper.rb. These are
-  generated for you automatically when using generators for controllers.
-  Helpers can be used to wrap functionality for your views into methods.
+WEBSOCKET_URL
+  Hard coded based on your environment. For the development environment will likely be
 
-config
-  Configuration files for the Rails environment, the routing map, the database,
-  and other dependencies.
+    ws://localhost:5000/websocket
 
-db
-  Contains the database schema in schema.rb. db/migrate contains all the
-  sequence of Migrations for your schema.
+NEW_RELIC_LICENSE_KEY
+  You will need to get this from the accounts page on NewRelic's site. Documentation can be found here:
+    
+    https://docs.newrelic.com/docs/accounts-partnerships/accounts/account-setup/license-key
 
-doc
-  This directory is where your application documentation will be stored when
-  generated using <tt>rake doc:app</tt>
+SECRET_KEY_BASE
+  This is unique to every environment. A value can be generated on the console by running:
+    
+    SecureRandom.hex(64)
 
-lib
-  Application specific libraries. Basically, any kind of custom code that
-  doesn't belong under controllers, models, or helpers. This directory is in
-  the load path.
+== Start It Up
 
-public
-  The directory available for the web server. Also contains the dispatchers and the
-  default HTML files. This should be set as the DOCUMENT_ROOT of your web
-  server.
+All going well, you should now be able to start the application up!
 
-script
-  Helper scripts for automation and generation.
+If you are using Heroku, to run the app locally, you need to run:
+  
+  heroku local
 
-test
-  Unit and functional tests along with fixtures. When using the rails generate
-  command, template test files will be generated for you and placed in this
-  directory.
+Once it's up, you can visit http://localhost:5000 to have a look.
 
-vendor
-  External libraries that the application depends on. Also includes the plugins
-  subdirectory. If the app has frozen rails, those gems also go here, under
-  vendor/rails/. This directory is in the load path.
+Hit the sign in button and log in with your Google credentials.
+
+Since at this point there are no admin users who are capable of authorizing your user, you'll have to manually add yourself as an admin.
+To do this, you will need to access your database and find your User Id.
+
+  SELECT id FROM users WHERE email = 'YOUR EMAIL ADDRESS';
+
+This should give you the user id for the account you just logged in with.
+
+You will then need to run 2 statements to be able to log in.
+
+  UPDATE users SET requires_auth = false WHERE id = FOUND_USER_ID;
+
+  INSERT INTO roles (user_id, title, created_at, updated_at) VALUES (FOUND_USER_ID, 'admin', NOW(), NOW());
+
+At this point you should be good to go!
