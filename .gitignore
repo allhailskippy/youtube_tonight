@@ -15,9 +15,7 @@ dump.rdb
 .DS_Store
 /bower_components
 
-# config/database.yml
-config/database.production.yml
-config/environments/credentials.production.yml
+config/database.yml
 .env
 spec/examples.txt
 .byebug_history

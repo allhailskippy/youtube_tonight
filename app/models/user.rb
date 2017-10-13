@@ -2,7 +2,7 @@ class User < ActiveRecord::Base
   model_stamper
 
   # == Attributes ===========================================================
-  attr_accessor :role_titles, :change_roles, :skip_playlist_import
+  attr_accessor :role_titles, :change_roles, :skip_playlist_import, :skip_registered_user_email, :skip_authorized_email
 
   # == Extensions ===========================================================
   devise :database_authenticatable,
@@ -30,10 +30,10 @@ class User < ActiveRecord::Base
   scope :without_system_admin, -> { where("users.id != ?", SYSTEM_ADMIN_ID) }
 
   # == Callbacks ============================================================
-  after_create :deliver_registered_user_email
+  after_create :deliver_registered_user_email, unless: Proc.new{|r| r.skip_registered_user_email }
   after_create :import_playlists, unless: Proc.new{|r| r.skip_playlist_import }
   before_validation :update_roles, if: Proc.new{|r| r.change_roles }
-  before_update :deliver_authorized_email, if: Proc.new{|r| !r.requires_auth && r.requires_auth_changed? }
+  before_update :deliver_authorized_email, if: Proc.new{|r| !r.skip_authorized_email && !r.requires_auth && r.requires_auth_changed? }
 
   # == Class Methods ========================================================
   # Stores user info on successful sign in from google
