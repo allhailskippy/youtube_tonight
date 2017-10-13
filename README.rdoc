@@ -14,7 +14,7 @@ Unfortunately the project never fully materialized, but feel free to have a look
 
 There are few core objects that work together to make this app work.
 
-* *User*: There are 2 types of users on this site; Admin and Host. Admin users have access to pretty much everything, while host users should only have access to shows they belong to, and playlists that are theirs. Devise[https://github.com/plataformatec/devise] is used for handling login/logout features and {cancancan}[https://github.com/CanCanCommunity/cancancan] is used for handling permissions.
+* *User*: There are 2 types of users on this site; Admin and Host. Admin users have access to pretty much everything, while host users should only have access to shows they belong to, and playlists that are theirs. Devise[https://github.com/plataformatec/devise] is used for handling login/logout features and {pundit}[https://github.com/elabs/pundit] is used for handling permissions.
 
 * *Show*: This is how the videos to be shown are grouped. Each show should also have a defined list of people who will participate in the show, as well as an air date.
 
